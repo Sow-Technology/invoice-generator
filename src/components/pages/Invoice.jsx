@@ -5,7 +5,7 @@ import MainDetails from "../sections/MainDetails";
 import Notes from "../sections/Notes";
 import Table from "../sections/Table";
 import TableForm from "../sections/TableForm";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
@@ -33,6 +33,13 @@ function App() {
     setNotes,
   } = useInvoiceStore();
   const componentRef = useRef();
+  const [width] = useState(641);
+
+  useEffect(() => {
+    if (window.innerWidth < width) {
+      alert("Place your phone in landscape mode for the best experience");
+    }
+  }, [width]);
   return (
     <>
       <main

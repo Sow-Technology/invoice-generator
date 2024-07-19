@@ -110,7 +110,7 @@ const TableForm = () => {
 
     // Ensure the input is a number
     if (!isNaN(inputValue) && inputValue >= 0) {
-      setPaid("₹" + inputValue);
+      setPaid(inputValue);
     }
   };
   const removeSymbol = (string) => {
@@ -120,6 +120,9 @@ const TableForm = () => {
     const handleCalculateBalance = () => {
       const balance = subTotal - removeSymbol(paid);
       console.log(balance);
+      console.log(paid);
+      console.log(typeof Number(paid.slice(0, 1)));
+      console.log(Number(paid.slice(0, 1)));
       if (subTotal >= paid) {
         setBalance("₹" + balance);
       } else {
@@ -185,7 +188,12 @@ const TableForm = () => {
       <div className="flex items-center justify-center gap-2 mb-4">
         {" "}
         <Label htmlFor="paid">Amount Paid:</Label>
-        <Input id="paid" name="paid" onChange={handlePaidChange} value={paid} />
+        <Input
+          id="paid"
+          name="paid"
+          onChange={handlePaidChange}
+          value={"₹" + paid}
+        />
       </div>
       {/* Table items */}
 
@@ -240,7 +248,7 @@ const TableForm = () => {
           {" "}
           <div>₹{subTotal}</div>
           {/* <div>{subTotal}</div> */}
-          <div className="text-primary font-medium">{paid}</div>
+          <div className="text-primary font-medium">₹{paid}</div>
           <div className="text-primary text-2xl font-medium">{balance}</div>
         </div>
       </div>
