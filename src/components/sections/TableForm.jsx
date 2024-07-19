@@ -40,7 +40,9 @@ const TableForm = () => {
   const [discount, setDiscount] = useState(0);
   console.log(code);
   const editRow = (id) => {
-    const editingRow = productsData.find((row) => row.id === id);
+    console.log(id);
+    const editingRow = products.find((row) => row.id === id);
+    console.log(editingRow);
     setProducts(products.filter((row) => row.id !== id));
     setIsEditing(true);
     setCode(editingRow.code);
@@ -118,7 +120,11 @@ const TableForm = () => {
     const handleCalculateBalance = () => {
       const balance = subTotal - removeSymbol(paid);
       console.log(balance);
-      setBalance("₹" + balance);
+      if (subTotal >= paid) {
+        setBalance("₹" + balance);
+      } else {
+        setBalance("-₹" + Math.abs(balance));
+      }
     };
     handleCalculateBalance();
   }, [paid, setBalance, subTotal]);
@@ -172,10 +178,7 @@ const TableForm = () => {
             onChange={handleDiscountChange}
           />
         </div>
-        <Button
-          type="submit"
-          className="bg-blue-500  text-white font-bold py-2 px-8 rounded hover:bg-blue-600 hover:text-white transition-all duration-150 hover:ring-4 hover:ring-blue-400 mt-auto"
-        >
+        <Button type="submit" className="-400 mt-auto">
           {isEditing ? "Finish Editing" : "Add Product"}
         </Button>
       </form>
@@ -188,7 +191,7 @@ const TableForm = () => {
 
       <table width="100%" className="mb-10 overflow-auto">
         <thead>
-          <tr className="bg-gray-100 p-1 text-[#2a3990]">
+          <tr className="bg-gray-100 p-1 text-primary">
             <td className="font-bold">Code</td>
             <td className="font-bold">Product Name</td>
             <td className="font-bold">Qty</td>
@@ -209,7 +212,7 @@ const TableForm = () => {
                   <td>{discount}%</td>
                   <td className="amount">{total}</td>
                   <td>
-                    <button onClick={() => editRow(code)}>
+                    <button onClick={() => editRow(id)}>
                       <AiOutlineEdit className="text-green-500 font-bold text-xl" />
                     </button>
                   </td>
@@ -230,15 +233,15 @@ const TableForm = () => {
         <div>
           <div className="">SubTotal</div>
           {/* <div className="">Adjustments</div> */}
-          <div className="">Paid</div>
-          <div className="">Balance</div>
+          <div className="text-primary font-medium">Paid</div>
+          <div className="text-primary font-medium text-2xl">Balance</div>
         </div>
         <div className="text-right">
           {" "}
           <div>₹{subTotal}</div>
           {/* <div>{subTotal}</div> */}
-          <div>{paid}</div>
-          <div>{balance}</div>
+          <div className="text-primary font-medium">{paid}</div>
+          <div className="text-primary text-2xl font-medium">{balance}</div>
         </div>
       </div>
     </>

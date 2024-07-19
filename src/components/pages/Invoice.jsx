@@ -1,7 +1,5 @@
 // import ReactToPrint from "react-to-print";
 import { useInvoiceStore } from "@/store/store";
-import ClientDetails from "../sections/ClientDetails";
-import Dates from "../sections/Dates";
 import Header from "../sections/Header";
 import MainDetails from "../sections/MainDetails";
 import Notes from "../sections/Notes";
@@ -10,8 +8,18 @@ import TableForm from "../sections/TableForm";
 import { useRef } from "react";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import { Textarea } from "../ui/textarea";
+import { PDFExport, savePDF } from "@progress/kendo-react-pdf";
+import { Button } from "../ui/button";
+import ReactToPrint from "react-to-print";
 
 function App() {
+  let pdfExportComponent;
+
+  const exportPDFWithComponent = () => {
+    pdfExportComponent.save();
+  };
+
   const {
     orderNumber,
     setOrderNumber,
@@ -105,38 +113,30 @@ function App() {
               </article>
 
               <Label htmlFor="notes">Additional Notes</Label>
-              <textarea
+              <Textarea
                 name="notes"
                 id="notes"
                 cols="30"
-                rows="10"
+                rows="5"
                 placeholder="Additional notes to the client"
                 maxLength={500}
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-              ></textarea>
+              ></Textarea>
             </div>
           </div>
         </section>
 
         {/* Invoice Preview */}
         <div className="invoice__preview bg-white p-5 rounded-2xl border-4 border-blue-200">
-          {/* <ReactToPrint
-            trigger={() => (
-              <button className="bg-blue-500 ml-5 text-white font-bold py-2 px-8 rounded hover:bg-blue-600 hover:text-white transition-all duration-150 hover:ring-4 hover:ring-blue-400">
-                Print / Download
-              </button>
-            )}
+          <ReactToPrint
+            trigger={() => <Button>Print / Download</Button>}
             content={() => componentRef.current}
-          /> */}
-          <div ref={componentRef} className="p-5">
+          />
+          <div ref={componentRef} className="p-5" paperSize="A4">
             <Header />
 
             <MainDetails />
-
-            {/* <ClientDetails /> */}
-
-            {/* <Dates /> */}
 
             <Table />
 

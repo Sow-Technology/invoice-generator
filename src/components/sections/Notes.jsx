@@ -5,9 +5,11 @@ const Notes = () => {
   const { notes } = useInvoiceStore();
   return (
     <>
-      <section className="mt-10 mb-5">
+      <section className="mt-10 mb-5 flex flex-col max-w-full">
         <h3>Additional notes</h3>
-        <p className="lg:w-1/2 text-justify">{notes}</p>
+        <p className=" max-w-full break-words whitespace-normal text-wrap">
+          {notes}
+        </p>
       </section>
     </>
   );
