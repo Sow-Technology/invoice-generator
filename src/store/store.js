@@ -1,4 +1,3 @@
-import { productsData } from "@/lib/data";
 import { create } from "zustand";
 export const useInvoiceStore = create((set) => ({
   orderNumber: "",
@@ -15,7 +14,7 @@ export const useInvoiceStore = create((set) => ({
   setProducts: (products) => set({ products }),
   subTotal: "₹0",
   setSubTotal: (subTotal) => set({ subTotal }),
-  paid: "₹0",
+  paid: "0",
   setPaid: (paid) => set({ paid }),
   balance: "₹0",
   setBalance: (balance) => set({ balance }),

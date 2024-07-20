@@ -49,6 +49,16 @@ const TableForm = () => {
     setQuantity(editingRow.quantity);
     setPrice(editingRow.price);
   };
+  const handleCodeEdit = (id) => {
+    console.log(id);
+    const editingRow = products.find((row) => row.id === id);
+    console.log(editingRow);
+    setProducts(products.filter((row) => row.id !== id));
+    // setIsEditing(true);
+    // setCode(editingRow.code);
+    // setQuantity(editingRow.quantity);
+    // setPrice(editingRow.price);
+  };
 
   // Delete function
 
@@ -116,6 +126,39 @@ const TableForm = () => {
   const removeSymbol = (string) => {
     return string.replace(/₹/g, "");
   };
+  const handleQuantityChange = (e, id) => {
+    const updatedQuantity = e.target.value;
+    const updatedProducts = products.map((product) =>
+      product.id === id ? { ...product, quantity: updatedQuantity } : product
+    );
+    setProducts(updatedProducts);
+  };
+
+  const handleDiscountInRowChange = (e, id) => {
+    let inputValue = e.target.value;
+
+    // Remove the '%' symbol if it's present
+    if (inputValue.endsWith("%")) {
+      inputValue = inputValue.slice(0, -1);
+    }
+
+    // Ensure the input is a number and within the range 0-100
+    if (!isNaN(inputValue) && inputValue >= 0 && inputValue <= 100) {
+      const updatedDiscount = inputValue;
+      const updatedProducts = products.map((product) =>
+        product.id === id ? { ...product, discount: updatedDiscount } : product
+      );
+      setProducts(updatedProducts);
+    }
+  };
+
+  const handleCodeChange = (value, id) => {
+    const updatedProducts = products.map((product) =>
+      product.id === id ? { ...product, code: value } : product
+    );
+    setProducts(updatedProducts);
+  };
+
   useEffect(() => {
     const handleCalculateBalance = () => {
       const balance = subTotal - removeSymbol(paid);
@@ -133,14 +176,110 @@ const TableForm = () => {
   }, [paid, setBalance, subTotal]);
   return (
     <>
+      {/* Table items */}
+
+      <table width="100%" className="mb-10 overflow-auto">
+        {/* <thead>
+          <tr className="bg-gray-100 p-1 text-primary">
+            <td className="font-bold">Code</td>
+            <td className="font-bold">Product Name</td>
+            <td className="font-bold">Qty</td>
+            <td className="font-bold">Unit Price</td>
+            <td className="font-bold">Discount</td>
+            <td className="font-bold">Total</td>
+          </tr>
+        </thead> */}
+        {products?.map(
+          ({ code, productName, quantity, unitPrice, total, discount, id }) => (
+            <React.Fragment key={id}>
+              {/* <tbody>
+                <tr className="h-10">
+                  <td>{code}</td>
+                  <td>{productName}</td>
+                  <td>{quantity}</td>
+                  <td>{unitPrice}</td>
+                  <td>{discount}%</td>
+                  <td className="amount">{total}</td>
+                  <td>
+                    <button onClick={() => editRow(id)}>
+                      <AiOutlineEdit className="text-green-500 font-bold text-xl" />
+                    </button>
+                  </td>
+                  <td>
+                    <button onClick={() => setShowModal(true)}>
+                      <AiOutlineDelete className="text-red-500 font-bold text-xl" />
+                    </button>
+                  </td>
+                </tr>
+              </tbody> */}
+              <div
+                onSubmit={handleSubmit}
+                className="my-5 flex flex-row justify-between items-center gap-2 flex-wrap"
+              >
+                <div className="flex flex-1 flex-col items-start gap-2">
+                  <Label htmlFor="code">Code</Label>
+                  <Select
+                    onValueChange={(value) => handleCodeChange(value, id)}
+                    value={code}
+                  >
+                    <SelectTrigger className="">
+                      <SelectValue placeholder="code" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {productsData.map((product) => {
+                        return (
+                          <SelectItem key={product.code} value={product.code}>
+                            {product.code}
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex flex-1 flex-col items-start gap-2">
+                  <Label htmlFor="quantity">Quantity</Label>
+                  <Input
+                    type="number"
+                    name="quantity"
+                    id="quantity"
+                    placeholder="Quantity"
+                    maxLength={33}
+                    value={quantity}
+                    onChange={(e) => handleQuantityChange(e, id)}
+                  />
+                </div>
+
+                <div className="flex flex-1 flex-col items-start gap-2">
+                  <Label htmlFor="discount">Discount</Label>
+
+                  <Input
+                    type="text"
+                    name="discount"
+                    id="discount"
+                    placeholder="Discount"
+                    maxLength={33}
+                    value={discount + "%"}
+                    onChange={(e) => handleDiscountInRowChange(e, id)}
+                  />
+                </div>
+                {/* <Button type="submit" className="-400 mt-auto">
+                  {isEditing ? "Finish Editing" : "Add Product"}
+                </Button> */}
+              </div>
+              {showModal && <DeleteModal id={id} />}
+            </React.Fragment>
+          )
+        )}
+      </table>
       <form
         onSubmit={handleSubmit}
         className="my-5 flex flex-row justify-between items-center gap-2 flex-wrap"
       >
-        <div className="flex flex-col items-start gap-2">
+        <div className="flex flex-col flex-1 items-start gap-2">
           <Label htmlFor="code">Code</Label>
           <Select onValueChange={setCode} value={code}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="">
               <SelectValue placeholder="code" />
             </SelectTrigger>
             <SelectContent>
@@ -195,61 +334,19 @@ const TableForm = () => {
           value={"₹" + paid}
         />
       </div>
-      {/* Table items */}
-
-      <table width="100%" className="mb-10 overflow-auto">
-        <thead>
-          <tr className="bg-gray-100 p-1 text-primary">
-            <td className="font-bold">Code</td>
-            <td className="font-bold">Product Name</td>
-            <td className="font-bold">Qty</td>
-            <td className="font-bold">Unit Price</td>
-            <td className="font-bold">Discount</td>
-            <td className="font-bold">Total</td>
-          </tr>
-        </thead>
-        {products?.map(
-          ({ code, productName, quantity, unitPrice, total, discount, id }) => (
-            <React.Fragment key={id}>
-              <tbody>
-                <tr className="h-10">
-                  <td>{code}</td>
-                  <td>{productName}</td>
-                  <td>{quantity}</td>
-                  <td>{unitPrice}</td>
-                  <td>{discount}%</td>
-                  <td className="amount">{total}</td>
-                  <td>
-                    <button onClick={() => editRow(id)}>
-                      <AiOutlineEdit className="text-green-500 font-bold text-xl" />
-                    </button>
-                  </td>
-                  <td>
-                    <button onClick={() => setShowModal(true)}>
-                      <AiOutlineDelete className="text-red-500 font-bold text-xl" />
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-              {showModal && <DeleteModal id={id} />}
-            </React.Fragment>
-          )
-        )}
-      </table>
-
       <div className="flex items-center justify-end gap-20">
         <div>
           <div className="">SubTotal</div>
           {/* <div className="">Adjustments</div> */}
           <div className="text-primary font-medium">Paid</div>
-          <div className="text-primary font-medium text-2xl">Balance</div>
+          {/* <div className="text-primary font-medium text-2xl">Balance</div> */}
         </div>
         <div className="text-right">
           {" "}
           <div>₹{subTotal}</div>
           {/* <div>{subTotal}</div> */}
           <div className="text-primary font-medium">₹{paid}</div>
-          <div className="text-primary text-2xl font-medium">{balance}</div>
+          {/* <div className="text-primary text-2xl font-medium">{balance}</div> */}
         </div>
       </div>
     </>

@@ -1,25 +1,17 @@
-// import ReactToPrint from "react-to-print";
 import { useInvoiceStore } from "@/store/store";
 import Header from "../sections/Header";
 import MainDetails from "../sections/MainDetails";
 import Notes from "../sections/Notes";
-import Table from "../sections/Table";
 import TableForm from "../sections/TableForm";
 import { useEffect, useRef, useState } from "react";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
-import { PDFExport, savePDF } from "@progress/kendo-react-pdf";
 import { Button } from "../ui/button";
 import ReactToPrint from "react-to-print";
+import TableContainer from "../sections/Table";
 
 function App() {
-  let pdfExportComponent;
-
-  const exportPDFWithComponent = () => {
-    pdfExportComponent.save();
-  };
-
   const {
     orderNumber,
     setOrderNumber,
@@ -145,7 +137,7 @@ function App() {
 
             <MainDetails />
 
-            <Table />
+            <TableContainer />
 
             <Notes />
           </div>
