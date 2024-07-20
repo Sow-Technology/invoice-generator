@@ -73,7 +73,7 @@ const TableContainer = () => {
           {" "}
           <div>₹{subTotal}</div>
           {/* <div>{subTotal}</div> */}
-          <div className="text-primary font-medium">{paid}</div>
+          <div className="text-primary font-medium">₹{paid}</div>
           {/* <div className="text-primary text-2xl font-medium">{balance}</div> */}
         </div>
       </div>

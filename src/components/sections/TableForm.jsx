@@ -1,5 +1,5 @@
 import { useInvoiceStore } from "@/store/store";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
 import { v4 as uuidv4 } from "uuid";
 import DeleteModal from "./DeleteModal";
@@ -38,48 +38,38 @@ const TableForm = () => {
   const [code, setCode] = useState(null);
   const [price, setPrice] = useState();
   const [discount, setDiscount] = useState(0);
-  console.log(code);
+
   const editRow = (id) => {
-    console.log(id);
     const editingRow = products.find((row) => row.id === id);
-    console.log(editingRow);
     setProducts(products.filter((row) => row.id !== id));
     setIsEditing(true);
     setCode(editingRow.code);
     setQuantity(editingRow.quantity);
     setPrice(editingRow.price);
   };
-  const handleCodeEdit = (id) => {
-    console.log(id);
-    const editingRow = products.find((row) => row.id === id);
-    console.log(editingRow);
-    setProducts(products.filter((row) => row.id !== id));
-    // setIsEditing(true);
-    // setCode(editingRow.code);
-    // setQuantity(editingRow.quantity);
-    // setPrice(editingRow.price);
-  };
 
-  // Delete function
+  const calculateTotal = (code, quantity, discount) => {
+    const unitPrice = productsData.find((p) => p.code === code)?.price || 0;
+    const totalBeforeDiscount = quantity * unitPrice;
+    const total = totalBeforeDiscount - (discount / 100) * totalBeforeDiscount;
+    return total.toFixed(2); // Truncate to 2 decimal places
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!code || !quantity || typeof discount == number) {
+    if (!code || !quantity || typeof discount !== "number") {
       toast.error("All the fields are required!");
-      console.log(code, quantity, discount);
+      return;
     }
 
-    const unitPrice = productsData.find((p) => p.code == code).price;
-    const totalBeforeDiscount = quantity * unitPrice;
-    const total = totalBeforeDiscount - (discount / 100) * totalBeforeDiscount;
-    console.log(total);
+    const newTotal = calculateTotal(code, quantity, discount);
     const newProduct = {
       code,
       quantity,
       id: uuidv4(),
       discount,
-      total,
-      unitPrice,
+      total: newTotal,
+      unitPrice: productsData.find((p) => p.code === code).price,
       productName: productsData.find((p) => p.code === code).productName,
     };
     setCode(null);
@@ -88,134 +78,91 @@ const TableForm = () => {
     setProducts([...products, newProduct]);
     setIsEditing(false);
   };
-  console.log(products);
-  console.log(subTotal);
+
   useEffect(() => {
-    const calculateTotal = () => {
-      const allItems = products.map((product) => product.total);
-      setSubTotal(collect(allItems).sum());
-    };
-    calculateTotal();
+    const allItems = products.map((product) => parseFloat(product.total));
+    setSubTotal(collect(allItems).sum().toFixed(2));
   }, [products, setSubTotal]);
-  const handleDiscountChange = (e) => {
-    let inputValue = e.target.value;
 
-    // Remove the '%' symbol if it's present
-    if (inputValue.endsWith("%")) {
-      inputValue = inputValue.slice(0, -1);
-    }
-
-    // Ensure the input is a number and within the range 0-100
-    if (!isNaN(inputValue) && inputValue >= 0 && inputValue <= 100) {
-      setDiscount(inputValue);
-    }
-  };
-  const handlePaidChange = (e) => {
-    let inputValue = e.target.value;
-
-    // Remove the '₹' symbol if it's present
-    if (inputValue.startsWith("₹")) {
-      inputValue = inputValue.slice(1);
-    }
-
-    // Ensure the input is a number
-    if (!isNaN(inputValue) && inputValue >= 0) {
-      setPaid(inputValue);
-    }
-  };
-  const removeSymbol = (string) => {
-    return string.replace(/₹/g, "");
-  };
-  const handleQuantityChange = (e, id) => {
-    const updatedQuantity = e.target.value;
-    const updatedProducts = products.map((product) =>
-      product.id === id ? { ...product, quantity: updatedQuantity } : product
+  useEffect(() => {
+    const balance = subTotal - Number(paid);
+    setBalance(
+      subTotal >= paid
+        ? "₹" + balance.toFixed(2)
+        : "-₹" + Math.abs(balance).toFixed(2)
     );
-    setProducts(updatedProducts);
-  };
+  }, [paid, setBalance, subTotal]);
 
-  const handleDiscountInRowChange = (e, id) => {
+  const handleDiscountChange = (e, id) => {
     let inputValue = e.target.value;
-
-    // Remove the '%' symbol if it's present
     if (inputValue.endsWith("%")) {
       inputValue = inputValue.slice(0, -1);
     }
-
-    // Ensure the input is a number and within the range 0-100
     if (!isNaN(inputValue) && inputValue >= 0 && inputValue <= 100) {
-      const updatedDiscount = inputValue;
-      const updatedProducts = products.map((product) =>
-        product.id === id ? { ...product, discount: updatedDiscount } : product
-      );
+      const updatedProducts = products.map((product) => {
+        if (product.id === id) {
+          const newDiscount = inputValue;
+          const newTotal = calculateTotal(
+            product.code,
+            product.quantity,
+            newDiscount
+          );
+          return { ...product, discount: newDiscount, total: newTotal };
+        }
+        return product;
+      });
       setProducts(updatedProducts);
     }
   };
 
-  const handleCodeChange = (value, id) => {
-    const updatedProducts = products.map((product) =>
-      product.id === id ? { ...product, code: value } : product
-    );
+  const handlePaidChange = (e) => {
+    let inputValue = e.target.value;
+    if (inputValue.startsWith("₹")) {
+      inputValue = inputValue.slice(1);
+    }
+    if (!isNaN(inputValue) && inputValue >= 0) {
+      setPaid(inputValue);
+    }
+  };
+
+  const handleQuantityChange = (e, id) => {
+    const updatedQuantity = e.target.value;
+    const updatedProducts = products.map((product) => {
+      if (product.id === id) {
+        const newTotal = calculateTotal(
+          product.code,
+          updatedQuantity,
+          product.discount
+        );
+        return { ...product, quantity: updatedQuantity, total: newTotal };
+      }
+      return product;
+    });
     setProducts(updatedProducts);
   };
 
-  useEffect(() => {
-    const handleCalculateBalance = () => {
-      const balance = subTotal - removeSymbol(paid);
-      console.log(balance);
-      console.log(paid);
-      console.log(typeof Number(paid.slice(0, 1)));
-      console.log(Number(paid.slice(0, 1)));
-      if (subTotal >= paid) {
-        setBalance("₹" + balance);
-      } else {
-        setBalance("-₹" + Math.abs(balance));
+  const handleCodeChange = (value, id) => {
+    const updatedProducts = products.map((product) => {
+      if (product.id === id) {
+        const newTotal = calculateTotal(
+          value,
+          product.quantity,
+          product.discount
+        );
+        return { ...product, code: value, total: newTotal };
       }
-    };
-    handleCalculateBalance();
-  }, [paid, setBalance, subTotal]);
+      return product;
+    });
+    setProducts(updatedProducts);
+  };
+
   return (
     <>
-      {/* Table items */}
-
       <table width="100%" className="mb-10 overflow-auto">
-        {/* <thead>
-          <tr className="bg-gray-100 p-1 text-primary">
-            <td className="font-bold">Code</td>
-            <td className="font-bold">Product Name</td>
-            <td className="font-bold">Qty</td>
-            <td className="font-bold">Unit Price</td>
-            <td className="font-bold">Discount</td>
-            <td className="font-bold">Total</td>
-          </tr>
-        </thead> */}
         {products?.map(
           ({ code, productName, quantity, unitPrice, total, discount, id }) => (
             <React.Fragment key={id}>
-              {/* <tbody>
-                <tr className="h-10">
-                  <td>{code}</td>
-                  <td>{productName}</td>
-                  <td>{quantity}</td>
-                  <td>{unitPrice}</td>
-                  <td>{discount}%</td>
-                  <td className="amount">{total}</td>
-                  <td>
-                    <button onClick={() => editRow(id)}>
-                      <AiOutlineEdit className="text-green-500 font-bold text-xl" />
-                    </button>
-                  </td>
-                  <td>
-                    <button onClick={() => setShowModal(true)}>
-                      <AiOutlineDelete className="text-red-500 font-bold text-xl" />
-                    </button>
-                  </td>
-                </tr>
-              </tbody> */}
-              <div
-                onSubmit={handleSubmit}
-                className="my-5 flex flex-row justify-between items-center gap-2 flex-wrap"
-              >
+              <div className="my-5 flex flex-row justify-between items-center gap-2 flex-wrap">
                 <div className="flex flex-1 flex-col items-start gap-2">
                   <Label htmlFor="code">Code</Label>
                   <Select
@@ -226,13 +173,11 @@ const TableForm = () => {
                       <SelectValue placeholder="code" />
                     </SelectTrigger>
                     <SelectContent>
-                      {productsData.map((product) => {
-                        return (
-                          <SelectItem key={product.code} value={product.code}>
-                            {product.code}
-                          </SelectItem>
-                        );
-                      })}
+                      {productsData.map((product) => (
+                        <SelectItem key={product.code} value={product.code}>
+                          {product.code}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -252,7 +197,6 @@ const TableForm = () => {
 
                 <div className="flex flex-1 flex-col items-start gap-2">
                   <Label htmlFor="discount">Discount</Label>
-
                   <Input
                     type="text"
                     name="discount"
@@ -260,18 +204,16 @@ const TableForm = () => {
                     placeholder="Discount"
                     maxLength={33}
                     value={discount + "%"}
-                    onChange={(e) => handleDiscountInRowChange(e, id)}
+                    onChange={(e) => handleDiscountChange(e, id)}
                   />
                 </div>
-                {/* <Button type="submit" className="-400 mt-auto">
-                  {isEditing ? "Finish Editing" : "Add Product"}
-                </Button> */}
               </div>
               {showModal && <DeleteModal id={id} />}
             </React.Fragment>
           )
         )}
       </table>
+
       <form
         onSubmit={handleSubmit}
         className="my-5 flex flex-row justify-between items-center gap-2 flex-wrap"
@@ -283,13 +225,11 @@ const TableForm = () => {
               <SelectValue placeholder="code" />
             </SelectTrigger>
             <SelectContent>
-              {productsData.map((product) => {
-                return (
-                  <SelectItem key={product.code} value={product.code}>
-                    {product.code}
-                  </SelectItem>
-                );
-              })}
+              {productsData.map((product) => (
+                <SelectItem key={product.code} value={product.code}>
+                  {product.code}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -309,7 +249,6 @@ const TableForm = () => {
 
         <div className="flex flex-1 flex-col items-start gap-2">
           <Label htmlFor="discount">Discount</Label>
-
           <Input
             type="text"
             name="discount"
@@ -317,15 +256,15 @@ const TableForm = () => {
             placeholder="Discount"
             maxLength={33}
             value={discount + "%"}
-            onChange={handleDiscountChange}
+            onChange={(e) => setDiscount(e.target.value)}
           />
         </div>
         <Button type="submit" className="-400 mt-auto">
           {isEditing ? "Finish Editing" : "Add Product"}
         </Button>
       </form>
+
       <div className="flex items-center justify-center gap-2 mb-4">
-        {" "}
         <Label htmlFor="paid">Amount Paid:</Label>
         <Input
           id="paid"
@@ -334,19 +273,15 @@ const TableForm = () => {
           value={"₹" + paid}
         />
       </div>
+
       <div className="flex items-center justify-end gap-20">
         <div>
           <div className="">SubTotal</div>
-          {/* <div className="">Adjustments</div> */}
           <div className="text-primary font-medium">Paid</div>
-          {/* <div className="text-primary font-medium text-2xl">Balance</div> */}
         </div>
         <div className="text-right">
-          {" "}
           <div>₹{subTotal}</div>
-          {/* <div>{subTotal}</div> */}
           <div className="text-primary font-medium">₹{paid}</div>
-          {/* <div className="text-primary text-2xl font-medium">{balance}</div> */}
         </div>
       </div>
     </>
