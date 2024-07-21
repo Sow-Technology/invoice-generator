@@ -17,6 +17,9 @@ import { toast } from "sonner";
 import { number } from "zod";
 import collect from "collect.js";
 import { Button } from "../ui/button";
+import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
+import Image from "next/image";
+import { Checkbox } from "../ui/checkbox";
 
 const TableForm = () => {
   const {
@@ -33,6 +36,8 @@ const TableForm = () => {
     setIsEditing,
     showModal,
     setShowModal,
+    paymentMode,
+    setPaymentMode,
   } = useInvoiceStore();
   const [quantity, setQuantity] = useState(1);
   const [code, setCode] = useState(null);
@@ -92,7 +97,6 @@ const TableForm = () => {
         : "-₹" + Math.abs(balance).toFixed(2)
     );
   }, [paid, setBalance, subTotal]);
-
   const handleDiscountChange = (e, id) => {
     let inputValue = e.target.value;
     if (inputValue.endsWith("%")) {
@@ -112,6 +116,25 @@ const TableForm = () => {
         return product;
       });
       setProducts(updatedProducts);
+    }
+  };
+  const handleDiscount = (e) => {
+    let inputValue = e.target.value;
+
+    // Remove the '%' symbol if it's present
+    if (inputValue.endsWith("%")) {
+      inputValue = inputValue.slice(0, -1);
+    }
+    console.log(Number(inputValue));
+    console.log(typeof inputValue);
+
+    // Ensure the input is a number and within the range 0-100
+    if (
+      !isNaN(Number(inputValue)) &&
+      Number(inputValue) >= 0 &&
+      Number(inputValue) <= 100
+    ) {
+      setDiscount(Number(inputValue));
     }
   };
 
@@ -256,7 +279,7 @@ const TableForm = () => {
             placeholder="Discount"
             maxLength={33}
             value={discount + "%"}
-            onChange={(e) => setDiscount(e.target.value)}
+            onChange={handleDiscount}
           />
         </div>
         <Button type="submit" className="-400 mt-auto">

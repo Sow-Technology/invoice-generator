@@ -1,5 +1,5 @@
 import { useInvoiceStore } from "@/store/store";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -9,6 +9,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Popover, PopoverContent } from "../ui/popover";
+import Image from "next/image";
+
 const TableContainer = () => {
   const {
     products,
@@ -24,7 +27,9 @@ const TableContainer = () => {
     setIsEditing,
     showModal,
     setShowModal,
+    paymentMode,
   } = useInvoiceStore();
+
   return (
     <>
       <Table width="100%" className="mb-10 overflow-auto">
@@ -76,6 +81,10 @@ const TableContainer = () => {
           <div className="text-primary font-medium">₹{paid}</div>
           {/* <div className="text-primary text-2xl font-medium">{balance}</div> */}
         </div>
+      </div>
+      <div className="flex gap-10">
+        <div className="font-medium text-[#373737]">Payment Mode:</div>
+        <div className=" capitalize">{paymentMode}</div>
       </div>
     </>
   );

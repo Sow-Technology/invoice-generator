@@ -22,4 +22,6 @@ export const useInvoiceStore = create((set) => ({
   setIsEditing: (isEditing) => set({ isEditing }),
   showModal: false,
   setShowModal: (showModal) => set({ showModal }),
+  paymentMode: "",
+  setPaymentMode: (paymentMode) => set({ paymentMode }),
 }));

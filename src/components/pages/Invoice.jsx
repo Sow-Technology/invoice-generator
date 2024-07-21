@@ -10,6 +10,9 @@ import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import ReactToPrint from "react-to-print";
 import TableContainer from "../sections/Table";
+import { Checkbox } from "../ui/checkbox";
+import Image from "next/image";
+import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 
 function App() {
   const {
@@ -23,9 +26,22 @@ function App() {
     setEmailId,
     notes,
     setNotes,
+    paymentMode,
+    setPaymentMode,
   } = useInvoiceStore();
   const componentRef = useRef();
   const [width] = useState(641);
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [isPaymentDone, setIsPaymentDone] = useState(false);
+  useEffect(() => {
+    console.log(paymentMode);
+    if (paymentMode == "upi") {
+      console.log(true);
+      setIsPopoverOpen(true);
+    } else {
+      setIsPopoverOpen(false);
+    }
+  }, [paymentMode]);
 
   useEffect(() => {
     if (window.innerWidth < width) {
@@ -123,15 +139,62 @@ function App() {
                 onChange={(e) => setNotes(e.target.value)}
               ></Textarea>
             </div>
+            <div>
+              <Label>Payment Mode:</Label>
+              <RadioGroup
+                defaultValue="cash"
+                value={paymentMode}
+                onValueChange={setPaymentMode}
+                className="flex gap-4 my-2"
+              >
+                <div className="flex items-center space-x-2 ">
+                  <RadioGroupItem value="cash" id="cash" />
+                  <Label htmlFor="cash">Cash</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="upi" id="upi" />
+                  <Label htmlFor="upi">Upi</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="card" id="card" />
+                  <Label htmlFor="card">Card</Label>
+                </div>
+              </RadioGroup>
+              {isPopoverOpen && (
+                <>
+                  <Image
+                    src="/images/upi.webp"
+                    width={400}
+                    height={400}
+                    alt=""
+                  />
+                </>
+              )}
+              <div className="flex items-center my-4 space-x-2">
+                <Checkbox
+                  id="paymentDone"
+                  Checked={isPaymentDone}
+                  onCheckedChange={setIsPaymentDone}
+                />
+                <Label
+                  htmlFor="paymentDone"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Payment Done?
+                </Label>
+              </div>
+              {isPaymentDone && (
+                <ReactToPrint
+                  trigger={() => <Button>Print / Download</Button>}
+                  content={() => componentRef.current}
+                />
+              )}
+            </div>
           </div>
         </section>
 
         {/* Invoice Preview */}
-        <div className="invoice__preview bg-white p-5 rounded-2xl border-4 border-blue-200">
-          <ReactToPrint
-            trigger={() => <Button>Print / Download</Button>}
-            content={() => componentRef.current}
-          />
+        <div className="invoice__preview bg-white p-5 rounded-2xl border-4 border-blue-200 sticky top-0">
           <div ref={componentRef} className="p-5" paperSize="A4">
             <Header />
 
