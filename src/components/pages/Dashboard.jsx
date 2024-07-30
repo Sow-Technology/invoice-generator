@@ -110,7 +110,7 @@ export default function Dashboard() {
           </TooltipProvider>
         </nav>
       </aside>
-      <div className="flex flex-1 flex-col sm:gap-4 sm:py-4 sm:pl-14">
+      <div className="flex flex-1 flex-col sm:gap-4 sm:py-4 sm:pl-64">
         <div>
           <div className="grid gap-4 p-4 sm:p-6 md:grid-cols-2 lg:grid-cols-3">
             <Card>
@@ -408,7 +408,7 @@ export default function Dashboard() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <BarchartChart className="aspect-[9/4]" />
+                <BarchartChart className="aspect-square w-auto max-w-full" />
               </CardContent>
             </Card>
             <Card>
@@ -461,7 +461,7 @@ function BarchartChart(props) {
             color: "hsl(var(--chart-1))",
           },
         }}
-        className="min-h-[300px]"
+        className="min-h-[300px] max-w-full"
       >
         <BarChart
           accessibilityLayer
