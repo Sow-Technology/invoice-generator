@@ -163,9 +163,9 @@ function App() {
               {isPopoverOpen && (
                 <>
                   <Image
-                    src="/images/upi.webp"
+                    src="/images/upi.jpg"
                     width={400}
-                    height={400}
+                    height={800}
                     alt=""
                   />
                 </>
