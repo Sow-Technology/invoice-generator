@@ -173,7 +173,7 @@ function App() {
               <div className="flex items-center my-4 space-x-2">
                 <Checkbox
                   id="paymentDone"
-                  Checked={isPaymentDone}
+                  checked={isPaymentDone}
                   onCheckedChange={setIsPaymentDone}
                 />
                 <Label
