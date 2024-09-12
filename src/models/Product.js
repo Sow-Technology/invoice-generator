@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+
 const ProductSchema = new mongoose.Schema(
   {
     code: { type: String, required: true },
@@ -6,7 +7,8 @@ const ProductSchema = new mongoose.Schema(
     productName: { type: String, required: true },
     unitPrice: { type: Number },
   },
-  { timestamps }
+  { timestamps: true } // Corrected line
 );
+
 export const Product =
   mongoose.models.Product || mongoose.model("Product", ProductSchema);
