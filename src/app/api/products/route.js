@@ -1,11 +1,5 @@
-// src/app/api/products/route.js
-
 import dbConnect from "@/lib/dbConnect";
 import { Product } from "@/models/Product";
-
-
-// import dbConnect from './mongodb';
-// import { Product } from '../../models/Product'; // Adjust path if needed
 
 export async function GET(request) {
   try {
