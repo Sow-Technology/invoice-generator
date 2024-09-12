@@ -26,31 +26,38 @@ import {
 
 export default function DashboardSection({ data }) {
   return (
-    <div className="flex flex-1 flex-col sm:gap-4 sm:py-4 sm:pl-64">
+    <div className="flex flex-1 flex-col sm:py-4 ">
       <div>
-        <div className="grid gap-4 p-4 sm:p-6 md:grid-cols-2 lg:grid-cols-3">
-          <DataCard
-            title="Total Invoices"
-            icon={<ReceiptIcon className="h-6 w-6 text-muted-foreground" />}
-            value="1,234"
-          />
-          <DataCard
-            title="Total Revenue"
-            icon={<DollarSignIcon className="h-6 w-6 text-muted-foreground" />}
-            value="$45,231.89"
-          />
-          <DataCard
-            title="Paid Invoices"
-            icon={<CheckIcon className="h-6 w-6 text-muted-foreground" />}
-            value="987"
-          />
-          <DataCard
-            title="Overdue Invoices"
-            icon={<ClockIcon className="h-6 w-6 text-muted-foreground" />}
-            value="45"
-          />
-
-          <Invoices data={data} />
+        <div className=" ">
+          <div className="mx-5 flex w-full flex-wrap flex-row gap-4 justify-between max-w-[95%]">
+            {" "}
+            <DataCard
+              title="Total Invoices"
+              icon={<ReceiptIcon className="h-6 w-6 text-muted-foreground" />}
+              value="1,234"
+            />
+            <DataCard
+              title="Total Revenue"
+              icon={
+                <DollarSignIcon className="h-6 w-6 text-muted-foreground" />
+              }
+              value="₹45,231.89"
+            />
+            <DataCard
+              title="Paid Invoices"
+              icon={<CheckIcon className="h-6 w-6 text-muted-foreground" />}
+              value="987"
+            />
+            <DataCard
+              title="Overdue Invoices"
+              icon={<ClockIcon className="h-6 w-6 text-muted-foreground" />}
+              value="45"
+            />
+          </div>
+          <div className="w-[95%]">
+            {" "}
+            <Invoices data={data} />
+          </div>
         </div>
       </div>
       <div>

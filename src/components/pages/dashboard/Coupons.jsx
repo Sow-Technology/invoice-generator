@@ -49,10 +49,31 @@ export default function Coupons({}) {
       status: "Active",
     },
     {
-      couponCode: "JOC111",
+      couponCode: "JOC112",
       discount: "20",
       couponType: "Percent",
       validity: new Date("2024-nov-2"),
+      status: "InActive",
+    },
+    {
+      couponCode: "JOC113",
+      discount: "200",
+      couponType: "Fixed",
+      validity: new Date("2025-jan-2"),
+      status: "Active",
+    },
+    {
+      couponCode: "JOC114",
+      discount: "200",
+      couponType: "Fixed",
+      validity: new Date("2025-jan-2"),
+      status: "InActive",
+    },
+    {
+      couponCode: "JOC115",
+      discount: "200",
+      couponType: "Percent",
+      validity: new Date("2025-jan-2"),
       status: "InActive",
     },
   ];

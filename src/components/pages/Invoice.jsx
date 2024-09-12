@@ -13,6 +13,8 @@ import TableContainer from "../sections/Table";
 import { Checkbox } from "../ui/checkbox";
 import Image from "next/image";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
+import axios from "axios";
+import { toast } from "sonner";
 
 function App() {
   const {
@@ -26,12 +28,19 @@ function App() {
     setEmailId,
     notes,
     setNotes,
+    subTotal,
     paymentMode,
+    setTax,
+    tax,
+    taxValue,
+    setTaxValue,
     setPaymentMode,
   } = useInvoiceStore();
   const componentRef = useRef();
   const [width] = useState(641);
+  const [items, setItems] = useState([]);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [existingCustomer, setExistingCustomer] = useState(false);
   const [isPaymentDone, setIsPaymentDone] = useState(false);
   useEffect(() => {
     console.log(paymentMode);
@@ -42,12 +51,65 @@ function App() {
       setIsPopoverOpen(false);
     }
   }, [paymentMode]);
-
+  const handleSubmit = async () => {
+    const data = {
+      orderNumber,
+      customerName,
+      phoneNumber,
+      emailId,
+      notes,
+      paymentMode,
+      items,
+      isPaymentDone,
+      subTotal,
+      taxValue,
+    };
+    if (!existingCustomer) {
+      const newCustomer = await axios.post("/api/createCustomer", {
+        name: customerName,
+        phoneNumber,
+        emailId,
+      });
+      console.log(newCustomer);
+    }
+    const response = await axios.post("/api/invoice", { ...data });
+  };
   useEffect(() => {
     if (window.innerWidth < width) {
       alert("Place your phone in landscape mode for the best experience");
     }
   }, [width]);
+
+  const getInvoiceNumber = async () => {
+    const response = await axios.get("/api/newInvoiceNumber");
+    return response;
+  };
+  useEffect(() => {
+    getInvoiceNumber().then((res) => {
+      const r = +res.data.split("JO")[1] + 1;
+      setOrderNumber("JO" + r);
+    });
+  }, []);
+  const handleFetchCustomerDetails = async () => {
+    toast.loading("Fetching Customer Details", {
+      id: "fetchingCustomerDetails",
+    });
+    const response = await axios.get(
+      `/api/getCustomer?phoneNumber=${phoneNumber}`
+    );
+    console.log(response);
+    if (response.status != 200) {
+      toast.error("Customer not found!, enter details to create new customer", {
+        id: "fetchingCustomerDetails",
+      });
+    }
+    setCustomerName(response.data.name);
+    setEmailId(response.data.email);
+    setExistingCustomer(true);
+    toast.success("Customer Details Fetched", {
+      id: "fetchingCustomerDetails",
+    });
+  };
   return (
     <>
       <main
@@ -60,7 +122,7 @@ function App() {
         <section>
           <div className="bg-white p-5 rounded shadow">
             <div className="flex flex-col justify-center gap-2">
-              <article className="md:grid grid-cols-3 gap-2">
+              {/* <article className="md:grid grid-cols-3 gap-2">
                 <div className="flex flex-row w-auto items-center gap-2">
                   <Label htmlFor="orderNumber" className="md:min-w-[100px]">
                     Order Number
@@ -76,9 +138,29 @@ function App() {
                     onChange={(e) => setOrderNumber(e.target.value)}
                   />
                 </div>
-              </article>
-              <article className="md:grid grid-cols-2 gap-4 md:mt-6 max-lg:space-y-2">
-                <div className="flex flex-col gap-3">
+              </article> */}
+              <article className="grid grid-cols-4 gap-4 md:mt-6 max-lg:space-y-2">
+                <div className=" flex-col gap-3 col-span-3">
+                  <Label htmlFor="phoneNumber">
+                    Enter customer phone number
+                  </Label>
+                  <Input
+                    type="text"
+                    name="phoneNumber"
+                    id="phoneNumber"
+                    placeholder="Enter customer phone number"
+                    maxLength={96}
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                  />
+                </div>
+                <div className="w-max col-span-1 flex  items-end">
+                  {" "}
+                  <Button onClick={handleFetchCustomerDetails}>
+                    Get Details
+                  </Button>
+                </div>
+                <div className="flex flex-col gap-3 col-span-2">
                   <Label htmlFor="customerName">Customer Name</Label>
                   <Input
                     type="text"
@@ -92,22 +174,7 @@ function App() {
                   />
                 </div>
 
-                <div className="flex flex-col gap-3">
-                  <Label htmlFor="phoneNumber">
-                    Enter customer phone number
-                  </Label>
-                  <Input
-                    type="text"
-                    name="phoneNumber"
-                    id="phoneNumber"
-                    placeholder="Enter customer phone number"
-                    maxLength={96}
-                    autoComplete="off"
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
-                  />
-                </div>
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-3 col-span-2">
                   <Label htmlFor="emailId">Enter customer Email ID</Label>
                   <Input
                     type="text"
@@ -124,7 +191,7 @@ function App() {
 
               {/* This is our table form */}
               <article>
-                <TableForm />
+                <TableForm setItems={setItems} />
               </article>
 
               <Label htmlFor="notes">Additional Notes</Label>
@@ -184,10 +251,13 @@ function App() {
                 </Label>
               </div>
               {isPaymentDone && (
-                <ReactToPrint
-                  trigger={() => <Button>Print / Download</Button>}
-                  content={() => componentRef.current}
-                />
+                <div className="" onClick={handleSubmit}>
+                  {" "}
+                  <ReactToPrint
+                    trigger={() => <Button>Print / Download</Button>}
+                    content={() => componentRef.current}
+                  />
+                </div>
               )}
             </div>
           </div>

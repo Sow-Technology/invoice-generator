@@ -6,6 +6,7 @@ import DataCard from "./dashboard/DataCard";
 import Invoices from "./dashboard/Invoices";
 import DashboardSection from "./dashboard/DashboardSection";
 import Coupons from "./dashboard/Coupons";
+import { useQuery } from "@tanstack/react-query";
 const data = [
   {
     orderNumber: "JO001",
@@ -77,6 +78,12 @@ const data = [
 export default function Dashboard() {
   const [active, setActive] = useState("Dashboard");
   console.log(active);
+  const invoiceData = useQuery({
+    queryKey: ["invoices"],
+    queryFn: () => fetch(`/api/getInvoices`),
+  });
+  console.log("inv data");
+  console.log(invoiceData);
   return (
     <div className="flex min-h-screen w-full">
       <Sidebar active={active} setActive={setActive} />

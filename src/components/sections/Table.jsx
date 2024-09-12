@@ -28,6 +28,7 @@ const TableContainer = () => {
     showModal,
     setShowModal,
     paymentMode,
+    taxValue,
   } = useInvoiceStore();
 
   return (
@@ -69,17 +70,14 @@ const TableContainer = () => {
 
       <div className="flex items-center justify-end gap-20">
         <div>
+          <div className="">Tax</div>
           <div className="">SubTotal</div>
-          {/* <div className="">Adjustments</div> */}
           <div className="text-primary font-medium">Paid</div>
-          {/* <div className="text-primary font-medium text-2xl">Balance</div> */}
         </div>
         <div className="text-right">
-          {" "}
+          <div>₹{taxValue}</div>
           <div>₹{subTotal}</div>
-          {/* <div>{subTotal}</div> */}
           <div className="text-primary font-medium">₹{paid}</div>
-          {/* <div className="text-primary text-2xl font-medium">{balance}</div> */}
         </div>
       </div>
       <div className="flex gap-10">

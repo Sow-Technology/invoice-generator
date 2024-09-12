@@ -40,7 +40,7 @@ const columns = [
 ];
 export default function Invoices({ data }) {
   return (
-    <Card className="col-span-2 lg:col-span-3">
+    <Card className=" w-full mt-5 mx-5">
       <CardHeader>
         <CardTitle>Invoices</CardTitle>
         <CardDescription>

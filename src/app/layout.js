@@ -1,6 +1,6 @@
 import { Roboto } from "next/font/google";
 import "./globals.css";
-import { Toaster } from "@/components/ui/sonner";
+import RootProviders from "@/components/providers/RootProviders";
 
 const inter = Roboto({ subsets: ["latin"], weight: ["400", "500", "700"] });
 
@@ -13,8 +13,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Toaster position="top-center" />
-        {children}
+        <RootProviders>{children}</RootProviders>
       </body>
     </html>
   );

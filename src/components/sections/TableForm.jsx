@@ -21,7 +21,7 @@ import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import Image from "next/image";
 import { Checkbox } from "../ui/checkbox";
 
-const TableForm = () => {
+const TableForm = ({ setItems }) => {
   const {
     products,
     setProducts,
@@ -38,6 +38,10 @@ const TableForm = () => {
     setShowModal,
     paymentMode,
     setPaymentMode,
+    setTax,
+    tax,
+    taxValue,
+    setTaxValue,
   } = useInvoiceStore();
   const [quantity, setQuantity] = useState(1);
   const [code, setCode] = useState(null);
@@ -119,22 +123,25 @@ const TableForm = () => {
     }
   };
   const handleDiscount = (e) => {
-    let inputValue = e.target.value;
+    let inputValue = e.target.value.replace("%", "");
 
-    // Remove the '%' symbol if it's present
-    if (inputValue.endsWith("%")) {
-      inputValue = inputValue.slice(0, -1);
-    }
-    console.log(Number(inputValue));
-    console.log(typeof inputValue);
-
-    // Ensure the input is a number and within the range 0-100
     if (
       !isNaN(Number(inputValue)) &&
       Number(inputValue) >= 0 &&
       Number(inputValue) <= 100
     ) {
       setDiscount(Number(inputValue));
+    }
+  };
+  const handleTaxChange = (e) => {
+    let inputValue = e.target.value.replace("%", "");
+
+    if (
+      !isNaN(Number(inputValue)) &&
+      Number(inputValue) >= 0 &&
+      Number(inputValue) <= 30
+    ) {
+      setTax(Number(inputValue));
     }
   };
 
@@ -179,6 +186,13 @@ const TableForm = () => {
     setProducts(updatedProducts);
   };
 
+  useEffect(() => {
+    setItems(products);
+  }, [products, setItems]);
+  useEffect(() => {
+    const tVal = subTotal * (tax / 100);
+    setTaxValue(tVal.toFixed(2));
+  }, [tax, subTotal, setTaxValue]);
   return (
     <>
       <table width="100%" className="mb-10 overflow-auto">
@@ -226,12 +240,11 @@ const TableForm = () => {
                     id="discount"
                     placeholder="Discount"
                     maxLength={33}
-                    value={discount + "%"}
+                    value={discount !== "" ? `${discount}%` : ""}
                     onChange={(e) => handleDiscountChange(e, id)}
                   />
                 </div>
               </div>
-              {showModal && <DeleteModal id={id} />}
             </React.Fragment>
           )
         )}
@@ -277,8 +290,7 @@ const TableForm = () => {
             name="discount"
             id="discount"
             placeholder="Discount"
-            maxLength={33}
-            value={discount + "%"}
+            value={discount !== "" ? `${discount}%` : ""}
             onChange={handleDiscount}
           />
         </div>
@@ -287,7 +299,7 @@ const TableForm = () => {
         </Button>
       </form>
 
-      <div className="flex items-center justify-center gap-2 mb-4">
+      <div className="inline-flex sm:w-[48%] items-center justify-center gap-2 mb-4 mr-4">
         <Label htmlFor="paid">Amount Paid:</Label>
         <Input
           id="paid"
@@ -296,13 +308,24 @@ const TableForm = () => {
           value={"₹" + paid}
         />
       </div>
+      <div className="inline-flex  sm:w-[48%] items-center justify-center gap-2 mb-4">
+        <Label htmlFor="paid">Tax applicable:</Label>
+        <Input
+          id="tax"
+          name="tax"
+          onChange={handleTaxChange}
+          value={tax !== "" ? `${tax}%` : ""}
+        />
+      </div>
 
       <div className="flex items-center justify-end gap-20">
         <div>
+          <div className="">Tax</div>
           <div className="">SubTotal</div>
           <div className="text-primary font-medium">Paid</div>
         </div>
         <div className="text-right">
+          <div>₹{taxValue}</div>
           <div>₹{subTotal}</div>
           <div className="text-primary font-medium">₹{paid}</div>
         </div>
