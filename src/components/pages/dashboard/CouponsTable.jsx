@@ -54,7 +54,7 @@ const columns = [
 ];
 export default function CouponsTable({ data }) {
   return (
-    <Card className="col-span-2 lg:col-span-3 my-10">
+    <Card className="col-span-2 lg:col-span-3 my-10 w-full">
       <CardHeader>
         <CardTitle>Coupons</CardTitle>
         <CardDescription>
@@ -62,7 +62,7 @@ export default function CouponsTable({ data }) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 w-full">
           <DataTable columns={columns} data={data} />
         </div>
       </CardContent>
