@@ -28,4 +28,8 @@ export const useInvoiceStore = create((set) => ({
   setShowModal: (showModal) => set({ showModal }),
   paymentMode: "",
   setPaymentMode: (paymentMode) => set({ paymentMode }),
+  coupon: "",
+  setCoupon: (coupon) => set({ coupon }),
+  couponDiscount: "",
+  setCouponDiscount: (couponDiscount) => set({ couponDiscount }),
 }));

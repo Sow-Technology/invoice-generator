@@ -82,6 +82,7 @@ export default function CreateCouponsDialog({ data }) {
     });
     try {
       const response = await createCoupon({ data: values });
+      console.log(response);
       if (response.success) {
         toast.success("Coupon created successfully!", {
           id: "creating-coupon",

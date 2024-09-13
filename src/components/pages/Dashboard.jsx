@@ -7,6 +7,7 @@ import Invoices from "./dashboard/Invoices";
 import DashboardSection from "./dashboard/DashboardSection";
 import Coupons from "./dashboard/Coupons";
 import { useQuery } from "@tanstack/react-query";
+import InventoryPage from "./inventory/page";
 const data = [
   {
     orderNumber: "JO001",
@@ -90,6 +91,7 @@ export default function Dashboard() {
       {active == "Dashboard" && <DashboardSection data={data} />}
       {active == "Invoices" && <Invoices data={data} />}
       {active == "Coupons" && <Coupons />}
+      {active == "Products" && <InventoryPage />}
     </div>
   );
 }

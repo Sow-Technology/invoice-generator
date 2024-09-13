@@ -1,8 +1,6 @@
 import { useInvoiceStore } from "@/store/store";
-import React, { useCallback, useEffect, useState } from "react";
-import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
+import React, { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import DeleteModal from "./DeleteModal";
 import { Label } from "../ui/label";
 import {
   Select,
@@ -14,12 +12,9 @@ import {
 import { Input } from "../ui/input";
 import { productsData } from "@/lib/data";
 import { toast } from "sonner";
-import { number } from "zod";
 import collect from "collect.js";
 import { Button } from "../ui/button";
-import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
-import Image from "next/image";
-import { Checkbox } from "../ui/checkbox";
+import { getCouponDetails } from "@/app/_actions/coupon";
 
 const TableForm = ({ setItems }) => {
   const {
@@ -42,11 +37,16 @@ const TableForm = ({ setItems }) => {
     tax,
     taxValue,
     setTaxValue,
+    coupon,
+    setCoupon,
+    couponDiscount,
+    setCouponDiscount,
   } = useInvoiceStore();
   const [quantity, setQuantity] = useState(1);
   const [code, setCode] = useState(null);
   const [price, setPrice] = useState();
   const [discount, setDiscount] = useState(0);
+  const [couponDetails, setCouponDetails] = useState({});
 
   const editRow = (id) => {
     const editingRow = products.find((row) => row.id === id);
@@ -64,6 +64,8 @@ const TableForm = ({ setItems }) => {
     return total.toFixed(2); // Truncate to 2 decimal places
   };
 
+  console.log(couponDetails);
+  console.log(couponDiscount);
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!code || !quantity || typeof discount !== "number") {
@@ -186,6 +188,74 @@ const TableForm = ({ setItems }) => {
     setProducts(updatedProducts);
   };
 
+  const handleCoupon = async () => {
+    toast.loading("Applying Coupon...", {
+      id: "coupon",
+    });
+
+    try {
+      const response = await getCouponDetails(coupon);
+
+      if (!response.success) {
+        toast.error("Invalid coupon code!", {
+          id: "coupon",
+        });
+        return;
+      }
+
+      const couponData = response.data;
+
+      if (new Date(couponData.validity) < Date.now()) {
+        toast.error("Coupon expired!", {
+          id: "coupon",
+        });
+        return;
+      }
+
+      if (couponData.status !== "Active") {
+        toast.error("Coupon is inactive", {
+          id: "coupon",
+        });
+        return;
+      }
+
+      setCouponDetails(couponData);
+      console.log(subTotal);
+      let newSubTotal = subTotal;
+      console.log(newSubTotal);
+
+      if (couponData.couponType === "Fixed") {
+        newSubTotal = Math.max(subTotal - couponData.discount, 0);
+        setCouponDiscount(couponData.discount);
+      } else if (couponData.couponType === "percentage") {
+        let calculatedDiscount = (couponData.discount / 100) * subTotal;
+        console.log(subTotal);
+        console.log("======");
+        console.log(calculatedDiscount);
+
+        if (
+          couponData.maxDiscount > 0 &&
+          calculatedDiscount > couponData.maxDiscount
+        ) {
+          calculatedDiscount = couponData.maxDiscount;
+        }
+
+        newSubTotal = Math.max(subTotal - calculatedDiscount, 0);
+        setCouponDiscount(calculatedDiscount.toFixed(2));
+      }
+
+      setSubTotal(newSubTotal.toFixed(2));
+      toast.success("Coupon applied successfully!", {
+        id: "coupon",
+      });
+    } catch (error) {
+      toast.error("An error occurred while applying the coupon.", {
+        id: "coupon",
+      });
+      console.error("Coupon application error:", error);
+    }
+  };
+
   useEffect(() => {
     setItems(products);
   }, [products, setItems]);
@@ -193,6 +263,21 @@ const TableForm = ({ setItems }) => {
     const tVal = subTotal * (tax / 100);
     setTaxValue(tVal.toFixed(2));
   }, [tax, subTotal, setTaxValue]);
+  useEffect(() => {
+    if (couponDetails && couponDetails.couponType == "percentage") {
+      let calculatedDiscount = (couponDetails.discount / 100) * subTotal;
+      console.log(calculatedDiscount);
+      if (
+        couponDetails.maxDiscount > 0 &&
+        calculatedDiscount > couponDetails.maxDiscount
+      ) {
+        calculatedDiscount = couponDetails.maxDiscount;
+      }
+      const newSubTotal = Math.max(subTotal - calculatedDiscount, 0);
+      setSubTotal(newSubTotal.toFixed(2));
+      setCouponDiscount(calculatedDiscount.toFixed(2));
+    }
+  }, [products]);
   return (
     <>
       <table width="100%" className="mb-10 overflow-auto">
@@ -317,15 +402,28 @@ const TableForm = ({ setItems }) => {
           value={tax !== "" ? `${tax}%` : ""}
         />
       </div>
+      <div className="inline-flex  items-center justify-center gap-2 mb-4">
+        <Label htmlFor="paid">Coupon Code:</Label>
+        <Input
+          id="coupon"
+          name="coupon"
+          onChange={(e) => setCoupon(e.target.value)}
+          value={coupon}
+        />
+        <Button onClick={handleCoupon}>Apply</Button>
+      </div>
 
       <div className="flex items-center justify-end gap-20">
         <div>
           <div className="">Tax</div>
+          {couponDiscount && <div className="">Coupon Discount</div>}
           <div className="">SubTotal</div>
           <div className="text-primary font-medium">Paid</div>
         </div>
         <div className="text-right">
           <div>₹{taxValue}</div>
+          {couponDiscount && <div className="">-₹{couponDiscount}</div>}
+
           <div>₹{subTotal}</div>
           <div className="text-primary font-medium">₹{paid}</div>
         </div>
