@@ -38,3 +38,18 @@ export const productsData = [
   { code: "AddonPhotogrey", productName: "Addon", price: 299.0 },
   { code: "AddonBluecut", productName: "Addon", price: 299.0 },
 ];
+
+export const storesData = [
+  {
+    name: "Store A Narayan",
+    address:
+      "25, A Narayanapura Main Rd, Near Muneshwara Temple Opposite Mahadevapura, Bangalore- 560016",
+    phoneNumber: "087922 82205",
+  },
+  {
+    name: "Store Trinity",
+    address:
+      "#23, Trinity Enclave, Old Madras Rd, C V Raman Nagar, Karnatka, Bengaluru - 560093 ",
+    phoneNumber: "087922 82205",
+  },
+];

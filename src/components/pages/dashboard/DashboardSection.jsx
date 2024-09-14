@@ -23,13 +23,35 @@ import {
   PieChart,
   XAxis,
 } from "recharts";
+import { DateRangePicker } from "@/components/ui/date-range-picker";
 
-export default function DashboardSection({ data }) {
+export default function DashboardSection({ data, invoiceData, dateRange }) {
   return (
     <div className="flex flex-1 flex-col sm:py-4 ">
       <div>
+        <div className="container flex flex-wrap items-end justify-between gap-2 py-6">
+          <h2 className="text-3xl font-bold">Overview</h2>
+          <div className="flex items-center gap-3">
+            <DateRangePicker
+              initialDateFrom={dateRange.from}
+              initialDateTo={dateRange.to}
+              showCompare={false}
+              onUpdate={(values) => {
+                const { from, to } = values.range;
+                if (!from || !to) return;
+                if (differenceInDays(to, from) > MAX_DATE_RANGE_DAYS) {
+                  toast.error(
+                    `The selected date range is too big. Max allowed range is ${MAX_DATE_RANGE_DAYS} days!`
+                  );
+                  return;
+                }
+                setDateRange({ from, to });
+              }}
+            />
+          </div>
+        </div>
         <div className=" ">
-          <div className="mx-5 flex w-full flex-wrap flex-row gap-4 justify-between max-w-[95%]">
+          <div className=" flex w-full  flex-wrap flex-row items-center justify-between max-w-[85vw] self-center justify-self-center mx-auto  ">
             {" "}
             <DataCard
               title="Total Invoices"
@@ -54,9 +76,9 @@ export default function DashboardSection({ data }) {
               value="45"
             />
           </div>
-          <div className="w-[95%]">
+          <div className="">
             {" "}
-            <Invoices data={data} />
+            <Invoices data={invoiceData} />
           </div>
         </div>
       </div>

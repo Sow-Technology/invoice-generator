@@ -24,44 +24,73 @@ const columns = [
   },
   {
     accessorKey: "customerName",
-    header: "Customer Name",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Customer Name <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
   },
   {
-    accessorKey: "date",
-    header: "Date",
+    accessorKey: "phoneNumber",
+    header: "Phone Number",
+  },
+  {
+    accessorKey: "createdAt",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Date <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     cell: ({ cell }) => {
-      return cell.row.original.date.toLocaleDateString();
+      return new Date(cell.row.original.createdAt).toDateString();
     },
   },
   {
     accessorKey: "subTotal",
-    header: "Amount",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Amount <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
   },
 ];
 export default function Invoices({ data }) {
+  console.log(data);
   return (
-    <Card className=" w-full mt-5 mx-5">
-      <CardHeader>
-        <CardTitle>Invoices</CardTitle>
-        <CardDescription>
-          Manage your invoices and view their details.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-end">
-            <Link href="/invoice">
-              <Button size="sm" className="h-8 gap-1">
-                <PlusIcon className="h-4 w-4" />
-                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                  New Invoice
-                </span>
-              </Button>
-            </Link>
+    <div className="mx-5">
+      {" "}
+      <Card className=" w-full  mt-5 h-max max-w-[85vw] mx-auto">
+        <CardHeader>
+          <CardTitle>Invoices</CardTitle>
+          <CardDescription>
+            Manage your invoices and view their details.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center justify-end">
+              <Link href="/invoice">
+                <Button size="sm" className="h-8 gap-1">
+                  <PlusIcon className="h-4 w-4" />
+                  <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                    New Invoice
+                  </span>
+                </Button>
+              </Link>
+            </div>
+            <DataTable columns={columns} data={data} />
           </div>
-          <DataTable columns={columns} data={data} />
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

@@ -8,90 +8,54 @@ import DashboardSection from "./dashboard/DashboardSection";
 import Coupons from "./dashboard/Coupons";
 import { useQuery } from "@tanstack/react-query";
 import InventoryPage from "./inventory/page";
-const data = [
-  {
-    orderNumber: "JO001",
-    date: new Date("2023-05-01"),
-    subTotal: "₹2500",
-    customerName: "Rajendra Prasad",
-  },
-  {
-    orderNumber: "JO002",
-    date: new Date("2023-05-01"),
-    subTotal: "₹2500",
-    customerName: "Akhil",
-  },
-  {
-    orderNumber: "JO003",
-    date: new Date("2023-05-01"),
-    subTotal: "₹2500",
-    customerName: "Rajendra Prasad",
-  },
-  {
-    orderNumber: "JO004",
-    date: new Date("2023-05-01"),
-    subTotal: "₹2500",
-    customerName: "Akhiolj",
-  },
-  {
-    orderNumber: "JO005",
-    date: new Date("2023-05-01"),
-    subTotal: "₹2500",
-    customerName: "Raj Prasad",
-  },
-  {
-    orderNumber: "JO006",
-    date: new Date("2023-05-01"),
-    subTotal: "₹2500",
-    customerName: "AJ LK",
-  },
-  {
-    orderNumber: "JO007",
-    date: new Date("2023-05-01"),
-    subTotal: "₹2500",
-    customerName: "KK Singh",
-  },
-  {
-    orderNumber: "JO008",
-    date: new Date("2023-05-01"),
-    subTotal: "₹2500",
-    customerName: "Raj Prasad",
-  },
-  {
-    orderNumber: "JO009",
-    date: new Date("2023-05-01"),
-    subTotal: "₹2500",
-    customerName: "Raju M",
-  },
-  {
-    orderNumber: "JO010",
-    date: new Date("2023-05-01"),
-    subTotal: "₹2500",
-    customerName: "RK MM",
-  },
-  {
-    orderNumber: "JO011",
-    date: new Date("2023-05-01"),
-    subTotal: "₹2500",
-    customerName: "Jeru",
-  },
-];
+import axios from "axios";
+import { startOfQuarter } from "date-fns";
+
 export default function Dashboard() {
   const [active, setActive] = useState("Dashboard");
-  console.log(active);
-  const invoiceData = useQuery({
-    queryKey: ["invoices"],
-    queryFn: () => fetch(`/api/getInvoices`),
+  const [dateRange, setDateRange] = useState({
+    from: startOfQuarter(new Date()),
+    to: new Date(),
   });
-  console.log("inv data");
-  console.log(invoiceData);
+  // Handle the invoice query
+  const {
+    data: invoiceData,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["invoices"],
+    queryFn: async () => {
+      const response = await fetch(`/api/getInvoices`, {
+        method: "GET",
+      });
+      if (!response.ok) {
+        throw new Error("Failed to fetch invoices");
+      }
+      return response.json();
+    },
+  });
+
+  const data = {}; // make sure to define or fetch this properly
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error loading invoices: {error.message}</div>;
+  console.log(dateRange);
+
   return (
     <div className="flex min-h-screen w-full">
       <Sidebar active={active} setActive={setActive} />
-      {active == "Dashboard" && <DashboardSection data={data} />}
-      {active == "Invoices" && <Invoices data={data} />}
-      {active == "Coupons" && <Coupons />}
-      {active == "Products" && <InventoryPage />}
+      {active === "Dashboard" && (
+        <DashboardSection
+          data={data}
+          invoiceData={invoiceData}
+          dateRange={dateRange}
+          setDateRange={setDateRange}
+        />
+      )}
+      {active === "Invoices" && <Invoices data={invoiceData} />}
+      {active === "Coupons" && <Coupons />}
+      {active === "Products" && <InventoryPage />}
+      {active === "Stores" && <InventoryPage />}
     </div>
   );
 }

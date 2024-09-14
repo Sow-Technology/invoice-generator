@@ -11,7 +11,9 @@ import {
   LayoutDashboardIcon,
   ReceiptIcon,
   SettingsIcon,
+  Store,
   Ticket,
+  TicketCheck,
 } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
@@ -94,21 +96,53 @@ export default function Sidebar({ active, setActive }) {
             className="flex items-center justify-start gap-2 cursor-pointer hover:scale-105"
             onClick={() => setActive("Coupons")}
           >
-            <div className="group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground">
-              <Ticket className="h-4 w-4 transition-all group-hover:scale-110" />
-            </div>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href="#"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <TicketCheck className="h-5 w-5" />
+                </Link>
+              </TooltipTrigger>
+              {!open && <TooltipContent side="right">Coupons</TooltipContent>}
+            </Tooltip>
             {open && <span>Coupons</span>}
           </div>
-
           {/* Products */}
           <div
             className="flex items-center justify-start gap-2 cursor-pointer hover:scale-105"
             onClick={() => setActive("Products")}
           >
-            <div className="group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-secondary text-lg font-semibold text-primary-foreground">
-              <AiFillProduct className="h-4 w-4 transition-all group-hover:scale-110" />
-            </div>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href="#"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <AiFillProduct className="h-5 w-5" />
+                </Link>
+              </TooltipTrigger>
+              {!open && <TooltipContent side="right">Products</TooltipContent>}
+            </Tooltip>
             {open && <span>Products</span>}
+          </div>
+          <div
+            className="flex items-center justify-start gap-2 cursor-pointer hover:scale-105"
+            onClick={() => setActive("Stores")}
+          >
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href="#"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <Store className="h-5 w-5" />
+                </Link>
+              </TooltipTrigger>
+              {!open && <TooltipContent side="right">Stores</TooltipContent>}
+            </Tooltip>
+            {open && <span>Stores</span>}
           </div>
         </TooltipProvider>
       </nav>

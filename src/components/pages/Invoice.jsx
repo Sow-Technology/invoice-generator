@@ -15,6 +15,15 @@ import Image from "next/image";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import axios from "axios";
 import { toast } from "sonner";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import { storesData } from "@/lib/data";
+import { useLocalStorage } from "@uidotdev/usehooks";
 
 function App() {
   const {
@@ -35,6 +44,10 @@ function App() {
     taxValue,
     setTaxValue,
     setPaymentMode,
+    coupon,
+    activeStore,
+    setActiveStore,
+    couponDiscount,
   } = useInvoiceStore();
   const componentRef = useRef();
   const [width] = useState(641);
@@ -63,6 +76,8 @@ function App() {
       isPaymentDone,
       subTotal,
       taxValue,
+      coupon,
+      couponDiscount,
     };
     if (!existingCustomer) {
       const newCustomer = await axios.post("/api/createCustomer", {
@@ -110,6 +125,17 @@ function App() {
       id: "fetchingCustomerDetails",
     });
   };
+  const handleStoreChange = (value) => {
+    setActiveStore(value);
+    localStorage.setItem("selectedStore", value);
+    console.log(value);
+  };
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedData = localStorage.getItem("selectedStore");
+      setActiveStore(storedData);
+    }
+  }, []);
   return (
     <>
       <main
@@ -122,23 +148,25 @@ function App() {
         <section>
           <div className="bg-white p-5 rounded shadow">
             <div className="flex flex-col justify-center gap-2">
-              {/* <article className="md:grid grid-cols-3 gap-2">
+              <article className="">
                 <div className="flex flex-row w-auto items-center gap-2">
-                  <Label htmlFor="orderNumber" className="md:min-w-[100px]">
-                    Order Number
+                  <Label htmlFor="" className="md:min-w-[100px]">
+                    Select Store
                   </Label>
-                  <Input
-                    type="text"
-                    name="orderNumber"
-                    id="orderNumber"
-                    placeholder="Order Number"
-                    autoComplete="off"
-                    value={orderNumber}
-                    className="w-fit"
-                    onChange={(e) => setOrderNumber(e.target.value)}
-                  />
+                  <Select onValueChange={handleStoreChange} value={activeStore}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select a Store" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {storesData.map((store) => (
+                        <SelectItem key={store.name} value={store.name}>
+                          {store.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
-              </article> */}
+              </article>
               <article className="grid grid-cols-4 gap-4 md:mt-6 max-lg:space-y-2">
                 <div className=" flex-col gap-3 col-span-3">
                   <Label htmlFor="phoneNumber">
