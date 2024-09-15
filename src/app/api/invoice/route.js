@@ -18,10 +18,15 @@ export async function POST(req) {
     emailId,
     items,
     amountPaid,
+    taxValue,
+    tax,
+    couponCode,
     subTotal,
     notes,
+    storeName,
     paymentMode,
     isPaymentDone,
+    document,
   } = body;
 
   // Validate required fields
@@ -40,9 +45,14 @@ export async function POST(req) {
       emailId,
       items,
       amountPaid,
+      taxValue,
+      tax,
+      couponCode,
       subTotal,
       notes,
+      storeName,
       paymentMode,
+      document,
     });
 
     // Save the invoice to the database

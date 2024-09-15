@@ -62,6 +62,11 @@ const columns = [
       </Button>
     ),
   },
+
+  {
+    accessorKey: "document",
+    header: "Invoice Document",
+  },
 ];
 export default function Invoices({ data }) {
   console.log(data);
