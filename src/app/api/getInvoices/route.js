@@ -1,10 +1,12 @@
 import dbConnect from "@/lib/dbConnect";
 import { Invoice } from "@/models/Invoice";
-
-export async function GET() {
+export async function GET(req) {
   await dbConnect();
-  const response = await Invoice.find({}).lean();
-  console.log(response);
-  console.log("response");
-  return Response.json(response);
+  // const { searchParams } = new URL(req.url);
+  console.log("=============");
+  const invoices = await Invoice.find({
+    // createdAt: { $gte: from, $lte: to },
+  }).lean();
+  console.log(invoices);
+  return Response.json(invoices);
 }

@@ -10,7 +10,12 @@ export async function POST(req) {
   const { name, phoneNumber, emailId } = reqBody;
   if (!name || !phoneNumber || !emailId)
     return Response.error("All fields are required");
-
+  const existingCustomer = Customer.findOne({
+    phoneNumber,
+  });
+  if (existingCustomer) {
+    return Response.json("Customer already exists");
+  }
   const newCustomer = new Customer({
     name,
     phoneNumber,

@@ -23,16 +23,11 @@ export default function Dashboard() {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["invoices"],
-    queryFn: async () => {
-      const response = await fetch(`/api/getInvoices`, {
+    queryKey: ["invoices", dateRange.from, dateRange.to],
+    queryFn: () =>
+      fetch(`/api/getInvoices?from=${dateRange.from}&to=${dateRange.to}`, {
         method: "GET",
-      });
-      if (!response.ok) {
-        throw new Error("Failed to fetch invoices");
-      }
-      return response.json();
-    },
+      }).then((res) => res.json()),
   });
 
   const data = {}; // make sure to define or fetch this properly

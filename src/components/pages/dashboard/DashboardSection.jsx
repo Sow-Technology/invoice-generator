@@ -25,7 +25,12 @@ import {
 } from "recharts";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
 
-export default function DashboardSection({ data, invoiceData, dateRange }) {
+export default function DashboardSection({
+  data,
+  invoiceData,
+  dateRange,
+  setDateRange,
+}) {
   return (
     <div className="flex flex-1 flex-col sm:py-4 ">
       <div>
@@ -39,13 +44,8 @@ export default function DashboardSection({ data, invoiceData, dateRange }) {
               onUpdate={(values) => {
                 const { from, to } = values.range;
                 if (!from || !to) return;
-                if (differenceInDays(to, from) > MAX_DATE_RANGE_DAYS) {
-                  toast.error(
-                    `The selected date range is too big. Max allowed range is ${MAX_DATE_RANGE_DAYS} days!`
-                  );
-                  return;
-                }
                 setDateRange({ from, to });
+                console.log(dateRange);
               }}
             />
           </div>

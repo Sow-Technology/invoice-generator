@@ -24,6 +24,7 @@ import {
 } from "../ui/select";
 import { storesData } from "@/lib/data";
 import { useLocalStorage } from "@uidotdev/usehooks";
+import { useRouter } from "next/navigation";
 
 function App() {
   const {
@@ -50,6 +51,9 @@ function App() {
     couponDiscount,
   } = useInvoiceStore();
   const componentRef = useRef();
+  const [isInvoiceSaved, setIsInvoiceSaved] = useState(false);
+
+  const router = useRouter();
   const [width] = useState(641);
   const [items, setItems] = useState([]);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -65,6 +69,11 @@ function App() {
     }
   }, [paymentMode]);
   const handleSubmit = async () => {
+    if (isInvoiceSaved) {
+      toast.error("This invoice has already been saved!");
+      return;
+    }
+
     const data = {
       orderNumber,
       customerName,
@@ -88,7 +97,24 @@ function App() {
       console.log(newCustomer);
     }
     const response = await axios.post("/api/invoice", { ...data });
+    setIsInvoiceSaved(true);
+
+    const r = +orderNumber.split("JO")[1] + 1;
+    setOrderNumber("JO" + r);
   };
+  const handleReset = () => {
+    setCustomerName("");
+    setPhoneNumber("");
+    setEmailId("");
+    setNotes("");
+    setItems([]);
+    setPaymentMode("cash");
+    setTax(0);
+    setTaxValue(0);
+    setIsPaymentDone(false);
+    setIsInvoiceSaved(false);
+  };
+
   useEffect(() => {
     if (window.innerWidth < width) {
       alert("Place your phone in landscape mode for the best experience");
@@ -279,12 +305,24 @@ function App() {
                 </Label>
               </div>
               {isPaymentDone && (
-                <div className="" onClick={handleSubmit}>
-                  {" "}
-                  <ReactToPrint
-                    trigger={() => <Button>Print / Download</Button>}
-                    content={() => componentRef.current}
-                  />
+                <div className="flex gap-2">
+                  <div
+                    className=""
+                    onClick={() => {
+                      handleSubmit();
+                      router.push("/");
+                    }}
+                  >
+                    <Button>Submit / Save</Button>
+                  </div>{" "}
+                  <div className="" onClick={handleSubmit}>
+                    {" "}
+                    <ReactToPrint
+                      trigger={() => <Button>Print / Download</Button>}
+                      content={() => componentRef.current}
+                    />
+                  </div>
+                  <Button onClick={handleReset}>Reset </Button>
                 </div>
               )}
             </div>
