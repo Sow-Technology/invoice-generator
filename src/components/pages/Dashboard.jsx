@@ -6,6 +6,7 @@ import DataCard from "./dashboard/DataCard";
 import Invoices from "./dashboard/Invoices";
 import DashboardSection from "./dashboard/DashboardSection";
 import Coupons from "./dashboard/Coupons";
+import Stores from "./dashboard/store";
 import { useQuery } from "@tanstack/react-query";
 import InventoryPage from "./inventory/page";
 import axios from "axios";
@@ -50,7 +51,7 @@ export default function Dashboard() {
       {active === "Invoices" && <Invoices data={invoiceData} />}
       {active === "Coupons" && <Coupons />}
       {active === "Products" && <InventoryPage />}
-      {active === "Stores" && <InventoryPage />}
+      {active === "Stores" && <Stores />}
     </div>
   );
 }

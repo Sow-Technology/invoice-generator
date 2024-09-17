@@ -12,7 +12,5 @@ const StoreSchema = new mongoose.Schema(
     );
     
 
-// delete mongoose.models.Invoice;
-// const Invoices = mongoose.models.Invoice || mongoose.model("Invoice", InvoiceSchema);
 export const Store =
   mongoose.models.Store || mongoose.model("Store", StoreSchema);

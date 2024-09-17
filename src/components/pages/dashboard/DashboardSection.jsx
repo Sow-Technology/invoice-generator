@@ -124,12 +124,14 @@ const DashboardSection = () => {
           />
         </div>
 
-        <div className=''>
-          <Invoices data={invoiceData} />
-        </div>
+        <div className="">
+            {" "}
+            <Invoices data={invoiceData} />
+          </div>
       </div>
-      {/* Additional Charts Below */}
     </div>
+   
+    
   );
 };
 

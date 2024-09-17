@@ -1,6 +1,7 @@
 import React from "react";
 import CreateCouponsDialog from "./CreateCouponsDialog";
 import CouponsTable from "./CouponsTable";
+
 const data = [
   {
     couponCode: "JOC111",
@@ -45,3 +46,7 @@ export default function Coupons() {
     </div>
   );
 }
+
+
+
+
