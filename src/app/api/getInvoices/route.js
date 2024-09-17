@@ -1,12 +1,21 @@
 import dbConnect from "@/lib/dbConnect";
 import { Invoice } from "@/models/Invoice";
+
 export async function GET(req) {
   await dbConnect();
-  // const { searchParams } = new URL(req.url);
-  console.log("=============");
-  const invoices = await Invoice.find({
-    // createdAt: { $gte: from, $lte: to },
-  }).lean();
-  console.log(invoices);
-  return Response.json(invoices);
+  const { searchParams } = new URL(req.url);
+
+  const fromDate = new Date(searchParams.get("from"));
+  const toDate = new Date(searchParams.get("to"));
+
+  try {
+    const invoices = await Invoice.find({
+      createdAt: { $gte: fromDate, $lte: toDate },
+    }).lean();
+
+    return Response.json(invoices);
+  } catch (error) {
+    console.error(error);
+    return Response.json({ error: "Error fetching invoices" }, { status: 500 });
+  }
 }

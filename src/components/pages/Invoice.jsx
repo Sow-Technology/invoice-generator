@@ -46,8 +46,8 @@ function App() {
     setTaxValue,
     setPaymentMode,
     coupon,
-    activeStore,
-    setActiveStore,
+    storeName,
+    setStoreName,
     couponDiscount,
   } = useInvoiceStore();
   const componentRef = useRef();
@@ -85,6 +85,8 @@ function App() {
       isPaymentDone,
       subTotal,
       taxValue,
+      tax,
+      storeName,
       coupon,
       couponDiscount,
     };
@@ -152,14 +154,14 @@ function App() {
     });
   };
   const handleStoreChange = (value) => {
-    setActiveStore(value);
+    setStoreName(value);
     localStorage.setItem("selectedStore", value);
     console.log(value);
   };
   useEffect(() => {
     if (typeof window !== "undefined") {
       const storedData = localStorage.getItem("selectedStore");
-      setActiveStore(storedData);
+      setStoreName(storedData);
     }
   }, []);
   return (
@@ -179,7 +181,7 @@ function App() {
                   <Label htmlFor="" className="md:min-w-[100px]">
                     Select Store
                   </Label>
-                  <Select onValueChange={handleStoreChange} value={activeStore}>
+                  <Select onValueChange={handleStoreChange} value={storeName}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select a Store" />
                     </SelectTrigger>

@@ -32,7 +32,13 @@ const InvoiceSchema = new mongoose.Schema(
       type: Number,
     },
     tax: {
-      type: Number,  // New field for tax percentage
+      type: Number,
+    },
+    coupon: {
+      type: String,
+    },
+    couponDiscount: {
+      type: String,
     },
     subTotal: {
       type: Number,
@@ -55,15 +61,9 @@ const InvoiceSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    document: {
-      type: Buffer,  // New field to store the document
-    },
   },
   { timestamps: true }
 );
 
-
-// delete mongoose.models.Invoice;
-// const Invoices = mongoose.models.Invoice || mongoose.model("Invoice", InvoiceSchema);
 export const Invoice =
   mongoose.models.Invoice || mongoose.model("Invoice", InvoiceSchema);

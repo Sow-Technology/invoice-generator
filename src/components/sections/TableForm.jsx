@@ -38,6 +38,7 @@ const TableForm = ({ setItems }) => {
     taxValue,
     setTaxValue,
     coupon,
+    storeName,
     setCoupon,
     couponDiscount,
     setCouponDiscount,
@@ -74,12 +75,14 @@ const TableForm = ({ setItems }) => {
     }
 
     const newTotal = calculateTotal(code, quantity, discount);
+    console.log(storeName);
     const newProduct = {
       code,
       quantity,
       id: uuidv4(),
       discount,
       total: newTotal,
+
       unitPrice: productsData.find((p) => p.code === code).price,
       productName: productsData.find((p) => p.code === code).productName,
     };

@@ -1,15 +1,13 @@
 "use client";
-
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
+import { startOfQuarter, format } from "date-fns"; // Import `format` from date-fns to format dates
+import Invoices from "./dashboard/Invoices";
+import Coupons from "./dashboard/Coupons";
+import InventoryPage from "./inventory/page";
+import DashboardSection from "./dashboard/DashboardSection";
 import Sidebar from "./dashboard/Sidebar";
 import { useState } from "react";
-import DataCard from "./dashboard/DataCard";
-import Invoices from "./dashboard/Invoices";
-import DashboardSection from "./dashboard/DashboardSection";
-import Coupons from "./dashboard/Coupons";
-import { useQuery } from "@tanstack/react-query";
-import InventoryPage from "./inventory/page";
-import axios from "axios";
-import { startOfQuarter } from "date-fns";
 
 export default function Dashboard() {
   const [active, setActive] = useState("Dashboard");
@@ -17,33 +15,60 @@ export default function Dashboard() {
     from: startOfQuarter(new Date()),
     to: new Date(),
   });
-  // Handle the invoice query
+
+  // Format dates to "YYYY-MM-DD" to remove time and timezone
+  const formattedFrom = format(dateRange.from, "yyyy-MM-dd");
+  const formattedTo = format(dateRange.to, "yyyy-MM-dd");
+
+  // Use axios for fetching invoices
   const {
     data: invoiceData,
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["invoices", dateRange.from, dateRange.to],
-    queryFn: () =>
-      fetch(`/api/getInvoices?from=${dateRange.from}&to=${dateRange.to}`, {
-        method: "GET",
-      }).then((res) => res.json()),
+    queryKey: ["invoices", formattedFrom, formattedTo], // Update query key to formatted dates
+    queryFn: async () => {
+      const response = await axios.get("/api/getInvoices", {
+        params: {
+          from: formattedFrom, // Send date in "YYYY-MM-DD" format
+          to: formattedTo, // Send date in "YYYY-MM-DD" format
+        },
+      });
+      return response.data;
+    },
   });
-
-  const data = {}; // make sure to define or fetch this properly
-
-  if (isLoading) return <div>Loading...</div>;
+  const fetchMetrics = async (fromDate, toDate) => {
+    const { data } = await axios.get("/api/metrics", {
+      params: {
+        from: fromDate.toISOString(),
+        to: toDate.toISOString(),
+      },
+    });
+    return data;
+  };
+  const {
+    data: metricsData,
+    isLoading: metricsLoading,
+    error: metricsError,
+  } = useQuery({
+    queryKey: ["metrics", formattedFrom, formattedTo],
+    queryFn: () => fetchMetrics(dateRange.from, dateRange.to),
+  });
+  const data = {};
+  console.log(metricsData);
+  // Loading and Error Handling
+  if (isLoading || metricsLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading invoices: {error.message}</div>;
-  console.log(dateRange);
 
   return (
     <div className="flex min-h-screen w-full">
       <Sidebar active={active} setActive={setActive} />
       {active === "Dashboard" && (
         <DashboardSection
-          data={data}
+          data={metricsData}
           invoiceData={invoiceData}
           dateRange={dateRange}
+          isDataLoading={metricsLoading}
           setDateRange={setDateRange}
         />
       )}
