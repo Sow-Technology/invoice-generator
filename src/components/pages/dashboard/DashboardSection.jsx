@@ -1,34 +1,38 @@
-import React, { useEffect, useState } from 'react';
-import DataCard from './DataCard';  // Adjust the import path if necessary
-import Invoices from './Invoices';
-import { DateRangePicker } from '@/components/ui/date-range-picker';
+import React, { useEffect, useState } from "react";
+import DataCard from "./DataCard"; // Adjust the import path if necessary
+import Invoices from "./Invoices";
+import { DateRangePicker } from "@/components/ui/date-range-picker";
+import SkeletonWrapper from "@/components/SkeletonWrapper";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { storesData } from "@/lib/data";
 
-const DashboardSection = () => {
-  const [data, setData] = useState({
-    numOfOrders: 0,
-    storeSale: 0,
-    numOfCustomers: 0,
-    numOfRepeatedCustomers: 0
-  });
-  const [invoiceData, setInvoiceData] = useState([]);
-  const [dateRange, setDateRange] = useState({
-    from: '2024-09-12',  // Default start date
-    to: '2024-09-17'    // Default end date
-  });
-  const [storeName, setStoreName] = useState('Quality Goods');  // Default store name
+const DashboardSection = ({
+  data,
+  invoiceData,
+  dateRange,
+  setDateRange,
+  isDataLoading,
+}) => {
+  const [storeName, setStoreName] = useState(); // Default store name
   const [storeNames, setStoreNames] = useState([]);
 
   useEffect(() => {
     const fetchStoreNames = async () => {
       try {
-        const response = await fetch('/api/stores'); // Fetch store names from the new API endpoint
+        const response = await fetch("/api/stores"); // Fetch store names from the new API endpoint
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+          throw new Error("Network response was not ok");
         }
         const result = await response.json();
         setStoreNames(result.storeNames || []);
       } catch (error) {
-        console.error('Failed to fetch store names:', error);
+        console.error("Failed to fetch store names:", error);
       }
     };
 
@@ -39,27 +43,18 @@ const DashboardSection = () => {
     const fetchData = async () => {
       try {
         // Fetch dashboard data
-        const dashboardResponse = await fetch(`/api/dashboard?storeName=${encodeURIComponent(storeName)}&startDate=${dateRange.from}&endDate=${dateRange.to}`);
+        const dashboardResponse = await fetch(
+          `/api/dashboard?storeName=${encodeURIComponent(
+            storeName
+          )}&startDate=${dateRange.from}&endDate=${dateRange.to}`
+        );
         if (!dashboardResponse.ok) {
-          throw new Error('Network response was not ok');
+          throw new Error("Network response was not ok");
         }
         const dashboardResult = await dashboardResponse.json();
-        setData({
-          numOfOrders: dashboardResult.numOfOrders || 0,
-          storeSale: dashboardResult.storeSale || 0,
-          numOfCustomers: dashboardResult.numOfCustomers || 0,
-          numOfRepeatedCustomers: dashboardResult.numOfRepeatedCustomers || 0
-        });
-
-        // Fetch invoice data
-        const invoicesResponse = await fetch(`/api/invoices?storeName=${encodeURIComponent(storeName)}&startDate=${dateRange.from}&endDate=${dateRange.to}`);
-        if (!invoicesResponse.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const invoicesResult = await invoicesResponse.json();
-        setInvoiceData(invoicesResult || []);
+        // Process and set dashboard data as needed
       } catch (error) {
-        console.error('Failed to fetch data:', error);
+        console.error("Failed to fetch data:", error);
       }
     };
 
@@ -70,18 +65,13 @@ const DashboardSection = () => {
     setStoreName(event.target.value);
   };
 
-  const numberOfOrders = data.numOfOrders.toLocaleString();
-  const storeSale = `₹${data.storeSale.toLocaleString()}`;
-  const numberOfCustomers = data.numOfCustomers.toLocaleString();
-  const repeatedCustomers = data.numOfRepeatedCustomers.toLocaleString();
-
   return (
     <div className="flex flex-1 flex-col sm:py-4">
       <div>
         <div className="container flex flex-wrap items-end justify-between gap-2 py-6">
           <h2 className="text-3xl font-bold">Overview</h2>
           <div className="flex items-center gap-3">
-            <select
+            {/* <select
               value={storeName}
               onChange={handleStoreChange}
               className="border p-2 rounded"
@@ -91,7 +81,24 @@ const DashboardSection = () => {
                   {store}
                 </option>
               ))}
-            </select>
+            </select> */}
+            <Select
+              defaultValue="all"
+              value={storeName}
+              onValueChange={setStoreName}
+            >
+              <SelectTrigger className="min-w-[200px]">
+                <SelectValue placeholder="Store" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Stores</SelectItem>
+                {storesData.map((store) => (
+                  <SelectItem key={store.name} value={store.name}>
+                    {store.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <DateRangePicker
               initialDateFrom={dateRange.from}
               initialDateTo={dateRange.to}
@@ -105,29 +112,59 @@ const DashboardSection = () => {
           </div>
         </div>
 
-        <div className="flex w-full flex-wrap flex-row items-center justify-between max-w-[85vw] mx-auto">
-          <DataCard
-            title="No. of Orders"
-            value={numberOfOrders}
-          />
-          <DataCard
-            title="Store Sale"
-            value={storeSale}
-          />
-          <DataCard
-            title="No. of Customers"
-            value={numberOfCustomers}
-          />
-          <DataCard
-            title="No. of Repeated Customers"
-            value={repeatedCustomers}
-          />
+        <div className="flex w-full flex-wrap gap-5 flex-row items-center justify-around max-w-[85vw] mx-auto ">
+          <SkeletonWrapper isLoading={isDataLoading}>
+            <DataCard
+              title="Total Orders"
+              value={data.totalOrders}
+              isLoading={isDataLoading}
+            />
+          </SkeletonWrapper>
+          <SkeletonWrapper isLoading={isDataLoading}>
+            <DataCard
+              title="Total Revenue"
+              isLoading={isDataLoading}
+              value={`₹${Number(data.totalOrderValue).toLocaleString("en-IN", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}`}
+            />
+          </SkeletonWrapper>
+          <SkeletonWrapper isLoading={isDataLoading}>
+            <DataCard
+              title="Total Customers"
+              isLoading={isDataLoading}
+              value={data.totalCustomers}
+            />
+          </SkeletonWrapper>
+          <SkeletonWrapper isLoading={isDataLoading}>
+            <DataCard
+              title="Repeat Customers"
+              isLoading={isDataLoading}
+              value={data.totalRepeatedCustomers}
+            />
+          </SkeletonWrapper>
+          <SkeletonWrapper isLoading={isDataLoading}>
+            <DataCard
+              title="Total Tax Collected"
+              isLoading={isDataLoading}
+              value={`₹${Number(data.totalTaxValue).toLocaleString("en-IN", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}`}
+            />
+          </SkeletonWrapper>
         </div>
 
         <div className="">
+<<<<<<< HEAD
             {" "}
             <Invoices data={invoiceData} />
           </div>
+=======
+          <Invoices data={invoiceData} />
+        </div>
+>>>>>>> 3d2f08e8a6ab921e17f510b66e857c75c797a264
       </div>
     </div>
    

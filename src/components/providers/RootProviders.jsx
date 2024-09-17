@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { Toaster } from "../ui/sonner";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { SessionProvider } from "next-auth/react";
 
 export default function RootProviders({ children }) {
   const [queryClient] = useState(() => new QueryClient({}));
@@ -10,7 +11,7 @@ export default function RootProviders({ children }) {
     <QueryClientProvider client={queryClient}>
       {" "}
       <Toaster position="top-center" />
-      {children}
+      <SessionProvider>{children}</SessionProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );

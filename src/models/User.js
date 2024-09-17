@@ -1,17 +1,22 @@
-import mongoose from 'mongoose';
-
-const UserSchema = new mongoose.Schema({
-  email: {
-    type: String,
-    required: [true, 'Email is required'],
-    unique: true,
-    trim: true,
-    lowercase: true,
+import mongoose from "mongoose";
+const userSchema = new mongoose.Schema(
+  {
+    email: {
+      type: String,
+      required: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    role: {
+      type: String,
+    },
+    isApproved: {
+      type: Boolean,
+      default: false,
+    },
   },
-  password: {
-    type: String,
-    required: [true, 'Password is required'],
-  },
-});
-
-export default mongoose.models.User || mongoose.model('User', UserSchema);
+  { timestamps: true }
+);
+export const User = mongoose.models.User || mongoose.model("User", userSchema);

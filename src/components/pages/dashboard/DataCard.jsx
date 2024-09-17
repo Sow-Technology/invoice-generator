@@ -4,7 +4,7 @@ import React from "react";
 
 export default function DataCard({ title, icon, value }) {
   return (
-    <Card className="lg:min-w-[30%]">
+    <Card className="min-w-[300px] lg:min-w-[25%]">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>{title}</CardTitle>
         {icon}

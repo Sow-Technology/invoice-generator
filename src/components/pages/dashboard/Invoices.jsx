@@ -10,6 +10,8 @@ import { DataTable } from "@/components/ui/data-table";
 import { ArrowUpDown, PlusIcon } from "lucide-react";
 import Link from "next/link";
 import React from "react";
+
+// Define columns with sorting functionality
 const columns = [
   {
     accessorKey: "orderNumber",
@@ -62,18 +64,20 @@ const columns = [
       </Button>
     ),
   },
-
-  {
-    accessorKey: "document",
-    header: "Invoice Document",
-  },
 ];
+
 export default function Invoices({ data }) {
-  console.log(data);
+  // Initialize sorting state
+  const initialSortingState = [
+    {
+      id: "createdAt", // Column id to be sorted
+      desc: true, // true for descending order
+    },
+  ];
+
   return (
     <div className="mx-5">
-      {" "}
-      <Card className=" w-full  mt-5 h-max max-w-[85vw] mx-auto">
+      <Card className="w-full mt-5 h-max max-w-[85vw] mx-auto">
         <CardHeader>
           <CardTitle>Invoices</CardTitle>
           <CardDescription>
@@ -92,7 +96,11 @@ export default function Invoices({ data }) {
                 </Button>
               </Link>
             </div>
-            <DataTable columns={columns} data={data} />
+            <DataTable
+              columns={columns}
+              data={data}
+              initialSorting={initialSortingState}
+            />
           </div>
         </CardContent>
       </Card>
