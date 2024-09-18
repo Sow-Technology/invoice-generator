@@ -157,14 +157,8 @@ const DashboardSection = ({
         </div>
 
         <div className="">
-<<<<<<< HEAD
-            {" "}
-            <Invoices data={invoiceData} />
-          </div>
-=======
           <Invoices data={invoiceData} />
         </div>
->>>>>>> 3d2f08e8a6ab921e17f510b66e857c75c797a264
       </div>
     </div>
    

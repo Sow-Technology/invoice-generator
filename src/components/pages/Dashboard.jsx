@@ -1,25 +1,22 @@
 "use client";
-import axios from "axios";
+// import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { startOfQuarter, format } from "date-fns"; // Import `format` from date-fns to format dates
 import Invoices from "./dashboard/Invoices";
-import Coupons from "./dashboard/Coupons";
+// import Coupons from "./dashboard/Coupons";
 import InventoryPage from "./inventory/page";
-import DashboardSection from "./dashboard/DashboardSection";
+// import DashboardSection from "./dashboard/DashboardSection";
 import Sidebar from "./dashboard/Sidebar";
 import { useState } from "react";
-<<<<<<< HEAD
 import DataCard from "./dashboard/DataCard";
-import Invoices from "./dashboard/Invoices";
+// import Invoices from "./dashboard/Invoices";
 import DashboardSection from "./dashboard/DashboardSection";
 import Coupons from "./dashboard/Coupons";
 import Stores from "./dashboard/store";
-import { useQuery } from "@tanstack/react-query";
-import InventoryPage from "./inventory/page";
+// import { useQuery } from "@tanstack/react-query";
+// import InventoryPage from "./inventory/page";
 import axios from "axios";
-import { startOfQuarter } from "date-fns";
-=======
->>>>>>> 3d2f08e8a6ab921e17f510b66e857c75c797a264
+// import { startOfQuarter } from "date-fns";
 
 export default function Dashboard() {
   const [active, setActive] = useState("Dashboard");
