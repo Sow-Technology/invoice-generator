@@ -8,7 +8,6 @@ import InventoryPage from "./inventory/page";
 // import DashboardSection from "./dashboard/DashboardSection";
 import Sidebar from "./dashboard/Sidebar";
 import { useState } from "react";
-<<<<<<< HEAD
 import DataCard from "./dashboard/DataCard";
 // import Invoices from "./dashboard/Invoices";
 import DashboardSection from "./dashboard/DashboardSection";
@@ -18,9 +17,6 @@ import Stores from "./dashboard/store";
 // import InventoryPage from "./inventory/page";
 import axios from "axios";
 // import { startOfQuarter } from "date-fns";
-=======
-import Stores from "./dashboard/store";
->>>>>>> bc359b3e9cda2886507ec9dfc49cc9e922d87327
 
 export default function Dashboard() {
   const [active, setActive] = useState("Dashboard");
