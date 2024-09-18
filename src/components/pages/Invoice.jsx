@@ -101,8 +101,10 @@ function App() {
     const response = await axios.post("/api/invoice", { ...data });
     setIsInvoiceSaved(true);
 
-    const r = +orderNumber.split("JO")[1] + 1;
-    setOrderNumber("JO" + r);
+    getInvoiceNumber().then((res) => {
+      console.log(res);
+      setOrderNumber("JO" + res.data);
+    });
   };
   const handleReset = () => {
     setCustomerName("");
@@ -129,8 +131,8 @@ function App() {
   };
   useEffect(() => {
     getInvoiceNumber().then((res) => {
-      const r = +res.data.split("JO")[1] + 1;
-      setOrderNumber("JO" + r);
+      console.log(res);
+      setOrderNumber("JO" + res.data);
     });
   }, []);
   const handleFetchCustomerDetails = async () => {
