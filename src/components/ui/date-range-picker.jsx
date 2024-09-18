@@ -23,12 +23,6 @@ import {
 import { cn } from "@/lib/utils";
 
 const formatDate = (date, locale = "en-us") => {
-  // Check if 'date' is a valid Date object
-  if (!(date instanceof Date) || isNaN(date)) {
-    console.error("Invalid date:", date);
-    return ""; // Handle invalid date scenario
-  }
-
   return date.toLocaleDateString(locale, {
     month: "short",
     day: "numeric",
@@ -97,7 +91,7 @@ export const DateRangePicker = ({
   const openedRangeRef = useRef();
   const openedRangeCompareRef = useRef();
 
-  const [selectedPreset, setSelectedPreset] = useState(undefined);
+  const [selectedPreset, setSelectedPreset] = useState();
 
   const [isSmallScreen, setIsSmallScreen] = useState(
     typeof window !== "undefined" ? window.innerWidth < 960 : false
@@ -312,12 +306,12 @@ export const DateRangePicker = ({
         <Button size={"lg"} variant="outline">
           <div className="text-right">
             <div className="py-1">
-              <div>{`${formatDate(range.from, locale)}${
+              <div className="">{`${formatDate(range.from, locale)}${
                 range.to != null ? " - " + formatDate(range.to, locale) : ""
               }`}</div>
             </div>
             {rangeCompare != null && (
-              <div className="opacity-60 text-xs -mt-1">
+              <div className="opacity-60  text-xs -mt-1">
                 <>
                   vs. {formatDate(rangeCompare.from, locale)}
                   {rangeCompare.to != null
@@ -380,8 +374,8 @@ export const DateRangePicker = ({
                     <Label htmlFor="compare-mode">Compare</Label>
                   </div>
                 )}
-                <div className="flex flex-col gap-2">
-                  <div className="flex gap-2">
+                <div className="flex flex-col gap-2 ">
+                  <div className="flex gap-2 bg-gray-400 w-[500px]">
                     <DateInput
                       value={range.from}
                       onChange={(date) => {

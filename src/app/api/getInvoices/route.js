@@ -11,7 +11,11 @@ export async function GET(req) {
   try {
     const invoices = await Invoice.find({
       createdAt: { $gte: fromDate, $lte: toDate },
-    }).lean();
+    })
+      .sort({
+        createdAt: -1,
+      })
+      .lean();
 
     return Response.json(invoices);
   } catch (error) {

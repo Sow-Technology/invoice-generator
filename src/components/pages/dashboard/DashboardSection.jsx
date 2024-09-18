@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import DataCard from "./DataCard"; // Adjust the import path if necessary
+import DataCard from "./DataCard";
 import Invoices from "./Invoices";
-import { DateRangePicker } from "@/components/ui/date-range-picker";
+
 import SkeletonWrapper from "@/components/SkeletonWrapper";
 import {
   Select,
@@ -11,6 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { storesData } from "@/lib/data";
+import { DateRangePicker } from "@/components/ui/date-range-picker";
 
 const DashboardSection = ({
   data,
@@ -87,7 +88,7 @@ const DashboardSection = ({
               value={storeName}
               onValueChange={setStoreName}
             >
-              <SelectTrigger className="min-w-[200px]">
+              <SelectTrigger className="md:min-w-[200px] min-w-[130px]">
                 <SelectValue placeholder="Store" />
               </SelectTrigger>
               <SelectContent>
@@ -161,8 +162,6 @@ const DashboardSection = ({
         </div>
       </div>
     </div>
-   
-    
   );
 };
 
