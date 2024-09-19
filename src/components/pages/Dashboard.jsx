@@ -19,6 +19,7 @@ import Products from "./dashboard/Products";
 export default function Dashboard() {
   const session = useSession();
   console.log(session);
+  // console.log(Status)
 
   const [active, setActive] = useState("Dashboard");
   const [storeName, setStoreName] = useState("all");
