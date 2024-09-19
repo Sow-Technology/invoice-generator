@@ -14,7 +14,7 @@ import DashboardSection from "./dashboard/DashboardSection";
 import Coupons from "./dashboard/Coupons";
 import Stores from "./dashboard/store";
 import { useSession } from "next-auth/react";
-import Products from "./dashboard/Products";
+import Products from "./dashboard/products/Products";
 
 export default function Dashboard() {
   const session = useSession();
