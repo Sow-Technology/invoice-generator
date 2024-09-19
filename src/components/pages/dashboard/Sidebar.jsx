@@ -26,7 +26,7 @@ export default function Sidebar({ active, setActive }) {
     <aside
       className={cn(
         "z-10 flex h-[100vh] flex-col border-r bg-background transition-all duration-300",
-        open ? "w-64 lg:sticky fixed  top-0" : "w-20 sticky sm:top-0"
+        open ? "w-60 md:sticky fixed  top-0" : "w-20 sticky sm:top-0"
       )}
     >
       {/* Sidebar toggle button */}

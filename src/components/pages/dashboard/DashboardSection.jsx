@@ -22,54 +22,8 @@ const DashboardSection = ({
   storeName,
   setStoreName,
 }) => {
-  const [storeNames, setStoreNames] = useState([]);
-
-  useEffect(() => {
-    const fetchStoreNames = async () => {
-      try {
-        const response = await fetch("/api/stores"); // Fetch store names from the new API endpoint
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const result = await response.json();
-        setStoreNames(result.storeNames || []);
-      } catch (error) {
-        console.error("Failed to fetch store names:", error);
-      }
-    };
-
-    fetchStoreNames();
-  }, []);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch dashboard data
-        const dashboardResponse = await fetch(
-          `/api/dashboard?storeName=${encodeURIComponent(
-            storeName
-          )}&startDate=${dateRange.from}&endDate=${dateRange.to}`
-        );
-        if (!dashboardResponse.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const dashboardResult = await dashboardResponse.json();
-        // Process and set dashboard data as needed
-      } catch (error) {
-        console.error("Failed to fetch data:", error);
-      }
-    };
-
-    fetchData();
-  }, [storeName, dateRange]);
-
-  const handleStoreChange = (event) => {
-    setStoreName(event.target.value);
-  };
-  console.log(storeName);
-
   return (
-    <div className="flex flex-1 flex-col sm:py-4">
+    <div className="flex flex-1 flex-col  w-max sm:py-4">
       <div>
         <div className="container flex flex-wrap items-end justify-between gap-2 py-6">
           <h2 className="text-3xl font-bold">Overview</h2>

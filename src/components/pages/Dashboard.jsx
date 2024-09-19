@@ -1,5 +1,5 @@
 "use client";
-// import axios from "axios";
+import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { startOfQuarter, format } from "date-fns"; // Import `format` from date-fns to format dates
 import Invoices from "./dashboard/Invoices";
@@ -83,7 +83,7 @@ export default function Dashboard() {
   if (isLoading || metricsLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading invoices: {error.message}</div>;
   return (
-    <div className="flex min-h-screen w-full">
+    <div className="flex min-h-screen w-full relative">
       <Sidebar active={active} setActive={setActive} />
       {active === "Dashboard" && (
         <DashboardSection
