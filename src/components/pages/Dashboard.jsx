@@ -9,9 +9,15 @@ import DashboardSection from "./dashboard/DashboardSection";
 import Sidebar from "./dashboard/Sidebar";
 import { useState } from "react";
 import Stores from "./dashboard/store";
+import { useSession } from "next-auth/react";
+import Products from "./dashboard/Products";
 
 export default function Dashboard() {
+  const session = useSession();
+  console.log(session);
+
   const [active, setActive] = useState("Dashboard");
+  const [storeName, setStoreName] = useState("all");
   const [dateRange, setDateRange] = useState({
     from: startOfQuarter(new Date()),
     to: new Date(),
@@ -27,14 +33,26 @@ export default function Dashboard() {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["invoices", formattedFrom, formattedTo], // Update query key to formatted dates
+    queryKey: ["invoices", formattedFrom, formattedTo, storeName], // Update query key to formatted dates
     queryFn: async () => {
       const response = await axios.get("/api/getInvoices", {
         params: {
-          from: formattedFrom, // Send date in "YYYY-MM-DD" format
-          to: formattedTo, // Send date in "YYYY-MM-DD" format
+          from: formattedFrom,
+          to: formattedTo,
+          storeName,
         },
       });
+      return response.data;
+    },
+  });
+  const {
+    data: productsData,
+    isLoading: isProductsLoading,
+    isError: isProductsError,
+  } = useQuery({
+    queryKey: ["products"], // Update query key to formatted dates
+    queryFn: async () => {
+      const response = await axios.get("/api/products");
       return response.data;
     },
   });
@@ -60,7 +78,6 @@ export default function Dashboard() {
   // Loading and Error Handling
   if (isLoading || metricsLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading invoices: {error.message}</div>;
-
   return (
     <div className="flex min-h-screen w-full">
       <Sidebar active={active} setActive={setActive} />
@@ -71,11 +88,13 @@ export default function Dashboard() {
           dateRange={dateRange}
           isDataLoading={metricsLoading}
           setDateRange={setDateRange}
+          storeName={storeName}
+          setStoreName={setStoreName}
         />
       )}
       {active === "Invoices" && <Invoices data={invoiceData} />}
       {active === "Coupons" && <Coupons />}
-      {active === "Products" && <InventoryPage />}
+      {active === "Products" && <Products data={productsData} />}
       {active === "Stores" && <Stores />}
     </div>
   );

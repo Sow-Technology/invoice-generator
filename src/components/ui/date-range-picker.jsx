@@ -375,7 +375,7 @@ export const DateRangePicker = ({
                   </div>
                 )}
                 <div className="flex flex-col gap-2 ">
-                  <div className="flex gap-2 bg-gray-400 w-[500px]">
+                  <div className="flex gap-2  justify-end">
                     <DateInput
                       value={range.from}
                       onChange={(date) => {

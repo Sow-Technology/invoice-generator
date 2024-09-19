@@ -19,8 +19,9 @@ const DashboardSection = ({
   dateRange,
   setDateRange,
   isDataLoading,
+  storeName,
+  setStoreName,
 }) => {
-  const [storeName, setStoreName] = useState(); // Default store name
   const [storeNames, setStoreNames] = useState([]);
 
   useEffect(() => {
@@ -65,6 +66,7 @@ const DashboardSection = ({
   const handleStoreChange = (event) => {
     setStoreName(event.target.value);
   };
+  console.log(storeName);
 
   return (
     <div className="flex flex-1 flex-col sm:py-4">
@@ -72,17 +74,6 @@ const DashboardSection = ({
         <div className="container flex flex-wrap items-end justify-between gap-2 py-6">
           <h2 className="text-3xl font-bold">Overview</h2>
           <div className="flex items-center gap-3">
-            {/* <select
-              value={storeName}
-              onChange={handleStoreChange}
-              className="border p-2 rounded"
-            >
-              {storeNames.map((store) => (
-                <option key={store} value={store}>
-                  {store}
-                </option>
-              ))}
-            </select> */}
             <Select
               defaultValue="all"
               value={storeName}

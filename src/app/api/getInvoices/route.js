@@ -7,10 +7,12 @@ export async function GET(req) {
 
   const fromDate = new Date(searchParams.get("from"));
   const toDate = new Date(searchParams.get("to"));
-
+  const storeName = searchParams.get("storeName");
+  console.log(storeName);
   try {
     const invoices = await Invoice.find({
       createdAt: { $gte: fromDate, $lte: toDate },
+      ...(storeName && storeName !== "all" ? { storeName } : {}),
     })
       .sort({
         createdAt: -1,

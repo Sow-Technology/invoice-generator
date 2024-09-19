@@ -12,7 +12,6 @@ import {
   ReceiptIcon,
   SettingsIcon,
   Store,
-  Ticket,
   TicketCheck,
 } from "lucide-react";
 import Link from "next/link";
@@ -26,8 +25,8 @@ export default function Sidebar({ active, setActive }) {
   return (
     <aside
       className={cn(
-        "sticky inset-y-0 left-0 z-10 flex h-[98vh] flex-col border-r bg-background transition-all duration-300",
-        open ? "w-64 " : "w-20 "
+        "z-10 flex h-[100vh] flex-col border-r bg-background transition-all duration-300",
+        open ? "w-64 lg:sticky fixed  top-0" : "w-20 sticky sm:top-0"
       )}
     >
       {/* Sidebar toggle button */}
@@ -51,6 +50,17 @@ export default function Sidebar({ active, setActive }) {
               <ReceiptIcon className="h-4 w-4 transition-all group-hover:scale-110" />
             </div>
             {open && <span>Invoices</span>}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="hidden sm:flex items-center">
+                  {open ? (
+                    ""
+                  ) : (
+                    <TooltipContent side="right">Invoices</TooltipContent>
+                  )}
+                </div>
+              </TooltipTrigger>
+            </Tooltip>
           </div>
 
           {/* Dashboard */}
@@ -109,6 +119,7 @@ export default function Sidebar({ active, setActive }) {
             </Tooltip>
             {open && <span>Coupons</span>}
           </div>
+
           {/* Products */}
           <div
             className="flex items-center justify-start gap-2 cursor-pointer hover:scale-105"
@@ -127,6 +138,8 @@ export default function Sidebar({ active, setActive }) {
             </Tooltip>
             {open && <span>Products</span>}
           </div>
+
+          {/* Stores */}
           <div
             className="flex items-center justify-start gap-2 cursor-pointer hover:scale-105"
             onClick={() => setActive("Stores")}
@@ -148,13 +161,13 @@ export default function Sidebar({ active, setActive }) {
       </nav>
 
       {/* Settings at the bottom */}
-      <nav className="mt-auto flex flex-col items-start gap-4 px-2 sm:py-5 sm:px-6 ">
+      <nav className="mt-auto flex flex-col items-start gap-4 px-2 sm:py-5 sm:px-6">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
               <Link
                 href="#"
-                className="flex h-9 w-9 items-center justify-start rounded-lg text-muted-foreground transition-colors hover:text-foreground "
+                className="flex h-9 w-9 items-center justify-start rounded-lg text-muted-foreground transition-colors hover:text-foreground"
               >
                 <SettingsIcon className="h-5 w-5" />
               </Link>

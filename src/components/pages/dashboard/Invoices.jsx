@@ -64,6 +64,17 @@ const columns = [
       </Button>
     ),
   },
+  {
+    accessorKey: "storeName",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Store Name <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+  },
 ];
 
 export default function Invoices({ data }) {
@@ -76,8 +87,8 @@ export default function Invoices({ data }) {
   ];
 
   return (
-    <div className="mx-5">
-      <Card className="w-full mt-5 h-max max-w-[85vw] mx-auto">
+    <div className="mx-5 max-lg:max-w-[83vw] w-full">
+      <Card className="w-full mt-5 h-max  mx-auto">
         <CardHeader>
           <CardTitle>Invoices</CardTitle>
           <CardDescription>
