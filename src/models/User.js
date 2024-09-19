@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+
+
 const userSchema = new mongoose.Schema(
   {
     email: {
@@ -16,7 +18,12 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    storeAccess: {
+      type: [String], 
+      default: [], 
+    },
   },
   { timestamps: true }
 );
+
 export const User = mongoose.models.User || mongoose.model("User", userSchema);
