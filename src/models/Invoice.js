@@ -61,9 +61,15 @@ const InvoiceSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    orderExpenses: { type: Number, },
   },
   { timestamps: true }
 );
+
+
+const Invoices = mongoose.models.Invoice || mongoose.model("Invoice", InvoiceSchema); 
+delete mongoose.models.Invoices;
+
 
 export const Invoice =
   mongoose.models.Invoice || mongoose.model("Invoice", InvoiceSchema);
