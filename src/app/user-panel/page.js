@@ -122,23 +122,22 @@
 //   );
 // }
 
+"use client";
 
-
-'use client';
-
-import { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 
 export default function UserPanel() {
   const { data: session, status } = useSession(); // Destructure session and status
   const [users, setUsers] = useState([]); // Initialize as an empty array
 
   useEffect(() => {
-    if (status === 'authenticated') {
-      if (session?.user?.role !== 'superuser') {
+    if (status === "authenticated") {
+      if (session?.user?.role !== "superuser") {
         // Redirect if not superuser
         console.log("Not a superuser, redirecting...");
-        window.location.href = '/unauthorized'; // Redirect to unauthorized page
+        // window.location.href = '/unauthorized'; // Redirect to unauthorized page
+        fetchUsers();
       } else {
         fetchUsers();
       }
@@ -147,9 +146,9 @@ export default function UserPanel() {
 
   const fetchUsers = async () => {
     try {
-      const res = await fetch('/api/users', {
+      const res = await fetch("/api/users", {
         headers: {
-          'role': session?.user?.role || 'user',
+          role: session?.user?.role || "user",
         },
       });
 
@@ -159,19 +158,19 @@ export default function UserPanel() {
       if (Array.isArray(data.users)) {
         setUsers(data.users);
       } else {
-        console.error('Invalid users data', data);
+        console.error("Invalid users data", data);
       }
     } catch (error) {
-      console.error('Failed to fetch users:', error);
+      console.error("Failed to fetch users:", error);
     }
   };
 
   const handleRoleChange = async (userId, role) => {
-    const res = await fetch('/api/users', {
-      method: 'PUT',
+    const res = await fetch("/api/users", {
+      method: "PUT",
       headers: {
-        'Content-Type': 'application/json',
-        'superuser': session?.user?.role === 'superuser', // Pass the superuser status
+        "Content-Type": "application/json",
+        superuser: session?.user?.role === "superuser", // Pass the superuser status
       },
       body: JSON.stringify({ userId, role }),
     });
@@ -180,16 +179,18 @@ export default function UserPanel() {
 
     // Update the users state after role change
     if (updatedUser && updatedUser._id) {
-      setUsers(users.map(user => (user._id === updatedUser._id ? updatedUser : user)));
+      setUsers(
+        users.map((user) => (user._id === updatedUser._id ? updatedUser : user))
+      );
     }
   };
 
   const handleStoreAccessChange = async (userId, storeAccess) => {
-    const res = await fetch('/api/users', {
-      method: 'PUT',
+    const res = await fetch("/api/users", {
+      method: "PUT",
       headers: {
-        'Content-Type': 'application/json',
-        'superuser': session?.user?.role === 'superuser', // Pass the superuser status
+        "Content-Type": "application/json",
+        superuser: session?.user?.role === "superuser", // Pass the superuser status
       },
       body: JSON.stringify({ userId, storeAccess }),
     });
@@ -198,11 +199,13 @@ export default function UserPanel() {
 
     // Update the users state after store access change
     if (updatedUser && updatedUser._id) {
-      setUsers(users.map(user => (user._id === updatedUser._id ? updatedUser : user)));
+      setUsers(
+        users.map((user) => (user._id === updatedUser._id ? updatedUser : user))
+      );
     }
   };
 
-  if (status === 'loading') {
+  if (status === "loading") {
     // While status is loading, show a loading indicator or message
     return <div>Loading...</div>;
   }
@@ -219,7 +222,7 @@ export default function UserPanel() {
           </tr>
         </thead>
         <tbody>
-          {users.map(user => (
+          {users.map((user) => (
             <tr key={user._id}>
               <td className="border px-4 py-2">{user.email}</td>
               <td className="border px-4 py-2">
@@ -235,8 +238,10 @@ export default function UserPanel() {
               <td className="border px-4 py-2">
                 <input
                   type="text"
-                  value={user.storeAccess.join(', ')}
-                  onChange={(e) => handleStoreAccessChange(user._id, e.target.value.split(','))}
+                  value={user.storeAccess.join(", ")}
+                  onChange={(e) =>
+                    handleStoreAccessChange(user._id, e.target.value.split(","))
+                  }
                   className="border p-1"
                 />
               </td>

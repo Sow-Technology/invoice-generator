@@ -50,17 +50,6 @@ export default function Dashboard() {
       return response.data;
     },
   });
-  const {
-    data: productsData,
-    isLoading: isProductsLoading,
-    isError: isProductsError,
-  } = useQuery({
-    queryKey: ["products"], // Update query key to formatted dates
-    queryFn: async () => {
-      const response = await axios.get("/api/products");
-      return response.data;
-    },
-  });
   const fetchMetrics = async (fromDate, toDate) => {
     const { data } = await axios.get("/api/metrics", {
       params: {
@@ -99,7 +88,7 @@ export default function Dashboard() {
       )}
       {active === "Invoices" && <Invoices data={invoiceData} />}
       {active === "Coupons" && <Coupons />}
-      {active === "Products" && <Products data={productsData} />}
+      {active === "Products" && <Products />}
       {active === "Stores" && <Stores />}
     </div>
   );

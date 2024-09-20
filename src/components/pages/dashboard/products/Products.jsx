@@ -24,16 +24,31 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
-import ProductDialog from "./ProductDialog";
+import EditProductDialog from "./EditProductDialog";
+import NewProductDialog from "./NewProductDialog";
+import { useQuery } from "@tanstack/react-query";
 
-export default function Products({ data }) {
+export default function Products() {
   const [selectedProduct, setSelectedProduct] = useState();
   const [isEditDilogOpen, setIsEditDialogOpen] = useState(false);
+  const [isNewDilogOpen, setIsNewDialogOpen] = useState(false);
   const handleProductEdit = (product) => {
     console.log(product);
     setSelectedProduct(product);
     setIsEditDialogOpen(true);
   };
+  const {
+    data,
+    isLoading: isProductsLoading,
+    isError: isProductsError,
+  } = useQuery({
+    queryKey: ["products"],
+    queryFn: async () => {
+      const response = await axios.get("/api/products");
+      return response.data;
+    },
+  });
+
   const handleSave = (updatedProduct) => {};
   const columns = [
     {
@@ -122,20 +137,32 @@ export default function Products({ data }) {
         <CardContent>
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-end">
-              <Link href="#">
-                <Button size="sm" className="h-8 gap-1">
-                  <PlusIcon className="h-4 w-4" />
-                  <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                    New Product
-                  </span>
-                </Button>
-              </Link>
+              <Button
+                size="sm"
+                className="h-8 gap-1"
+                onClick={() => setIsNewDialogOpen(true)}
+              >
+                <PlusIcon className="h-4 w-4" />
+                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                  New Product
+                </span>
+              </Button>
             </div>
             <DataTable columns={columns} data={data} />
           </div>
         </CardContent>
       </Card>
-      <ProductDialog isOpen={isEditDilogOpen} setIsOpen={setIsEditDialogOpen} />
+      {selectedProduct && (
+        <EditProductDialog
+          isOpen={isEditDilogOpen}
+          setIsOpen={setIsEditDialogOpen}
+          product={selectedProduct}
+        />
+      )}
+      <NewProductDialog
+        isOpen={isNewDilogOpen}
+        setIsOpen={setIsNewDialogOpen}
+      />
     </div>
   );
 }
