@@ -1,5 +1,4 @@
 import dbConnect from "@/lib/dbConnect";
-import Invoicee from "@/models/datab";
 import { Invoice } from "@/models/Invoice";
 
 // Handle POST request
@@ -26,7 +25,7 @@ export async function POST(req) {
     storeName,
     paymentMode,
     isPaymentDone,
-    document,
+    orderExpenses,
   } = body;
 
   // Validate required fields
@@ -52,7 +51,7 @@ export async function POST(req) {
       notes,
       storeName,
       paymentMode,
-      document,
+      orderExpenses,
     });
 
     // Save the invoice to the database
