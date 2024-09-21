@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   ArrowUpDown,
+  Loader,
   MoreHorizontal,
   Pencil,
   PlusIcon,
@@ -27,29 +28,34 @@ import React, { useState } from "react";
 import EditProductDialog from "./EditProductDialog";
 import NewProductDialog from "./NewProductDialog";
 import { useQuery } from "@tanstack/react-query";
+import axios from "axios"; // Don't forget to import axios
+import DeleteProductDialog from "./DeleteProductDialog";
 
 export default function Products() {
   const [selectedProduct, setSelectedProduct] = useState();
-  const [isEditDilogOpen, setIsEditDialogOpen] = useState(false);
-  const [isNewDilogOpen, setIsNewDialogOpen] = useState(false);
-  const handleProductEdit = (product) => {
-    console.log(product);
-    setSelectedProduct(product);
-    setIsEditDialogOpen(true);
-  };
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isNewDialogOpen, setIsNewDialogOpen] = useState(false);
+
   const {
     data,
-    isLoading: isProductsLoading,
+    isLoading,
     isError: isProductsError,
+    refetch,
   } = useQuery({
-    queryKey: ["products"],
+    queryKey: ["products", selectedProduct, isNewDialogOpen],
     queryFn: async () => {
       const response = await axios.get("/api/products");
       return response.data;
     },
   });
 
-  const handleSave = (updatedProduct) => {};
+  const handleProductEdit = (product) => {
+    setSelectedProduct(product);
+    setIsEditDialogOpen(true);
+    refetch();
+  };
+
   const columns = [
     {
       accessorKey: "code",
@@ -114,7 +120,12 @@ export default function Products() {
                 <Pencil className="h-3.5 w-3.5 mr-1.5" />
                 Edit
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  setSelectedProduct(row.original);
+                  setIsDeleteDialogOpen(true);
+                }}
+              >
                 <Trash className="h-3.5 w-3.5 mr-1.5" />
                 Delete
               </DropdownMenuItem>
@@ -124,10 +135,11 @@ export default function Products() {
       },
     },
   ];
+  if (isLoading) return <Loader />;
 
   return (
     <div className="mx-5 max-lg:max-w-[83vw] w-full">
-      <Card className="w-full mt-5 h-max  mx-auto">
+      <Card className="w-full mt-5 h-max mx-auto">
         <CardHeader>
           <CardTitle>Products</CardTitle>
           <CardDescription>
@@ -153,14 +165,21 @@ export default function Products() {
         </CardContent>
       </Card>
       {selectedProduct && (
-        <EditProductDialog
-          isOpen={isEditDilogOpen}
-          setIsOpen={setIsEditDialogOpen}
-          product={selectedProduct}
-        />
+        <>
+          <EditProductDialog
+            isOpen={isEditDialogOpen}
+            setIsOpen={setIsEditDialogOpen}
+            product={selectedProduct}
+          />
+          <DeleteProductDialog
+            isOpen={isDeleteDialogOpen}
+            setIsOpen={setIsDeleteDialogOpen}
+            product={selectedProduct}
+          />
+        </>
       )}
       <NewProductDialog
-        isOpen={isNewDilogOpen}
+        isOpen={isNewDialogOpen}
         setIsOpen={setIsNewDialogOpen}
       />
     </div>

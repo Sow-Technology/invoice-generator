@@ -30,3 +30,18 @@ export async function createProduct(product) {
     throw new Error("Unable to create the product!");
   }
 }
+
+export async function deleteProduct(productid) {
+  await dbConnect();
+  console.log(productid);
+  try {
+    const deletedProduct = await Product.findByIdAndDelete(productid);
+    if (!deletedProduct) {
+      throw new Error("Product not found");
+    }
+    return true;
+  } catch (err) {
+    console.error(err);
+    throw new Error("Unable to delete the product!");
+  }
+}

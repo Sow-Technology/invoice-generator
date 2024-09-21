@@ -1,44 +1,38 @@
 "use client";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
-import { startOfQuarter, format } from "date-fns"; // Import `format` from date-fns to format dates
+import { startOfQuarter, format } from "date-fns";
 import Invoices from "./dashboard/Invoices";
-// import Coupons from "./dashboard/Coupons";
-import InventoryPage from "./inventory/page";
-// import DashboardSection from "./dashboard/DashboardSection";
 import Sidebar from "./dashboard/Sidebar";
-import { useState } from "react";
-import DataCard from "./dashboard/DataCard";
-// import Invoices from "./dashboard/Invoices";
+import { useState, useEffect } from "react";
 import DashboardSection from "./dashboard/DashboardSection";
 import Coupons from "./dashboard/Coupons";
 import Stores from "./dashboard/store";
 import { useSession } from "next-auth/react";
 import Products from "./dashboard/products/Products";
+import { useSearchParams } from "next/navigation";
 
 export default function Dashboard() {
   const session = useSession();
-  console.log(session);
-  // console.log(Status)
+  const searchParams = useSearchParams();
+  const activeSection = searchParams.get("active") || "Dashboard";
 
-  const [active, setActive] = useState("Dashboard");
+  const [active, setActive] = useState(activeSection);
   const [storeName, setStoreName] = useState("all");
   const [dateRange, setDateRange] = useState({
     from: startOfQuarter(new Date()),
     to: new Date(),
   });
 
-  // Format dates to "YYYY-MM-DD" to remove time and timezone
   const formattedFrom = format(dateRange.from, "yyyy-MM-dd");
   const formattedTo = format(dateRange.to, "yyyy-MM-dd");
 
-  // Use axios for fetching invoices
   const {
     data: invoiceData,
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["invoices", formattedFrom, formattedTo, storeName], // Update query key to formatted dates
+    queryKey: ["invoices", formattedFrom, formattedTo, storeName],
     queryFn: async () => {
       const response = await axios.get("/api/getInvoices", {
         params: {
@@ -50,6 +44,7 @@ export default function Dashboard() {
       return response.data;
     },
   });
+
   const fetchMetrics = async (fromDate, toDate) => {
     const { data } = await axios.get("/api/metrics", {
       params: {
@@ -59,6 +54,7 @@ export default function Dashboard() {
     });
     return data;
   };
+
   const {
     data: metricsData,
     isLoading: metricsLoading,
@@ -67,11 +63,20 @@ export default function Dashboard() {
     queryKey: ["metrics", formattedFrom, formattedTo],
     queryFn: () => fetchMetrics(dateRange.from, dateRange.to),
   });
-  const data = {};
-  console.log(metricsData);
-  // Loading and Error Handling
+
+  // Update URL search parameters when active section changes
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    params.set("active", active);
+    window.history.replaceState(
+      {},
+      "",
+      `${window.location.pathname}?${params}`
+    );
+  }, [active]);
   if (isLoading || metricsLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading invoices: {error.message}</div>;
+
   return (
     <div className="flex min-h-screen w-full relative">
       <Sidebar active={active} setActive={setActive} />
