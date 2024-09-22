@@ -6,12 +6,12 @@ import Invoices from "./dashboard/Invoices";
 import Sidebar from "./dashboard/Sidebar";
 import { useState, useEffect } from "react";
 import DashboardSection from "./dashboard/DashboardSection";
-import Coupons from "./dashboard/Coupons";
-import Stores from "./dashboard/store";
 import { useSession } from "next-auth/react";
 import Products from "./dashboard/products/Products";
 import UserPanel from "../../app/user-panel/page";
 import { useSearchParams } from "next/navigation";
+import Stores from "./dashboard/stores/Stores";
+import CouponsTable from "./dashboard/coupons/Coupons";
 
 export default function Dashboard() {
   const session = useSession();
@@ -93,11 +93,11 @@ export default function Dashboard() {
         />
       )}
       {active === "Invoices" && <Invoices data={invoiceData} />}
-      {active === "Coupons" && <Coupons />}
+      {active === "Coupons" && <CouponsTable />}
       {active === "Products" && <Products />}
       {active === "Stores" && <Stores />}
       {active === "UserPanel" && session?.user?.role === "superuser" && (
-        <UserPanel /> // Render UserPanel if the user is a superuser
+        <UserPanel />
       )}
     </div>
   );

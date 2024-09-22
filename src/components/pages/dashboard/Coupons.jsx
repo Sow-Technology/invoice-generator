@@ -42,11 +42,7 @@ const data = [
 export default function Coupons() {
   return (
     <div className="w-full mx-4 py-4">
-      <CreateCouponsDialog data={data} /> <CouponsTable data={data} />
+      <CouponsTable data={data} />
     </div>
   );
 }
-
-
-
-

@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { ArrowUpDown, PlusIcon } from "lucide-react";
 import Link from "next/link";
 import React from "react";
+import CreateCouponsDialog from "./CreateCouponsDialog";
 const columns = [
   {
     accessorKey: "couponCode",
@@ -54,7 +55,7 @@ const columns = [
 ];
 export default function CouponsTable({ data }) {
   return (
-    <Card className="col-span-2 lg:col-span-3 my-10 w-full">
+    <Card className="col-span-2 lg:col-span-3  w-full">
       <CardHeader>
         <CardTitle>Coupons</CardTitle>
         <CardDescription>
@@ -62,7 +63,8 @@ export default function CouponsTable({ data }) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-col gap-4 w-full">
+        <CreateCouponsDialog data={data} />
+        <div className="flex flex-col gap-4 w-full my-4">
           <DataTable columns={columns} data={data} />
         </div>
       </CardContent>

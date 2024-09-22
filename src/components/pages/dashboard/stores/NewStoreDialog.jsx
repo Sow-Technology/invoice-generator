@@ -13,25 +13,25 @@ import { Label } from "@/components/ui/label";
 import React, { useState } from "react";
 import { toast } from "sonner";
 
-export default function NewProductDialog({ isOpen, setIsOpen }) {
-  const [productData, setProductData] = useState({
+export default function NewStoreDialog({ isOpen, setIsOpen }) {
+  const [storeData, setStoreData] = useState({
     code: "",
-    productName: "",
-    quantity: 0,
-    unitPrice: 0,
+    storeName: "",
+    phoneNumber: "",
+    address: "",
   });
   const handleSubmit = async () => {
     try {
-      const res = await createProduct(productData);
+      const res = await createProduct(storeData);
       console.log(res);
-      toast.success("Product created successfully!", {
-        id: "create-product",
+      toast.success("Store created successfully!", {
+        id: "create-store",
       });
       setIsOpen(false);
     } catch (error) {
       console.log(error);
-      toast.error("Failed to create product. Please try again later.", {
-        id: "create-product",
+      toast.error("Failed to create store. Please try again later.", {
+        id: "create-store",
       });
     }
   };
@@ -39,65 +39,61 @@ export default function NewProductDialog({ isOpen, setIsOpen }) {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add new product</DialogTitle>
-          <DialogDescription>
-            Enter the details of the product.
-          </DialogDescription>
+          <DialogTitle>Add new store</DialogTitle>
+          <DialogDescription>Enter the details of the store.</DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="code" className="text-right">
-              Code
+              Store Code
             </Label>
             <Input
               id="code"
               className="col-span-3"
-              value={productData.code}
+              value={storeData.code}
               onChange={(e) =>
-                setProductData({ ...productData, code: e.target.value })
+                setProductData({ ...storeData, code: e.target.value })
               }
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="productName" className="text-right">
-              Product Name
+            <Label htmlFor="storeName" className="text-right">
+              Store Name
             </Label>
             <Input
-              id="productName"
+              id="storeName"
               className="col-span-3"
-              value={productData.productName}
+              value={storeData.storeName}
               onChange={(e) =>
-                setProductData({ ...productData, productName: e.target.value })
+                setProductData({ ...storeData, storeName: e.target.value })
               }
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="quantity" className="text-right">
-              Quantity
+            <Label htmlFor="phoneNumber" className="text-right">
+              Phone Number
             </Label>
             <Input
-              id="quantity"
+              id="phoneNumber"
               type="number"
               min="0"
               className="col-span-3"
-              value={productData.quantity}
+              value={storeData.phoneNumber}
               onChange={(e) =>
-                setProductData({ ...productData, quantity: e.target.value })
+                setProductData({ ...storeData, phoneNumber: e.target.value })
               }
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="price" className="text-right">
-              Price
+            <Label htmlFor="address" className="text-right">
+              Address
             </Label>
             <Input
-              id="price"
-              type="number"
-              min="1"
+              id="address"
               className="col-span-3"
-              value={productData.unitPrice}
+              value={storeData.address}
               onChange={(e) =>
-                setProductData({ ...productData, unitPrice: e.target.value })
+                setProductData({ ...storeData, address: e.target.value })
               }
             />
           </div>

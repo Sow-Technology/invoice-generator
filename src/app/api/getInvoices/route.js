@@ -7,8 +7,11 @@ export async function GET(req) {
 
   const fromDate = new Date(searchParams.get("from"));
   const toDate = new Date(searchParams.get("to"));
+  toDate.setHours(23, 59, 59, 999);
+
   const storeName = searchParams.get("storeName");
   console.log(storeName);
+
   try {
     const invoices = await Invoice.find({
       createdAt: { $gte: fromDate, $lte: toDate },

@@ -1,15 +1,16 @@
 import dbConnect from "@/lib/dbConnect";
-import { Coupon } from "@/models/Coupon";
+import { Store } from "@/models/store";
 import mongoose from "mongoose";
 
 // GET request
-export async function GET(request) {
+export async function GET() {
   try {
     await dbConnect();
-    const coupons = await Coupon.find({}).lean();
-    return Response.json(coupons);
+    const products = await Store.find({});
+    return Response.json(products);
   } catch (error) {
-    return Response.json("Error retrieving coupons", { status: 500 });
+    console.error("Error in GET request:", error);
+    return Response.json("Error retrieving products", { status: 500 });
   }
 }
 
@@ -22,16 +23,16 @@ export async function POST(request) {
     // Log incoming data for debugging
     console.log("Incoming product data:", productData);
 
-    // Ensure all required fields are provided
+    // Ensure all  requiredfields are provided
     if (
-      !productData.couponCode ||
-      !productData.discount ||
-      !productData.validity
+      !productData.code ||
+      !productData.storeName ||
+      !productData.phoneNumber
     ) {
       return new Response("Missing required fields", { status: 400 });
     }
 
-    const newProduct = new Coupon(productData);
+    const newProduct = new Store(productData);
     await newProduct.save();
     return new Response(JSON.stringify(newProduct), { status: 201 });
   } catch (error) {
@@ -51,7 +52,7 @@ export async function PUT(request) {
       return new Response("Invalid ID format", { status: 400 });
     }
 
-    const updatedProduct = await Coupon.findByIdAndUpdate(_id, updates, {
+    const updatedProduct = await Store.findByIdAndUpdate(_id, updates, {
       new: true,
     });
 
@@ -77,7 +78,7 @@ export async function DELETE(request) {
       return new Response("Invalid ID format", { status: 400 });
     }
 
-    const deletedProduct = await Coupon.findByIdAndDelete(_id);
+    const deletedProduct = await Store.findByIdAndDelete(_id);
 
     if (!deletedProduct) {
       return new Response("Product not found", { status: 404 });

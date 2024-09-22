@@ -12,50 +12,28 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import {
   ArrowUpDown,
-  Loader,
   MoreHorizontal,
   Pencil,
   PlusIcon,
   Trash,
 } from "lucide-react";
 import Link from "next/link";
-import React, { useState } from "react";
-import EditProductDialog from "./EditProductDialog";
-import NewProductDialog from "./NewProductDialog";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import DeleteProductDialog from "./DeleteProductDialog";
+import React, { Suspense, useState } from "react";
+import EditStoreDialog from "./EditStoreDialog";
+import DeleteStoreDialog from "./DeleteStoreDialog";
+import NewStoreDialog from "./NewStoreDialog";
 
-export default function Products() {
-  const [selectedProduct, setSelectedProduct] = useState();
+export default function Stores({}) {
+  const [selectedStore, setSelectedStore] = useState();
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isNewDialogOpen, setIsNewDialogOpen] = useState(false);
-
-  const {
-    data,
-    isLoading,
-    isError: isProductsError,
-    refetch,
-  } = useQuery({
-    queryKey: ["products", selectedProduct, isNewDialogOpen],
-    queryFn: async () => {
-      const response = await axios.get("/api/products");
-      return response.data;
-    },
-  });
-
-  const handleProductEdit = (product) => {
-    setSelectedProduct(product);
-    setIsEditDialogOpen(true);
-    refetch();
-  };
-
   const columns = [
     {
       accessorKey: "code",
@@ -64,42 +42,42 @@ export default function Products() {
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Product Code <ArrowUpDown className="ml-2 h-4 w-4" />
+          Store Code <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
     },
     {
-      accessorKey: "productName",
+      accessorKey: "storeName",
       header: ({ column }) => (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Product Name <ArrowUpDown className="ml-2 h-4 w-4" />
+          Store Name <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
     },
     {
-      accessorKey: "quantity",
+      accessorKey: "phoneNumber",
+      header: "Phone Number",
+    },
+    {
+      accessorKey: "address",
+      header: "Address",
+    },
+    {
+      accessorKey: "updatedAt",
       header: ({ column }) => (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Quantity <ArrowUpDown className="ml-2 h-4 w-4" />
+          modified <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
-    },
-    {
-      accessorKey: "unitPrice",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Price <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      ),
+      cell: ({ cell }) => {
+        return new Date(cell.row.original.updatedAt).toDateString();
+      },
     },
 
     {
@@ -116,13 +94,18 @@ export default function Products() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => handleProductEdit(row.original)}>
+              <DropdownMenuItem
+                onClick={() => {
+                  setSelectedStore(row.original);
+                  setIsEditDialogOpen(true);
+                }}
+              >
                 <Pencil className="h-3.5 w-3.5 mr-1.5" />
                 Edit
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => {
-                  setSelectedProduct(row.original);
+                  setSelectedStore(row.original);
                   setIsDeleteDialogOpen(true);
                 }}
               >
@@ -135,15 +118,22 @@ export default function Products() {
       },
     },
   ];
-  if (isLoading) return <Loader />;
 
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["store", isEditDialogOpen, isDeleteDialogOpen],
+    queryFn: async () => {
+      const response = await axios.get("/api/getStores");
+      return response.data;
+    },
+  });
+  if (isLoading) return "Loading...";
   return (
-    <div className="mx-5 max-lg:max-w-[83vw] w-full">
-      <Card className="w-full mt-5 h-max mx-auto">
+    <div className="mx-5 max-lg:max-w-[83vw] max-w-[90vw] lg:min-w-max flex-1">
+      <Card className="w-full mt-5 h-max  mx-auto">
         <CardHeader>
-          <CardTitle>Products</CardTitle>
+          <CardTitle>Stores</CardTitle>
           <CardDescription>
-            Manage your products and view their details.
+            Manage your stores and view their details.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -156,32 +146,31 @@ export default function Products() {
               >
                 <PlusIcon className="h-4 w-4" />
                 <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                  New Product
+                  New Store
                 </span>
               </Button>
             </div>
-            <DataTable columns={columns} data={data} />
+            <Suspense isLoading={isLoading}>
+              <DataTable columns={columns} data={data} />
+            </Suspense>
           </div>
         </CardContent>
       </Card>
-      {selectedProduct && (
+      {selectedStore && (
         <>
-          <EditProductDialog
+          <EditStoreDialog
             isOpen={isEditDialogOpen}
             setIsOpen={setIsEditDialogOpen}
-            product={selectedProduct}
+            store={selectedStore}
           />
-          <DeleteProductDialog
+          <DeleteStoreDialog
             isOpen={isDeleteDialogOpen}
             setIsOpen={setIsDeleteDialogOpen}
-            product={selectedProduct}
+            store={selectedStore}
           />
         </>
       )}
-      <NewProductDialog
-        isOpen={isNewDialogOpen}
-        setIsOpen={setIsNewDialogOpen}
-      />
+      <NewStoreDialog isOpen={isNewDialogOpen} setIsOpen={setIsNewDialogOpen} />
     </div>
   );
 }
