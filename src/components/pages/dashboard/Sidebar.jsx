@@ -13,6 +13,7 @@ import {
   SettingsIcon,
   Store,
   TicketCheck,
+  Users,
 } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
@@ -161,22 +162,20 @@ export default function Sidebar({ active, setActive }) {
           {/* User Panel */}
           <div
             className="flex items-center justify-start gap-2 cursor-pointer hover:scale-105"
-            onClick={() => setActive("User Panel")}
+            onClick={() => setActive("Users")}
           >
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href="/user-panel"
+                  href="#"
                   className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground"
                 >
-                  <BarChartIcon className="h-5 w-5" />
+                  <Users className="h-5 w-5" />
                 </Link>
               </TooltipTrigger>
-              {!open && (
-                <TooltipContent side="right">User Panel</TooltipContent>
-              )}
+              {!open && <TooltipContent side="right">Users</TooltipContent>}
             </Tooltip>
-            {open && <span>User Panel</span>}
+            {open && <span>Users</span>}
           </div>
         </TooltipProvider>
       </nav>

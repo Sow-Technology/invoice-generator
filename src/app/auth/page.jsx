@@ -1,5 +1,4 @@
 "use client";
-// import { signIn } from "@/auth";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,14 +10,23 @@ import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { signIn, useSession } from "next-auth/react";
-import { useState } from "react";
-// import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function AuthPage() {
   const [isRegistering, setIsRegistering] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [user, setUser] = useState();
   const session = useSession();
+  const router = useRouter();
+  useEffect(() => {
+    setUser(session.data?.user);
+    if (user) {
+      router.push("/");
+    }
+  }, [router, session.data?.user, user]);
+  console.log(user);
   console.log(session.data);
   const handleSubmit = async (event) => {
     event.preventDefault();

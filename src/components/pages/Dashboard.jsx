@@ -12,6 +12,7 @@ import UserPanel from "../../app/user-panel/page";
 import { useSearchParams } from "next/navigation";
 import Stores from "./dashboard/stores/Stores";
 import CouponsTable from "./dashboard/coupons/Coupons";
+import Users from "./dashboard/users/Users";
 
 export default function Dashboard() {
   const session = useSession();
@@ -96,9 +97,7 @@ export default function Dashboard() {
       {active === "Coupons" && <CouponsTable />}
       {active === "Products" && <Products />}
       {active === "Stores" && <Stores />}
-      {active === "UserPanel" && session?.user?.role === "superuser" && (
-        <UserPanel />
-      )}
+      {active === "Users" && <Users data={invoiceData} />}
     </div>
   );
 }
