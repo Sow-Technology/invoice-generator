@@ -32,7 +32,7 @@ const MainDetails = () => {
               {new Date().toLocaleDateString()}
             </li>
             <li className="p-1 ">
-              <span className="font-bold">GST IN: </span> 29ELSPS8800P1ZT
+              <span className="font-bold">GST IN: </span> 29BCNPT0590C1ZB
             </li>
           </ul>
         </article>

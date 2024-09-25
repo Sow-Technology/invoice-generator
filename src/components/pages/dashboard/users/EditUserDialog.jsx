@@ -1,5 +1,5 @@
-import { updateUser } from "@/app/_actions/user";
-import { Button } from "@/components/ui/button";
+// This is assuming you have an `updateUser` function, and `toast` from a notification library
+
 import {
   Dialog,
   DialogContent,
@@ -8,23 +8,28 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import {
+  MultiSelector,
+  MultiSelectorContent,
+  MultiSelectorInput,
+  MultiSelectorItem,
+  MultiSelectorList,
+  MultiSelectorTrigger,
+} from "@/components/ui/multi-select";
+import {
+  Command,
+  CommandEmpty,
+  CommandInput,
+  CommandList,
+} from "@/components/ui/command";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  Command,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandEmpty,
-} from "@/components/ui/command";
-import { Check, ChevronsUpDown } from "lucide-react";
-import React, { useState } from "react";
-import { toast } from "sonner";
+import { ChevronsUpDown } from "lucide-react";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -33,26 +38,35 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import { storesData } from "@/lib/data";
-import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { updateUser } from "@/app/_actions/user";
+import { toast } from "sonner";
 
 export default function EditUserDialog({ isOpen, setIsOpen, user }) {
   const [userData, setUserData] = useState(user);
   const [selectedStores, setSelectedStores] = useState(user.storeAccess || []);
   const [open, setOpen] = useState(false);
 
+  // Function to handle the user update logic
   const handleUpdate = async () => {
     try {
       await updateUser({ ...userData, storeAccess: selectedStores });
       toast.success("User updated successfully!", {
         id: "update-user",
       });
-      setIsOpen(false);
+      setIsOpen(false); // Close the dialog on success
     } catch (error) {
       toast.error("Failed to update user. Please try again later.", {
         id: "update-user",
       });
     }
+  };
+
+  // Handle store selection
+  const handleStoreSelection = (newSelectedStores) => {
+    setSelectedStores(newSelectedStores);
   };
 
   return (
@@ -62,7 +76,9 @@ export default function EditUserDialog({ isOpen, setIsOpen, user }) {
           <DialogTitle>Edit User</DialogTitle>
           <DialogDescription>Edit the details of the user.</DialogDescription>
         </DialogHeader>
+
         <div className="grid gap-4 py-4">
+          {/* Email field */}
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="email" className="text-right">
               Email
@@ -74,6 +90,8 @@ export default function EditUserDialog({ isOpen, setIsOpen, user }) {
               disabled
             />
           </div>
+
+          {/* Role selector */}
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="role" className="text-right">
               Role
@@ -96,52 +114,38 @@ export default function EditUserDialog({ isOpen, setIsOpen, user }) {
               </SelectContent>
             </Select>
           </div>
+
+          {/* Store Access multi-selector */}
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="storeAccess" className="text-right">
               Store Access
             </Label>
-            <Popover open={open} onOpenChange={setOpen}>
-              <PopoverTrigger asChild>
-                <Button variant="outline" className="w-[200px] justify-between">
-                  {selectedStores.length > 0
-                    ? selectedStores.join(", ")
-                    : "Select store(s)"}
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-[200px] p-0">
-                <Command>
-                  <CommandInput placeholder="Search store..." />
-                  <CommandList>
-                    <CommandEmpty>No store found.</CommandEmpty>
-                    {storesData.map((store) => (
-                      <CommandItem
-                        key={store.name}
-                        onSelect={() => {
-                          setSelectedStores((prev) =>
-                            prev.includes(store.name)
-                              ? prev.filter((s) => s !== store.name)
-                              : [...prev, store.name]
-                          );
-                        }}
-                      >
-                        <Check
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                            selectedStores.includes(store.name)
-                              ? "opacity-100"
-                              : "opacity-0"
-                          )}
-                        />
-                        {store.name}
-                      </CommandItem>
-                    ))}
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
+
+            <MultiSelector
+              className="col-span-3"
+              onValuesChange={handleStoreSelection}
+              values={selectedStores}
+            >
+              <MultiSelectorTrigger>
+                <MultiSelectorInput placeholder="Select stores" />
+              </MultiSelectorTrigger>
+              <MultiSelectorContent>
+                <MultiSelectorList>
+                  {storesData.map((service, idx) => (
+                    <MultiSelectorItem
+                      key={idx}
+                      value={service.priority || service.name}
+                    >
+                      {service.priority || service.name}
+                    </MultiSelectorItem>
+                  ))}
+                </MultiSelectorList>
+              </MultiSelectorContent>
+            </MultiSelector>
           </div>
         </div>
+
+        {/* Dialog Footer with Save Button */}
         <DialogFooter>
           <Button type="submit" onClick={handleUpdate}>
             Save changes

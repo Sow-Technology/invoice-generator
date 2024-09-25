@@ -44,7 +44,7 @@ export default function Users() {
     isError,
     refetch,
   } = useQuery({
-    queryKey: ["users", selectedUser, isNewDialogOpen],
+    queryKey: ["users", selectedUser, isEditDialogOpen, isDeleteDialogOpen],
     queryFn: async () => {
       const response = await axios.get("/api/getUsers");
       return response.data;
@@ -96,7 +96,14 @@ export default function Users() {
           Store Access <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
-      cell: ({ row }) => <Badge>{row.original.storeAccess}</Badge>,
+      cell: ({ row }) => (
+        <div className="flex gap-2 flex-wrap">
+          {row.original.storeAccess.map((store) => {
+            console.log(store);
+            return <Badge key={store}>{store}</Badge>;
+          })}
+        </div>
+      ),
     },
     {
       id: "actions",
@@ -138,18 +145,6 @@ export default function Users() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-4">
-            <div className="flex items-center justify-end">
-              <Button
-                size="sm"
-                className="h-8 gap-1"
-                onClick={() => setIsNewDialogOpen(true)}
-              >
-                <PlusIcon className="h-4 w-4" />
-                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                  New User
-                </span>
-              </Button>
-            </div>
             <DataTable columns={columns} data={users} />
           </div>
         </CardContent>
@@ -168,7 +163,6 @@ export default function Users() {
           />
         </>
       )}
-      {/* <NewUserDialog isOpen={isNewDialogOpen} setIsOpen={setIsNewDialogOpen} /> */}
     </div>
   );
 }
