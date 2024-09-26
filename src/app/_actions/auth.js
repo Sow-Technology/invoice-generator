@@ -25,11 +25,14 @@ export async function handleEmailSignIn(email, password) {
   const saltRounds = 10;
   const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-  // Create a new user
+  // Check if this is the first user in the database
+  const userCount = await User.countDocuments();
+
+  // Create a new user with the appropriate role
   const newUser = new User({
     email,
     password: hashedPassword, // Store the hashed password
-    role: "user",
+    role: userCount === 0 ? "superUser" : "user", // Assign "superUser" if no users exist
   });
 
   const savedUser = await newUser.save();

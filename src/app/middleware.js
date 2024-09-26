@@ -1,12 +1,13 @@
-import { getSession } from 'next-auth/react';
+import { getSession } from "next-auth/react";
 
 export async function middleware(req) {
   const session = await getSession({ req });
 
-  if (req.nextUrl.pathname === '/user-panel') {
-    if (!session || session.user.role !== 'superuser') {
-      return NextResponse.redirect(new URL('/unauthorized', req.url));
-    }
+  if (!session) {
+    return NextResponse.redirect(new URL("/unauthorized", req.url));
+  }
+  if (session) {
+    return NextResponse.redirect(new URL("/user-panel", req.url));
   }
 
   return NextResponse.next();
