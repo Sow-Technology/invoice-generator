@@ -6,7 +6,7 @@ export async function GET(req, res) {
 
   try {
     const invoiceCount = await Invoice.countDocuments();
-    const nextInvoiceNumber = invoiceCount + 1;
+    const nextInvoiceNumber = "JO" + (invoiceCount + 1);
     return Response.json(nextInvoiceNumber);
   } catch (error) {
     return Response.json("Unable to fetch invoice count");

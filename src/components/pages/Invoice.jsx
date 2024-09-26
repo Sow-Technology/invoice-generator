@@ -73,6 +73,23 @@ function App() {
       toast.error("This invoice has already been saved!");
       return;
     }
+    const handleReset = () => {
+      setCustomerName("");
+      setPhoneNumber("");
+      setEmailId("");
+      setNotes("");
+      setItems([]);
+      setPaymentMode("cash");
+      setTax(0);
+      getInvoiceNumber().then((res) => {
+        console.log(res);
+        setOrderNumber(res.data);
+      });
+
+      setTaxValue(0);
+      setIsPaymentDone(false);
+      setIsInvoiceSaved(false);
+    };
 
     const data = {
       orderNumber,
@@ -103,22 +120,10 @@ function App() {
 
     getInvoiceNumber().then((res) => {
       console.log(res);
-      setOrderNumber("JO" + res.data);
+      setOrderNumber(res.data);
     });
+    handleReset();
   };
-  const handleReset = () => {
-    setCustomerName("");
-    setPhoneNumber("");
-    setEmailId("");
-    setNotes("");
-    setItems([]);
-    setPaymentMode("cash");
-    setTax(0);
-    setTaxValue(0);
-    setIsPaymentDone(false);
-    setIsInvoiceSaved(false);
-  };
-
   useEffect(() => {
     if (window.innerWidth < width) {
       alert("Place your phone in landscape mode for the best experience");
@@ -132,7 +137,7 @@ function App() {
   useEffect(() => {
     getInvoiceNumber().then((res) => {
       console.log(res);
-      setOrderNumber("JO" + res.data);
+      setOrderNumber(res.data);
     });
   }, []);
   const handleFetchCustomerDetails = async () => {
@@ -310,23 +315,13 @@ function App() {
               </div>
               {isPaymentDone && (
                 <div className="flex gap-2">
-                  <div
-                    className=""
-                    onClick={() => {
-                      handleSubmit();
-                      router.push("/");
-                    }}
-                  >
-                    <Button>Submit / Save</Button>
-                  </div>{" "}
                   <div className="" onClick={handleSubmit}>
                     {" "}
                     <ReactToPrint
-                      trigger={() => <Button>Print / Download</Button>}
+                      trigger={() => <Button>Save / Download</Button>}
                       content={() => componentRef.current}
                     />
                   </div>
-                  <Button onClick={handleReset}>Reset </Button>
                 </div>
               )}
             </div>
