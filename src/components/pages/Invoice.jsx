@@ -73,7 +73,8 @@ function App() {
       toast.error("This invoice has already been saved!");
       return;
     }
-    const handleReset = () => {
+    const handleReset = async () => {
+      await getInvoiceNumber();
       setCustomerName("");
       setPhoneNumber("");
       setEmailId("");
@@ -81,10 +82,6 @@ function App() {
       setItems([]);
       setPaymentMode("cash");
       setTax(0);
-      getInvoiceNumber().then((res) => {
-        console.log(res);
-        setOrderNumber(res.data);
-      });
 
       setTaxValue(0);
       setIsPaymentDone(false);
