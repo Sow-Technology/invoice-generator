@@ -1,14 +1,25 @@
 import dbConnect from "@/lib/dbConnect";
 import { Invoice } from "@/models/Invoice";
+import { NextResponse } from "next/server";
 
-export async function GET(req, res) {
+// export const runtime = "edge"; // This line tells Next.js to use the Edge Runtime
+
+export async function GET(req) {
   await dbConnect();
 
   try {
     const invoiceCount = await Invoice.countDocuments();
     const nextInvoiceNumber = "JO" + (invoiceCount + 1);
-    return Response.json(nextInvoiceNumber);
+    console.log(nextInvoiceNumber);
+    return NextResponse.json(nextInvoiceNumber);
   } catch (error) {
-    return Response.json("Unable to fetch invoice count");
+    console.error("Error fetching invoice count:", error);
+    return NextResponse.json(
+      { error: "Unable to fetch invoice count" },
+      { status: 500 }
+    );
   }
 }
+
+// This configuration ensures the route is always dynamic
+export const dynamic = "force-dynamic";

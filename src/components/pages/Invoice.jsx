@@ -48,6 +48,7 @@ function App() {
     coupon,
     storeName,
     setStoreName,
+    setProducts,
     couponDiscount,
   } = useInvoiceStore();
   const componentRef = useRef();
@@ -59,6 +60,7 @@ function App() {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [existingCustomer, setExistingCustomer] = useState(false);
   const [isPaymentDone, setIsPaymentDone] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     console.log(paymentMode);
     if (paymentMode == "upi") {
@@ -80,9 +82,9 @@ function App() {
       setEmailId("");
       setNotes("");
       setItems([]);
-      setPaymentMode("cash");
+      setPaymentMode(null);
       setTax(0);
-
+      setProducts([]);
       setTaxValue(0);
       setIsPaymentDone(false);
       setIsInvoiceSaved(false);
@@ -128,8 +130,10 @@ function App() {
   }, [width]);
 
   const getInvoiceNumber = async () => {
+    setIsLoading(true);
     const response = await axios.get("/api/newInvoiceNumber");
     setOrderNumber(response.data);
+    setIsLoading(false);
     return response;
   };
   useEffect(() => {
@@ -166,6 +170,11 @@ function App() {
       setStoreName(storedData);
     }
   }, []);
+  // useEffect(() => {
+  //   if (!orderNumber) {
+  //     return "Loading..";
+  //   }
+  // }, [orderNumber]);
   return (
     <>
       <main
