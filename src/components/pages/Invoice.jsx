@@ -132,13 +132,11 @@ function App() {
 
   const getInvoiceNumber = async () => {
     const response = await axios.get("/api/newInvoiceNumber");
+    setOrderNumber(response.data);
     return response;
   };
   useEffect(() => {
-    getInvoiceNumber().then((res) => {
-      console.log(res);
-      setOrderNumber(res.data);
-    });
+    getInvoiceNumber();
   }, []);
   const handleFetchCustomerDetails = async () => {
     toast.loading("Fetching Customer Details", {
