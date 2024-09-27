@@ -88,6 +88,7 @@ export default function CreateCouponsDialog({
         toast.success("Coupon created successfully!", {
           id: "creating-coupon",
         });
+        setIsNewCouponDialogOpen(false);
       } else {
         toast.error(response.message, {
           id: "creating-coupon",
@@ -261,9 +262,11 @@ export default function CreateCouponsDialog({
                     <div></div>
                   </div>
                 </div>
-                <div className="lg:my-4 ">
+                <div className="mt-4 w-full ">
                   {" "}
-                  <Button type="submit">Add Coupon</Button>
+                  <Button type="submit" className="w-full">
+                    Create Coupon
+                  </Button>
                 </div>
               </form>
             </Form>
