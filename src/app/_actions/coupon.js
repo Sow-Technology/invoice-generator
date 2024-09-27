@@ -7,7 +7,7 @@ export async function createCoupon({ data }) {
   await dbConnect();
   try {
     const existingCoupon = await Coupon.findOne({ code: data.code });
-    if (existingCoupon.length) {
+    if (existingCoupon) {
       console.log("Already exxitss======s");
       console.log(existingCoupon);
       throw new Error("Coupon already exists with this code.");
@@ -16,6 +16,7 @@ export async function createCoupon({ data }) {
     const newCoupon = new Coupon({
       ...data,
     });
+
     const savedCoupon = await newCoupon.save();
     console.log(savedCoupon);
     return {
@@ -23,6 +24,7 @@ export async function createCoupon({ data }) {
       message: "Coupon created successfully",
     };
   } catch (err) {
+    console.log(err);
     if (err.message.includes("Coupon already exists")) {
       console.log("Already exxitss======s");
       return {

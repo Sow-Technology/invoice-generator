@@ -35,8 +35,14 @@ export default function Coupons({}) {
   const [selectedCoupon, setSelectedCoupon] = useState();
   const [isEditDialogOpen, setIsEditDialogOpen] = useState();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState();
+  const [isNewCouponDialogOpen, setIsNewCouponDialogOpen] = useState(false);
   const { data, isLoading, error } = useQuery({
-    queryKey: ["store"],
+    queryKey: [
+      "store",
+      isDeleteDialogOpen,
+      isNewCouponDialogOpen,
+      isEditDialogOpen,
+    ],
     queryFn: async () => {
       const response = await axios.get("/api/coupon");
       return response.data;
@@ -133,7 +139,11 @@ export default function Coupons({}) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <CreateCouponsDialog data={data} />
+          <CreateCouponsDialog
+            data={data}
+            isNewCouponDialogOpen={isNewCouponDialogOpen}
+            setIsNewCouponDialogOpen={setIsNewCouponDialogOpen}
+          />
           <div className="flex flex-col gap-4 w-full my-4">
             <DataTable columns={columns} data={data} />
           </div>

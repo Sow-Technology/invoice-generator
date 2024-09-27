@@ -49,9 +49,10 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-export default function CreateCouponsDialog({ data }) {
-  const [open, setOpen] = useState(false);
-
+export default function CreateCouponsDialog({
+  isNewCouponDialogOpen,
+  setIsNewCouponDialogOpen,
+}) {
   const formSchema = z.object({
     couponCode: z
       .string()
@@ -99,7 +100,10 @@ export default function CreateCouponsDialog({ data }) {
     }
   };
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={isNewCouponDialogOpen}
+      onOpenChange={setIsNewCouponDialogOpen}
+    >
       <div className="w-full  flex items-end justify-end">
         {" "}
         <DialogTrigger className=" ml-auto justify-self-end ">
