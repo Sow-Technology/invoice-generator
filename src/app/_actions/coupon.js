@@ -3,13 +3,15 @@
 import dbConnect from "@/lib/dbConnect";
 import { Coupon } from "@/models/Coupon";
 
-export async function createCoupon({ data }) {
+export async function createCoupon(data) {
   await dbConnect();
   try {
-    const existingCoupon = await Coupon.findOne({ code: data.code });
+    console.log("data", data);
+    const existingCoupon = await Coupon.findOne({ couponCode: data.code });
+    console.log(existingCoupon);
     if (existingCoupon) {
       console.log("Already exxitss======s");
-      console.log(existingCoupon);
+      console.log("exx", existingCoupon);
       throw new Error("Coupon already exists with this code.");
     }
 
