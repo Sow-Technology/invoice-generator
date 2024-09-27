@@ -8,6 +8,7 @@ export async function GET(req) {
   const fromDate = new Date(searchParams.get("from"));
   const toDate = new Date(searchParams.get("to"));
   const storeName = searchParams.get("storeName");
+  toDate.setHours(23, 59, 59, 999);
 
   try {
     // Aggregation pipeline for calculating metrics
