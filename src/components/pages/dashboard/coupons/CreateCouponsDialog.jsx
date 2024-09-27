@@ -37,7 +37,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import CouponsTable from "./CouponsTable";
+import CouponsTable from "../CouponsTable";
 import { createCoupon } from "@/app/_actions/coupon";
 import { toast } from "sonner";
 import {
@@ -93,7 +93,9 @@ export default function CreateCouponsDialog({ data }) {
         });
       }
     } catch (err) {
-      toast.error("Internal server error!, try again later");
+      toast.error("Internal server error!, try again later", {
+        id: "creating-coupon",
+      });
     }
   };
   return (

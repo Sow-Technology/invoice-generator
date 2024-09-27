@@ -18,6 +18,10 @@ export async function createCoupon({ data }) {
     });
     const savedCoupon = await newCoupon.save();
     console.log(savedCoupon);
+    return {
+      success: true,
+      message: "Coupon created successfully",
+    };
   } catch (err) {
     if (err.message.includes("Coupon already exists")) {
       console.log("Already exxitss======s");
@@ -48,5 +52,30 @@ export async function getCouponDetails(couponCode) {
   } catch (error) {
     console.error("Error fetching coupon details:", error.message);
     return { success: false, error: error.message };
+  }
+}
+
+export async function updateCoupon(coupon) {
+  await dbConnect();
+  try {
+    await Coupon.findByIdAndUpdate(coupon._id, coupon);
+    return true;
+  } catch (err) {
+    throw new Error("Internal server error!, unable to update coupon");
+  }
+}
+
+export async function deleteCoupon(couponid) {
+  await dbConnect();
+
+  try {
+    const deletedCoupon = await Coupon.findByIdAndDelete(couponid);
+    if (!deletedCoupon) {
+      throw new Error("Coupon not found");
+    }
+    return true;
+  } catch (err) {
+    console.error(err);
+    throw new Error("Unable to delete the Coupon");
   }
 }

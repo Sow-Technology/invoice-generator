@@ -1,5 +1,5 @@
 import React from "react";
-import CreateCouponsDialog from "./CreateCouponsDialog";
+import CreateCouponsDialog from "./coupons/CreateCouponsDialog";
 import CouponsTable from "./CouponsTable";
 
 const data = [

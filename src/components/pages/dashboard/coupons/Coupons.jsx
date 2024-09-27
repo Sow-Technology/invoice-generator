@@ -17,10 +17,10 @@ import {
   Trash,
 } from "lucide-react";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
-import CreateCouponsDialog from "../CreateCouponsDialog";
+import CreateCouponsDialog from "./CreateCouponsDialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,84 +28,13 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-const columns = [
-  {
-    accessorKey: "couponCode",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Invoice <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-  },
-  {
-    accessorKey: "couponType",
-    header: "Coupon Type",
-  },
-  {
-    accessorKey: "validity",
-    header: "Validity",
-    cell: ({ cell }) => {
-      return new Date(cell.row.original.validity).toLocaleDateString();
-    },
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ cell }) => (
-      <Badge
-        className={cn(
-          cell.row.original.status == "Active"
-            ? "bg-green-700 "
-            : "bg-rose-700",
-          "px-5 py-1.5"
-        )}
-      >
-        {cell.row.original.status}
-      </Badge>
-    ),
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => {
-                setSelectedStore(row.original);
-                setIsEditDialogOpen(true);
-              }}
-            >
-              <Pencil className="h-3.5 w-3.5 mr-1.5" />
-              Edit
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => {
-                setSelectedStore(row.original);
-                setIsDeleteDialogOpen(true);
-              }}
-            >
-              <Trash className="h-3.5 w-3.5 mr-1.5" />
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
-];
-export default function CouponsTable({}) {
+import EditCouponDialog from "./EditCouponDialog";
+import DeleteCouponDialog from "./DeleteCouponDialog";
+
+export default function Coupons({}) {
+  const [selectedCoupon, setSelectedCoupon] = useState();
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState();
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState();
   const { data, isLoading, error } = useQuery({
     queryKey: ["store"],
     queryFn: async () => {
@@ -113,6 +42,83 @@ export default function CouponsTable({}) {
       return response.data;
     },
   });
+  const columns = [
+    {
+      accessorKey: "couponCode",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Coupon Code <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+    },
+    {
+      accessorKey: "couponType",
+      header: "Coupon Type",
+    },
+    {
+      accessorKey: "validity",
+      header: "Validity",
+      cell: ({ cell }) => {
+        return new Date(cell.row.original.validity).toLocaleDateString();
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ cell }) => (
+        <Badge
+          className={cn(
+            cell.row.original.status == "Active"
+              ? "bg-green-700 "
+              : "bg-rose-700",
+            "px-5 py-1.5"
+          )}
+        >
+          {cell.row.original.status}
+        </Badge>
+      ),
+    },
+    {
+      id: "actions",
+      enableHiding: false,
+      cell: ({ row }) => {
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() => {
+                  setSelectedCoupon(row.original);
+                  setIsEditDialogOpen(true);
+                }}
+              >
+                <Pencil className="h-3.5 w-3.5 mr-1.5" />
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  setSelectedCoupon(row.original);
+                  setIsDeleteDialogOpen(true);
+                }}
+              >
+                <Trash className="h-3.5 w-3.5 mr-1.5" />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+    },
+  ];
   console.log(data);
   if (isLoading) return "Loading...";
   if (error) return "err...";
@@ -133,6 +139,20 @@ export default function CouponsTable({}) {
           </div>
         </CardContent>
       </Card>
+      {selectedCoupon && (
+        <>
+          <EditCouponDialog
+            isOpen={isEditDialogOpen}
+            setIsOpen={setIsEditDialogOpen}
+            coupon={selectedCoupon}
+          />
+          <DeleteCouponDialog
+            isOpen={isDeleteDialogOpen}
+            setIsOpen={setIsDeleteDialogOpen}
+            coupon={selectedCoupon}
+          />
+        </>
+      )}
     </div>
   );
 }

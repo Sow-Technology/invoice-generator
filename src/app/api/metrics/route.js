@@ -7,13 +7,15 @@ export async function GET(req) {
 
   const fromDate = new Date(searchParams.get("from"));
   const toDate = new Date(searchParams.get("to"));
+  const storeName = searchParams.get("storeName");
 
   try {
     // Aggregation pipeline for calculating metrics
     const [result] = await Invoice.aggregate([
       {
         $match: {
-          createdAt: { $gte: fromDate, $lte: toDate }, // Filter invoices by date range
+          createdAt: { $gte: fromDate, $lte: toDate },
+          ...(storeName && storeName !== "all" ? { storeName } : {}),
         },
       },
       {

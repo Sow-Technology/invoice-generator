@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 import { ArrowUpDown, PlusIcon } from "lucide-react";
 import Link from "next/link";
 import React from "react";
-import CreateCouponsDialog from "./CreateCouponsDialog";
+import CreateCouponsDialog from "./coupons/CreateCouponsDialog";
 const columns = [
   {
     accessorKey: "couponCode",

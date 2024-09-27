@@ -8,10 +8,9 @@ import { useState, useEffect } from "react";
 import DashboardSection from "./dashboard/DashboardSection";
 import { useSession } from "next-auth/react";
 import Products from "./dashboard/products/Products";
-import UserPanel from "../../app/user-panel/page";
 import { useSearchParams } from "next/navigation";
 import Stores from "./dashboard/stores/Stores";
-import CouponsTable from "./dashboard/coupons/Coupons";
+import Coupons from "./dashboard/coupons/Coupons";
 import Users from "./dashboard/users/Users";
 
 export default function Dashboard() {
@@ -47,11 +46,12 @@ export default function Dashboard() {
     },
   });
 
-  const fetchMetrics = async (fromDate, toDate) => {
+  const fetchMetrics = async () => {
     const { data } = await axios.get("/api/metrics", {
       params: {
-        from: fromDate.toISOString(),
-        to: toDate.toISOString(),
+        from: formattedFrom,
+        to: formattedTo,
+        storeName,
       },
     });
     return data;
@@ -62,8 +62,8 @@ export default function Dashboard() {
     isLoading: metricsLoading,
     error: metricsError,
   } = useQuery({
-    queryKey: ["metrics", formattedFrom, formattedTo],
-    queryFn: () => fetchMetrics(dateRange.from, dateRange.to),
+    queryKey: ["metrics", formattedFrom, formattedTo, storeName],
+    queryFn: () => fetchMetrics(),
   });
 
   // Update URL search parameters when active section changes
@@ -94,7 +94,7 @@ export default function Dashboard() {
         />
       )}
       {active === "Invoices" && <Invoices data={invoiceData} />}
-      {active === "Coupons" && <CouponsTable />}
+      {active === "Coupons" && <Coupons />}
       {active === "Products" && <Products />}
       {active === "Stores" && <Stores />}
       {active === "Users" && <Users data={invoiceData} />}
