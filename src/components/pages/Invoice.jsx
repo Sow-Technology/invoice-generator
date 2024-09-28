@@ -180,6 +180,9 @@ function App() {
   if (session.status == "unauthenticated") {
     redirect("/auth");
   }
+  if (session.status == "authenticated" && session.data.user.role == "user") {
+    redirect("/unauthorized");
+  }
   return (
     <>
       <main

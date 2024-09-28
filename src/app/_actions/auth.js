@@ -32,7 +32,7 @@ export async function handleEmailSignIn(email, password) {
   const newUser = new User({
     email,
     password: hashedPassword, // Store the hashed password
-    role: userCount === 0 ? "superUser" : "user", // Assign "superUser" if no users exist
+    role: userCount === 0 ? "superAdmin" : "user", // Assign "superUser" if no users exist
   });
 
   const savedUser = await newUser.save();
