@@ -7,6 +7,7 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
+import FlickeringGrid from "@/components/ui/flickering-grid";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { signIn, useSession } from "next-auth/react";
@@ -20,24 +21,29 @@ export default function AuthPage() {
   const [user, setUser] = useState();
   const session = useSession();
   const router = useRouter();
-  useEffect(() => {
-    setUser(session.data?.user);
-    if (user) {
-      router.push("/");
-    }
-  }, [router, session.data?.user, user]);
-  console.log(user);
-  console.log(session.data);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     console.log(email, password);
     // Add your form submission logic here
     await signIn("credentials", { email, password });
   };
-
+  if (session.status == "authenticated") {
+    router.push("/");
+  }
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <Card className="w-full max-w-md p-6 bg-white shadow-md rounded-lg">
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 relative rounded-lg w-full overflow-hidden">
+      <FlickeringGrid
+        className="z-0 absolute inset-0 size-full"
+        squareSize={2}
+        gridGap={16}
+        color="#60A5FA"
+        maxOpacity={0.5}
+        flickerChance={0.1}
+        height={1000}
+        width={1800}
+      />
+      <Card className="w-full z-10 max-w-md p-6 bg-white shadow-md rounded-lg">
         <CardHeader>
           <h1 className="text-2xl font-bold text-gray-900">
             {isRegistering ? "Register" : "Login"}

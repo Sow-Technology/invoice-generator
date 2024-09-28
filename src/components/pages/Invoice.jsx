@@ -24,9 +24,11 @@ import {
 } from "../ui/select";
 import { storesData } from "@/lib/data";
 import { useLocalStorage } from "@uidotdev/usehooks";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 function App() {
+  const session = useSession();
   const {
     orderNumber,
     setOrderNumber,
@@ -175,6 +177,9 @@ function App() {
   //     return "Loading..";
   //   }
   // }, [orderNumber]);
+  if (session.status == "unauthenticated") {
+    redirect("/auth");
+  }
   return (
     <>
       <main

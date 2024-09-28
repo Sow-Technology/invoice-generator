@@ -8,7 +8,7 @@ import { useState, useEffect } from "react";
 import DashboardSection from "./dashboard/DashboardSection";
 import { useSession } from "next-auth/react";
 import Products from "./dashboard/products/Products";
-import { useSearchParams } from "next/navigation";
+import { redirect, useSearchParams } from "next/navigation";
 import Stores from "./dashboard/stores/Stores";
 import Coupons from "./dashboard/coupons/Coupons";
 import Users from "./dashboard/users/Users";
@@ -78,7 +78,10 @@ export default function Dashboard() {
   }, [active]);
   if (isLoading || metricsLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading invoices: {error.message}</div>;
-
+  console.log(session);
+  if (session.status == "unauthenticated") {
+    redirect("/auth");
+  }
   return (
     <div className="flex min-h-screen w-full relative">
       <Sidebar active={active} setActive={setActive} />

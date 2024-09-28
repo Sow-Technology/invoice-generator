@@ -39,6 +39,7 @@
     "collect.js": "^4.36.1",
     "date-fns": "^3.6.0",
     "dotenv": "^16.4.5",
+    "framer-motion": "^11.9.0",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.408.0",
     "mongodb": "^6.8.1",
