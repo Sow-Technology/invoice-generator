@@ -181,7 +181,7 @@ function App() {
     redirect("/auth");
   }
   if (session.status == "authenticated" && session.data.user.role == "user") {
-    redirect("/unauthorized");
+    // redirect("/unauthorized");
   }
   return (
     <>

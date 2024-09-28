@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Input } from "../ui/input";
-import { productsData } from "@/lib/data";
+// import { productsData } from "@/lib/data";
 import { toast } from "sonner";
 import collect from "collect.js";
 import { Button } from "../ui/button";
@@ -48,6 +48,7 @@ const TableForm = ({ setItems }) => {
   const [price, setPrice] = useState();
   const [discount, setDiscount] = useState(0);
   const [couponDetails, setCouponDetails] = useState({});
+  const [productsData, setProductsData] = useState([]);
 
   const editRow = (id) => {
     const editingRow = products.find((row) => row.id === id);
@@ -59,7 +60,7 @@ const TableForm = ({ setItems }) => {
   };
 
   const calculateTotal = (code, quantity, discount) => {
-    const unitPrice = productsData.find((p) => p.code === code)?.price || 0;
+    const unitPrice = productsData.find((p) => p.code === code)?.unitPrice || 0;
     const totalBeforeDiscount = quantity * unitPrice;
     const total = totalBeforeDiscount - (discount / 100) * totalBeforeDiscount;
     return total.toFixed(2); // Truncate to 2 decimal places
@@ -83,7 +84,7 @@ const TableForm = ({ setItems }) => {
       discount,
       total: newTotal,
 
-      unitPrice: productsData.find((p) => p.code === code).price,
+      unitPrice: productsData.find((p) => p.code === code).unitPrice,
       productName: productsData.find((p) => p.code === code).productName,
     };
     setCode(null);
@@ -281,6 +282,30 @@ const TableForm = ({ setItems }) => {
       setCouponDiscount(calculatedDiscount.toFixed(2));
     }
   }, [products]);
+  useEffect(() => {
+    // Fetch the products data from the API
+    const fetchProductsData = async () => {
+      try {
+        const response = await fetch("/api/getProducts");
+        const data = await response.json();
+        if (data.success) {
+          setProductsData(data.data);
+          console.log(data.data);
+        } else {
+          toast.error("Failed to fetch products", {
+            id: "fetchingProducts",
+          });
+        }
+      } catch (error) {
+        toast.error("Error fetching products", {
+          id: "fetchingProducts",
+        });
+      }
+    };
+
+    fetchProductsData();
+  }, []);
+
   return (
     <>
       <table width="100%" className="mb-10 overflow-auto">
