@@ -1,7 +1,12 @@
 "use client";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
-import { startOfQuarter, format } from "date-fns";
+import {
+  startOfQuarter,
+  format,
+  differenceInDays,
+  subQuarters,
+} from "date-fns";
 import Invoices from "./dashboard/Invoices";
 import Sidebar from "./dashboard/Sidebar";
 import { useState, useEffect } from "react";
@@ -12,6 +17,7 @@ import { redirect, useSearchParams } from "next/navigation";
 import Stores from "./dashboard/stores/Stores";
 import Coupons from "./dashboard/coupons/Coupons";
 import Users from "./dashboard/users/Users";
+import Analytics from "./dashboard/analytics/Analytics";
 
 export default function Dashboard() {
   const session = useSession();
@@ -20,9 +26,24 @@ export default function Dashboard() {
 
   const [active, setActive] = useState(activeSection);
   const [storeName, setStoreName] = useState("all");
-  const [dateRange, setDateRange] = useState({
-    from: startOfQuarter(new Date()),
-    to: new Date(),
+  const [dateRange, setDateRange] = useState(() => {
+    const currentDate = new Date();
+    const startOfCurrentQuarter = startOfQuarter(currentDate);
+
+    const gapInDays = differenceInDays(currentDate, startOfCurrentQuarter);
+
+    if (gapInDays < 30) {
+      const previousQuarterStart = startOfQuarter(subQuarters(currentDate, 1));
+      return {
+        from: previousQuarterStart,
+        to: currentDate,
+      };
+    }
+
+    return {
+      from: startOfCurrentQuarter,
+      to: currentDate,
+    };
   });
 
   const formattedFrom = format(dateRange.from, "yyyy-MM-dd");
@@ -86,24 +107,27 @@ export default function Dashboard() {
     redirect("/unauthorized");
   }
   return (
-    <div className="flex min-h-screen w-full relative">
-      <Sidebar active={active} setActive={setActive} />
-      {active === "Dashboard" && (
-        <DashboardSection
-          data={metricsData}
-          invoiceData={invoiceData}
-          dateRange={dateRange}
-          isDataLoading={metricsLoading}
-          setDateRange={setDateRange}
-          storeName={storeName}
-          setStoreName={setStoreName}
-        />
-      )}
-      {active === "Invoices" && <Invoices data={invoiceData} />}
-      {active === "Coupons" && <Coupons />}
-      {active === "Products" && <Products />}
-      {active === "Stores" && <Stores />}
-      {active === "Users" && <Users data={invoiceData} />}
+    <div className="flex flex-col md:flex-row min-h-screen w-full relative bg-[#6E81CC] rounded-3xl px-2 md:px-5 md:pl-0">
+      <Sidebar active={active} setActive={setActive} user={session.data.user} />
+      <div className="bg-white ml-16 md:w-full md:ml-0  w-auto rounded-3xl p-4 md:p-6 my-4 ">
+        {active === "Dashboard" && (
+          <DashboardSection
+            data={metricsData}
+            invoiceData={invoiceData}
+            dateRange={dateRange}
+            isDataLoading={metricsLoading}
+            setDateRange={setDateRange}
+            storeName={storeName}
+            setStoreName={setStoreName}
+          />
+        )}
+        {active === "Invoices" && <Invoices data={invoiceData} />}
+        {active === "Coupons" && <Coupons />}
+        {active === "Analytics" && <Analytics />}
+        {active === "Products" && <Products />}
+        {active === "Stores" && <Stores />}
+        {active === "Users" && <Users data={invoiceData} />}
+      </div>
     </div>
   );
 }

@@ -87,8 +87,8 @@ export default function Invoices({ data }) {
   ];
 
   return (
-    <div className="mx-5 max-lg:max-w-[83vw] max-w-[90vw] lg:min-w-max flex-1">
-      <Card className="w-full mt-5 h-max  mx-auto">
+    <div className="mx-5 max-lg:max-w-[83vw] max-w-[90vw] lg:min-w-max flex-1 ">
+      <Card className="w-full mt-5 h-max   mx-auto">
         <CardHeader>
           <CardTitle>Invoices</CardTitle>
           <CardDescription>

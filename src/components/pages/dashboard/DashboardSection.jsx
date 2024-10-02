@@ -23,11 +23,11 @@ const DashboardSection = ({
   setStoreName,
 }) => {
   return (
-    <div className="flex flex-1 flex-col  w-max sm:py-4">
-      <div>
-        <div className="container flex flex-wrap items-end justify-between gap-2 py-6">
-          <h2 className="text-3xl font-bold">Overview</h2>
-          <div className="flex items-center gap-3">
+    <div className="flex flex-1 flex-col bg-[#6E81CC8F]  rounded-3xl   sm:pt-4">
+      <div className="p-4 rounded-3xl w-full">
+        <div className="container flex flex-wrap items-end justify-between gap-2 py-6 ">
+          <h2 className="text-5xl font-medium">Overview</h2>
+          <div className="flex items-center max-lg:flex-wrap gap-3">
             <Select
               defaultValue="all"
               value={storeName}
@@ -58,7 +58,7 @@ const DashboardSection = ({
           </div>
         </div>
 
-        <div className="flex w-full flex-wrap gap-5 flex-row items-center justify-around max-w-[85vw] mx-auto ">
+        <div className="flex w-full flex-wrap gap-5  flex-row items-center justify-around max-w-[85vw] mx-auto ">
           <SkeletonWrapper isLoading={isDataLoading}>
             <DataCard
               title="Total Orders"
@@ -101,10 +101,10 @@ const DashboardSection = ({
             />
           </SkeletonWrapper>
         </div>
+      </div>
 
-        <div className="">
-          <Invoices data={invoiceData} />
-        </div>
+      <div className="bg-[#6e81cc]/60 rounded-3xl  py-10">
+        <Invoices data={invoiceData} />
       </div>
     </div>
   );
