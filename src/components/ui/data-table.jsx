@@ -19,7 +19,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "./button";
-import React from "react";
+import React, { useEffect } from "react";
 
 export function DataTable({ columns, data }) {
   const [sorting, setSorting] = React.useState([]);
@@ -36,7 +36,9 @@ export function DataTable({ columns, data }) {
       sorting,
     },
   });
-
+  useEffect(() => {
+    table.setPageSize(9);
+  }, []);
   return (
     <div className="rounded-md border">
       <Table>
