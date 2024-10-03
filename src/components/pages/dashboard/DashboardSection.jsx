@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { storesData } from "@/lib/data";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
+import Analytics from "./analytics/Analytics";
 
 const DashboardSection = ({
   data,
@@ -102,7 +103,9 @@ const DashboardSection = ({
           </SkeletonWrapper>
         </div>
       </div>
-
+      <div className="bg-[#6e81cc]/60 rounded-3xl  p-10 my-10">
+        <Analytics />
+      </div>
       <div className="bg-[#6e81cc]/60 rounded-3xl  py-10">
         <Invoices data={invoiceData} />
       </div>

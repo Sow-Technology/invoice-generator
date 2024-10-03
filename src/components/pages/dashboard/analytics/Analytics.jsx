@@ -1,144 +1,268 @@
-// components/SalesDashboard.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
-import { format, subDays, startOfYear, endOfYear } from "date-fns";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
+  format,
+  parseISO,
+  eachDayOfInterval,
+  eachMonthOfInterval,
+  startOfMonth,
+  endOfMonth,
+  startOfYear,
+  endOfYear,
+  subDays,
+} from "date-fns";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import SalesAnalytics from "./SalesAnalytics";
+import TopSellingProductsChart from "./TopSellingProductsChart";
 
 const Analytics = () => {
-  const [dailySales, setDailySales] = useState([]);
-  const [monthlySales, setMonthlySales] = useState([]);
-  const [yearlySales, setYearlySales] = useState([]);
+  const [salesData, setSalesData] = useState([]);
+  const [viewMode, setViewMode] = useState("daily");
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [isLoading, setIsLoading] = useState(false);
+  const [isPast30Days, setIsPast30Days] = useState(true);
+  const [topSellingProducts, setTopSellingProducts] = useState([]);
+  const [stores, setStores] = useState([]);
+
+  const fetchTopSellingProducts = async () => {
+    try {
+      const response = await axios.get("/api/sales/top-products");
+      console.log("Frontend - Top Selling Products Response:", response.data);
+
+      setTopSellingProducts(response.data.data);
+    } catch (error) {
+      console.error("Error fetching top selling products:", error);
+    }
+  };
+
+  const fetchStores = async () => {
+    try {
+      const response = await axios.get("/api/stores");
+      setStores(response.data.data);
+    } catch (error) {
+      console.error("Error fetching stores:", error);
+    }
+  };
+
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      let response;
+      let startDate, endDate;
+      switch (viewMode) {
+        case "daily":
+          if (isPast30Days) {
+            endDate = new Date();
+            startDate = subDays(endDate, 29);
+          } else {
+            startDate = startOfMonth(selectedDate);
+            endDate = endOfMonth(selectedDate);
+          }
+          response = await axios.get(
+            `/api/sales/daily?startDate=${format(
+              startDate,
+              "yyyy-MM-dd"
+            )}&endDate=${format(endDate, "yyyy-MM-dd")}`
+          );
+          break;
+
+        case "monthly":
+          startDate = startOfYear(selectedDate);
+          endDate = endOfYear(selectedDate);
+          response = await axios.get(
+            `/api/sales/monthly?year=${selectedDate.getFullYear()}`
+          );
+          break;
+        case "yearly":
+          const currentYear = new Date().getFullYear();
+          startDate = new Date(currentYear - 4, 0, 1);
+          endDate = new Date(currentYear, 11, 31);
+          response = await axios.get(
+            `/api/sales/yearly?startYear=${startDate.getFullYear()}&endYear=${endDate.getFullYear()}`
+          );
+          break;
+      }
+
+      const processedData = processData(response.data.data, startDate, endDate);
+      setSalesData(processedData);
+    } catch (error) {
+      console.error("Error fetching sales data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const processData = (data, startDate, endDate) => {
+    const dataMap = new Map(
+      data.map((item) => [item._id.toString(), item.totalSales])
+    );
+    let allDates;
+
+    if (viewMode === "daily") {
+      allDates = eachDayOfInterval({ start: startDate, end: endDate });
+    } else if (viewMode === "monthly") {
+      allDates = eachMonthOfInterval({ start: startDate, end: endDate });
+    } else {
+      allDates = Array.from(
+        { length: endDate.getFullYear() - startDate.getFullYear() + 1 },
+        (_, i) => new Date(startDate.getFullYear() + i, 0, 1)
+      );
+    }
+
+    return allDates.map((date) => {
+      let key;
+      if (viewMode === "daily") {
+        key = format(date, "yyyy-MM-dd");
+      } else if (viewMode === "monthly") {
+        key = format(date, "MM");
+      } else {
+        key = date.getFullYear().toString();
+      }
+      return {
+        _id: key,
+        totalSales: dataMap.get(key) || 0,
+      };
+    });
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      const endDate = new Date();
-      const startDate = subDays(endDate, 30);
-      const currentYear = endDate.getFullYear();
-
-      try {
-        const dailyResponse = await axios.get(
-          `/api/sales/daily?startDate=${format(
-            startDate,
-            "yyyy-MM-dd"
-          )}&endDate=${format(endDate, "yyyy-MM-dd")}`
-        );
-        setDailySales(dailyResponse.data.data);
-
-        const monthlyResponse = await axios.get(
-          `/api/sales/monthly?year=${currentYear}`
-        );
-        setMonthlySales(monthlyResponse.data.data);
-
-        const yearlyResponse = await axios.get(
-          `/api/sales/yearly?startYear=${
-            currentYear - 5
-          }&endYear=${currentYear}`
-        );
-        setYearlySales(yearlyResponse.data.data);
-      } catch (error) {
-        console.error("Error fetching sales data:", error);
-      }
-    };
-
     fetchData();
-  }, []);
+    fetchTopSellingProducts();
+    fetchStores();
+  }, [viewMode, selectedDate, isPast30Days]);
 
+  const chartConfig = useMemo(() => {
+    const configs = {
+      daily: {
+        title: `Daily Sales (${format(selectedDate, "MMMM yyyy")})`,
+        xAxisFormatter: (date) => format(parseISO(date), "dd"),
+        tooltipFormatter: (date) => format(parseISO(date), "MMM dd, yyyy"),
+      },
+      monthly: {
+        title: `Monthly Sales (${selectedDate.getFullYear()})`,
+        xAxisFormatter: (month) =>
+          format(new Date(0, parseInt(month) - 1), "MMM"),
+        tooltipFormatter: (month) =>
+          format(
+            new Date(selectedDate.getFullYear(), parseInt(month) - 1),
+            "MMMM yyyy"
+          ),
+      },
+      yearly: {
+        title: "Yearly Sales (Past 5 Years)",
+        xAxisFormatter: (year) => year,
+        tooltipFormatter: (year) => year,
+      },
+    };
+    return configs[viewMode];
+  }, [viewMode, selectedDate]);
+
+  const formatYAxis = (value) => {
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(value);
+  };
+  const handleDateSelection = (value) => {
+    if (value === "current") {
+      setSelectedDate(new Date());
+      setIsPast30Days(true);
+    } else {
+      setSelectedDate(new Date(value));
+      setIsPast30Days(false);
+    }
+  };
+
+  const renderDateSelector = () => {
+    if (viewMode === "daily" || viewMode === "monthly") {
+      const options =
+        viewMode === "daily"
+          ? [
+              { value: "past30days", label: "Past 30 Days" },
+              ...Array.from({ length: 12 }, (_, i) => {
+                const date = new Date();
+                date.setMonth(date.getMonth() - i);
+                return {
+                  value: format(date, "yyyy-MM"),
+                  label: format(date, "MMMM yyyy"),
+                };
+              }),
+            ]
+          : Array.from({ length: 12 }, (_, i) => {
+              const year = new Date().getFullYear() - i;
+              return {
+                value: year.toString(),
+                label: year.toString(),
+              };
+            });
+
+      return (
+        <Select
+          value={
+            viewMode === "daily"
+              ? isPast30Days
+                ? "past30days"
+                : format(selectedDate, "yyyy-MM")
+              : selectedDate.getFullYear().toString()
+          }
+          onValueChange={handleDateSelection}
+        >
+          <SelectTrigger>
+            <SelectValue
+              placeholder={`Select ${viewMode === "daily" ? "period" : "year"}`}
+            />
+          </SelectTrigger>
+          <SelectContent>
+            {options.map((option, index) => (
+              <SelectItem key={index} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      );
+    }
+    return null;
+  };
   return (
-    <div className="space-y-4">
-      <Card>
-        <CardHeader>
-          <CardTitle>Daily Sales (Last 30 Days)</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={dailySales}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                dataKey="date"
-                tickFormatter={(date) => format(new Date(date), "MMM dd")}
-              />
-              <YAxis />
-              <Tooltip
-                labelFormatter={(date) =>
-                  format(new Date(date), "MMM dd, yyyy")
-                }
-              />
-              <Legend />
-              <Line
-                type="monotone"
-                dataKey="totalSales"
-                stroke="#8884d8"
-                name="Total Sales"
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
+    <div className="space-y-8">
+      <div className="flex space-x-4">
+        <Select value={viewMode} onValueChange={setViewMode}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select view mode" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="daily">Daily</SelectItem>
+            <SelectItem value="monthly">Monthly</SelectItem>
+            <SelectItem value="yearly">Yearly</SelectItem>
+          </SelectContent>
+        </Select>
+        {renderDateSelector()}
+      </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Monthly Sales (Current Year)</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={monthlySales}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                dataKey="month"
-                tickFormatter={(month) =>
-                  format(new Date(2023, month - 1), "MMM")
-                }
-              />
-              <YAxis />
-              <Tooltip
-                labelFormatter={(month) =>
-                  format(new Date(2023, month - 1), "MMMM")
-                }
-              />
-              <Legend />
-              <Line
-                type="monotone"
-                dataKey="totalSales"
-                stroke="#82ca9d"
-                name="Total Sales"
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
+      <SalesAnalytics
+        salesData={salesData}
+        viewMode={viewMode}
+        selectedDate={selectedDate}
+        isLoading={isLoading}
+      />
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Yearly Sales (Last 5 Years)</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={yearlySales}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="year" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Line
-                type="monotone"
-                dataKey="totalSales"
-                stroke="#ffc658"
-                name="Total Sales"
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
+      {/* <StoreSalesAnalytics
+        salesData={salesData}
+        stores={stores}
+        viewMode={viewMode}
+        selectedDate={selectedDate}
+        isLoading={isLoading}
+      /> */}
+      {/* <TopSellingProductsChart data={topSellingProducts} /> */}
     </div>
   );
 };

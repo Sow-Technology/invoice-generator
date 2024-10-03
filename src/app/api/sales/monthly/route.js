@@ -1,20 +1,37 @@
 import dbConnect from "@/lib/dbConnect";
-import { MonthlySales } from "@/models/AggregatedSales";
+import { Invoice } from "@/models/Invoice";
+import { NextResponse } from "next/server";
 
-export async function GET(req, res) {
+export async function GET(req) {
   await dbConnect();
 
-  const { year } = req.query;
+  const url = new URL(req.url, `http://${req.headers.host}`);
+  const year = url.searchParams.get("year");
 
-  try {
-    const sales = await MonthlySales.find({ year: parseInt(year) }).sort(
-      "month"
-    );
-
-    res.status(200).json({ success: true, data: sales });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ success: false, message: "Failed to fetch monthly sales data" });
+  if (!year) {
+    return NextResponse.json({
+      success: false,
+      message: "Missing year query parameter",
+    });
   }
+
+  const monthlySales = await Invoice.aggregate([
+    {
+      $match: {
+        createdAt: {
+          $gte: new Date(`${year}-01-01`),
+          $lte: new Date(`${year}-12-31`),
+        },
+      },
+    },
+    {
+      $group: {
+        _id: { $dateToString: { format: "%m", date: "$createdAt" } },
+        totalSales: { $sum: "$amountPaid" },
+      },
+    },
+    { $sort: { _id: 1 } },
+  ]);
+
+  return NextResponse.json({ success: true, data: monthlySales });
 }
