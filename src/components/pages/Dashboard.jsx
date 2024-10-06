@@ -109,7 +109,7 @@ export default function Dashboard() {
   return (
     <div className="flex flex-row min-h-screen w-full relative bg-[#6E81CC]  px-2 md:px-5 md:pl-0 max-w-screen">
       <Sidebar active={active} setActive={setActive} user={session.data.user} />
-      <div className="bg-white   md:ml-0  w-max rounded-3xl p-4 md:p-6 my-4 max-w-[75vw] md:max-w-[80vw] ">
+      <div className="bg-white   md:ml-0   rounded-3xl p-4 md:p-6 my-4 max-w-[75vw] md:max-w-[80vw] w-full">
         {active === "Dashboard" && (
           <DashboardSection
             data={metricsData}
