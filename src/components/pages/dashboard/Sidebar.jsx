@@ -56,7 +56,7 @@ export default function Sidebar({ active, setActive, user }) {
           {[
             "Invoices",
             "Dashboard",
-            "Analytics",
+            // "Analytics",
             "Coupons",
             "Products",
             "Stores",
