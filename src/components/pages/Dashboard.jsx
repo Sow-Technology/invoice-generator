@@ -100,15 +100,15 @@ export default function Dashboard() {
   if (isLoading || metricsLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading invoices: {error.message}</div>;
   console.log(session);
-  // if (session.status == "unauthenticated") {
-  //   redirect("/auth");
-  // }
+  if (session.status == "unauthenticated") {
+    redirect("/auth");
+  }
   if (session.status == "authenticated" && session.data.user.role == "user") {
     redirect("/unauthorized");
   }
   return (
     <div className="flex flex-row min-h-screen w-full relative bg-[#6E81CC]  px-2 md:px-5 md:pl-0 max-w-screen">
-      <Sidebar active={active} setActive={setActive} user={true} />
+      <Sidebar active={active} setActive={setActive} user={session.data.user} />
       <div className="bg-white   md:ml-0  w-max rounded-3xl p-4 md:p-6 my-4 max-w-[75vw] md:max-w-[80vw] ">
         {active === "Dashboard" && (
           <DashboardSection
