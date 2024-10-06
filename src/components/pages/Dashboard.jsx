@@ -107,7 +107,7 @@ export default function Dashboard() {
     redirect("/unauthorized");
   }
   return (
-    <div className="flex flex-col md:flex-row min-h-screen w-full relative bg-[#6E81CC] rounded-3xl px-2 md:px-5 md:pl-0">
+    <div className="flex flex-col md:flex-row min-h-screen w-full relative bg-[#6E81CC]  px-2 md:px-5 md:pl-0">
       <Sidebar active={active} setActive={setActive} user={session.data.user} />
       <div className="bg-white ml-16 md:w-full md:ml-0  w-auto rounded-3xl p-4 md:p-6 my-4 ">
         {active === "Dashboard" && (

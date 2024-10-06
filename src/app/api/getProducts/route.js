@@ -12,3 +12,4 @@ export async function GET(req, res) {
     return Response.json({ success: false, message: "Server Error", error });
   }
 }
+export const dynamic = "force-dynamic";

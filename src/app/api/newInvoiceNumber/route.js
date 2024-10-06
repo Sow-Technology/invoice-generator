@@ -2,8 +2,6 @@ import dbConnect from "@/lib/dbConnect";
 import { Invoice } from "@/models/Invoice";
 import { NextResponse } from "next/server";
 
-// export const runtime = "edge"; // This line tells Next.js to use the Edge Runtime
-
 export async function GET(req) {
   await dbConnect();
 

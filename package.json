@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "agg":"node -r esm src/lib/aggregate.js "
+    "agg": "node -r esm src/lib/aggregate.js "
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",
@@ -38,6 +38,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
     "collect.js": "^4.36.1",
+    "crypto": "^1.0.1",
     "date-fns": "^3.6.0",
     "dotenv": "^16.4.5",
     "framer-motion": "^11.9.0",
