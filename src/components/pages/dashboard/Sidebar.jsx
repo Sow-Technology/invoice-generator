@@ -24,14 +24,15 @@ import { IoMdArrowDroprightCircle } from "react-icons/io";
 import { PiSignOutBold } from "react-icons/pi";
 
 export default function Sidebar({ active, setActive, user }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
 
   return (
     <aside
       className={cn(
         "z-10 flex h-screen flex-col transition-all duration-300 pt-4 md:pt-10",
         open
-          ? "w-full md:w-60 fixed md:sticky md:bg-transparent bg-[#6E81CC] left-0 top-0"
+          ? // ? "w-full md:w-60 fixed md:sticky md:bg-transparent bg-[#6E81CC] left-0 top-0"
+            "w-40 md:w-60 sticky bg-transparent left-0 top-0"
           : "w-16 sm:w-20 fixed md:sticky top-0"
       )}
     >
@@ -42,13 +43,13 @@ export default function Sidebar({ active, setActive, user }) {
         height={100}
         className="p-2 max-w-full h-auto"
       />
-      <IoMdArrowDroprightCircle
+      {/* <IoMdArrowDroprightCircle
         onClick={() => setOpen(!open)}
         className={cn(
           "text-3xl md:text-4xl text-accent-foreground mx-4 cursor-pointer transition-transform duration-300 ",
           open ? "rotate-180" : "rotate-0"
         )}
-      />
+      /> */}
 
       <nav className="flex flex-col justify-start gap-2 md:gap-4 py-2 md:py-5 text-accent-foreground">
         <TooltipProvider>
