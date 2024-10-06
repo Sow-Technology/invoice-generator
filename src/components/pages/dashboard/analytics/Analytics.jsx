@@ -58,8 +58,8 @@ const Analytics = () => {
       switch (viewMode) {
         case "daily":
           if (isPast30Days) {
-            endDate = new Date();
-            startDate = subDays(endDate, 29);
+            endDate = new Date(); // Set the current date as the end date
+            startDate = subDays(endDate, 29); // Calculate 30 days ago
           } else {
             startDate = startOfMonth(selectedDate);
             endDate = endOfMonth(selectedDate);
@@ -97,6 +97,7 @@ const Analytics = () => {
       setIsLoading(false);
     }
   };
+
   console.log("saleSDARA", salesData);
 
   const processData = (data, startDate, endDate) => {
@@ -141,7 +142,10 @@ const Analytics = () => {
   const chartConfig = useMemo(() => {
     const configs = {
       daily: {
-        title: `Daily Sales (${format(selectedDate, "MMMM yyyy")})`,
+        title: `Daily Sales 
+           (${
+             isPast30Days ? "Past 30 Days" : format(selectedDate, "MMMM yyyy")
+           })`,
         xAxisFormatter: (date) => format(parseISO(date), "dd"),
         tooltipFormatter: (date) => format(parseISO(date), "MMM dd, yyyy"),
       },
@@ -173,12 +177,12 @@ const Analytics = () => {
     }).format(value);
   };
   const handleDateSelection = (value) => {
-    if (value === "current") {
+    if (value === "past30days") {
       setSelectedDate(new Date());
-      setIsPast30Days(true);
+      setIsPast30Days(true); // Mark it as past 30 days
     } else {
       setSelectedDate(new Date(value));
-      setIsPast30Days(false);
+      setIsPast30Days(false); // Mark it as a specific month or year
     }
   };
 
@@ -254,6 +258,7 @@ const Analytics = () => {
         viewMode={viewMode}
         selectedDate={selectedDate}
         isLoading={isLoading}
+        isPast30Days={isPast30Days}
       />
 
       {/* <StoreSalesAnalytics

@@ -13,11 +13,19 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const SalesAnalytics = ({ salesData, viewMode, selectedDate, isLoading }) => {
+const SalesAnalytics = ({
+  salesData,
+  viewMode,
+  selectedDate,
+  isLoading,
+  isPast30Days,
+}) => {
   const chartConfig = useMemo(() => {
     const configs = {
       daily: {
-        title: `Daily Sales (${format(selectedDate, "MMMM yyyy")})`,
+        title: `Daily Sales (${
+          isPast30Days ? "Past 30 Days" : format(selectedDate, "MMMM yyyy")
+        })`,
         xAxisFormatter: (date) => format(parseISO(date), "dd"),
         tooltipFormatter: (date) => format(parseISO(date), "MMM dd, yyyy"),
       },
