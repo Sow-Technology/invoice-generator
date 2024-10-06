@@ -61,3 +61,26 @@
   }
 }
 
+.no-scrollbar{
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+body,.custom-scrollbar{
+  -ms-overflow-style: none;
+  scrollbar-width: 4px;
+  scrollbar-color: blue;
+scrollbar-track-color: blue;
+
+}
+
+body::-webkit-scrollbar,.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+  scrollbar-color: blue;
+scrollbar-track-color: blue;
+scroll-behavior: smooth;
+}

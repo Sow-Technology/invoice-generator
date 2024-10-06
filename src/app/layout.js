@@ -1,6 +1,6 @@
 import { Roboto } from "next/font/google";
 import "./globals.css";
-import RootProviders from "@/components/providers/RootProviders";
+import RootProviders from "../components/providers/RootProviders";
 
 const inter = Roboto({ subsets: ["latin"], weight: ["400", "500", "700"] });
 

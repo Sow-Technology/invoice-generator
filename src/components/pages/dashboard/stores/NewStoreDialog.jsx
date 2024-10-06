@@ -1,4 +1,4 @@
-import { createProduct, updateProduct } from "@/app/_actions/product";
+"use client";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,24 +10,59 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import React, { useState } from "react";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form";
 import { toast } from "sonner";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { createStore } from "../../../../app/_actions/store";
+
+// Validation schema with zod
+const storeSchema = z.object({
+  code: z.string().min(1, "Store code is required"),
+  storeName: z.string().min(1, "Store name is required"),
+  phoneNumber: z.string().min(10, "Phone number is required").max(15),
+  address: z.string().min(1, "Address is required"),
+  logo: z.any().optional(),
+});
 
 export default function NewStoreDialog({ isOpen, setIsOpen }) {
-  const [storeData, setStoreData] = useState({
-    code: "",
-    storeName: "",
-    phoneNumber: "",
-    address: "",
+  // Use useForm from react-hook-form
+  const form = useForm({
+    resolver: zodResolver(storeSchema),
+    defaultValues: {
+      code: "",
+      storeName: "",
+      phoneNumber: "",
+      address: "",
+      logo: null,
+    },
   });
-  const handleSubmit = async () => {
+
+  const handleSubmit = async (data) => {
     try {
-      const res = await createProduct(storeData);
-      console.log(res);
-      toast.success("Store created successfully!", {
-        id: "create-store",
-      });
-      setIsOpen(false);
+      // const res = await fetch("/api/upload", {
+      //   method: "POST",
+      //   body: formData,
+      // });
+      // if (res.ok) {
+      //   toast.success("Store created successfully!", {
+      //     id: "create-store",
+      //   });
+      //   setIsOpen(false);
+      // } else {
+      //   throw new Error("Failed to create store");
+      // }
+      // toast.success("Store created successfully!", {
+      //   id: "create-store",
+      // });
+      // setIsOpen(false);
     } catch (error) {
       console.log(error);
       toast.error("Failed to create store. Please try again later.", {
@@ -35,74 +70,101 @@ export default function NewStoreDialog({ isOpen, setIsOpen }) {
       });
     }
   };
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add new store</DialogTitle>
+          <DialogTitle>Add New Store</DialogTitle>
           <DialogDescription>Enter the details of the store.</DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="code" className="text-right">
-              Store Code
-            </Label>
-            <Input
-              id="code"
-              className="col-span-3"
-              value={storeData.code}
-              onChange={(e) =>
-                setProductData({ ...storeData, code: e.target.value })
-              }
+
+        {/* Start the form */}
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-4"
+          >
+            {/* Store Code Field */}
+            <FormField
+              control={form.control}
+              name="code"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Store Code</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Store code" {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
             />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="storeName" className="text-right">
-              Store Name
-            </Label>
-            <Input
-              id="storeName"
-              className="col-span-3"
-              value={storeData.storeName}
-              onChange={(e) =>
-                setProductData({ ...storeData, storeName: e.target.value })
-              }
+
+            {/* Store Name Field */}
+            <FormField
+              control={form.control}
+              name="storeName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Store Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Store name" {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
             />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="phoneNumber" className="text-right">
-              Phone Number
-            </Label>
-            <Input
-              id="phoneNumber"
-              type="number"
-              min="0"
-              className="col-span-3"
-              value={storeData.phoneNumber}
-              onChange={(e) =>
-                setProductData({ ...storeData, phoneNumber: e.target.value })
-              }
+
+            {/* Phone Number Field */}
+            <FormField
+              control={form.control}
+              name="phoneNumber"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Phone Number</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Phone number" type="tel" {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
             />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="address" className="text-right">
-              Address
-            </Label>
-            <Input
-              id="address"
-              className="col-span-3"
-              value={storeData.address}
-              onChange={(e) =>
-                setProductData({ ...storeData, address: e.target.value })
-              }
+
+            {/* Address Field */}
+            <FormField
+              control={form.control}
+              name="address"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Address</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Address" {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
             />
-          </div>
-        </div>
-        <DialogFooter>
-          <Button type="submit" onClick={handleSubmit}>
-            Create
-          </Button>
-        </DialogFooter>
+
+            {/* Logo Upload Field */}
+            <FormField
+              control={form.control}
+              name="logo"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Store Logo</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => field.onChange(e.target.files)}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            {/* Submit Button */}
+            <DialogFooter>
+              <Button type="submit">Create</Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

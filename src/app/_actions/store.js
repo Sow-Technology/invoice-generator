@@ -3,6 +3,24 @@
 import dbConnect from "@/lib/dbConnect";
 import { Store } from "@/models/store";
 
+export async function createStore(storeData) {
+  await dbConnect();
+  try {
+    const newStore = new Store({
+      code: storeData.code,
+      storeName: storeData.storeName,
+      phoneNumber: storeData.phoneNumber,
+      address: storeData.address,
+      logo: storeData.logo,
+    });
+    await newStore.save();
+    return true;
+  } catch (err) {
+    console.error(err);
+    throw new Error("Unable to create the store!");
+  }
+}
+
 export async function updateStore(store) {
   await dbConnect();
 

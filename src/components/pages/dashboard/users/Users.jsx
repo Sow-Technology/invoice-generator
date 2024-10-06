@@ -135,7 +135,7 @@ export default function Users() {
   if (isLoading) return <Loader />;
 
   return (
-    <div className="mx-5 max-lg:max-w-[83vw] w-full">
+    <div className="mx-5 max-lg:max-w-[83vw] max-w-[90vw] lg:min-w-max flex-1 ">
       <Card className="w-full mt-5 h-max mx-auto">
         <CardHeader>
           <CardTitle>Users</CardTitle>
