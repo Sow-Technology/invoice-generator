@@ -26,11 +26,13 @@ export async function GET(req) {
       {
         $group: {
           _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
-          totalSales: { $sum: "$amountPaid" },
+          totalSales: { $sum: "$subTotal" },
         },
       },
       { $sort: { _id: 1 } },
     ]);
+
+    console.log(dailySales);
 
     return NextResponse.json({ success: true, data: dailySales });
   } catch {

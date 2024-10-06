@@ -27,7 +27,7 @@ export async function GET(req) {
     {
       $group: {
         _id: { $dateToString: { format: "%m", date: "$createdAt" } },
-        totalSales: { $sum: "$amountPaid" },
+        totalSales: { $sum: "$subTotal" },
       },
     },
     { $sort: { _id: 1 } },

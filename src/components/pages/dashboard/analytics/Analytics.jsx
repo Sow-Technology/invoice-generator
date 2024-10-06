@@ -97,6 +97,7 @@ const Analytics = () => {
       setIsLoading(false);
     }
   };
+  console.log("saleSDARA", salesData);
 
   const processData = (data, startDate, endDate) => {
     const dataMap = new Map(
