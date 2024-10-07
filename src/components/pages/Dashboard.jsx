@@ -18,6 +18,7 @@ import Stores from "./dashboard/stores/Stores";
 import Coupons from "./dashboard/coupons/Coupons";
 import Users from "./dashboard/users/Users";
 import Analytics from "./dashboard/analytics/Analytics";
+import InvoiceTable from "@/app/storedetails/page";
 
 export default function Dashboard() {
   const session = useSession();
@@ -127,6 +128,7 @@ export default function Dashboard() {
         {active === "Products" && <Products />}
         {active === "Stores" && <Stores />}
         {active === "Users" && <Users data={invoiceData} />}
+        {active === "Expense Table" && <InvoiceTable data={invoiceData} />}
       </div>
     </div>
   );

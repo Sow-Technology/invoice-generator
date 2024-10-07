@@ -6,6 +6,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { Money } from "@mui/icons-material";
 import {
   BarChartIcon,
   LayoutDashboardIcon,
@@ -61,13 +62,16 @@ export default function Sidebar({ active, setActive, user }) {
             "Products",
             "Stores",
             "Users",
+            "Expense Table",
           ].map((item) => (
             <div
               key={item}
               className={cn(
                 "flex items-center justify-start gap-2 cursor-pointer hover:scale-105 pl-4 md:pl-6",
                 active == item && "bg-white text-black rounded-l-full p-2",
-                item == Users && user.role != "superAdmin" && "hidden"
+                item == ("Users" || "Expense Table") &&
+                  user.role != "superAdmin" &&
+                  "hidden"
               )}
               onClick={() => setActive(item)}
             >
@@ -130,6 +134,8 @@ function getIcon(item) {
       return <Store className="h-4 w-4 md:h-5 md:w-5" />;
     case "Users":
       return <Users className="h-4 w-4 md:h-5 md:w-5" />;
+    case "Expense Table":
+      return <Money className="h-4 w-4 md:h-5 md:w-5" />;
     default:
       return null;
   }

@@ -1,28 +1,35 @@
-"use client"; // Marks this as a client component
+"use client";
 
-import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+  TableCell,
+} from "@/components/ui/table";
 
 const InvoiceTable = () => {
   const [invoices, setInvoices] = useState([]);
   const [editingIndex, setEditingIndex] = useState(null); // Track the index of the row being edited
-  const [expensesInput, setExpensesInput] = useState('');
-  const [sortConfig, setSortConfig] = useState({ key: '', direction: '' });
+  const [expensesInput, setExpensesInput] = useState("");
+  const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
 
   useEffect(() => {
     const fetchInvoices = async () => {
-      const response = await fetch('/api/storedata');
+      const response = await fetch("/api/storedata");
       const data = await response.json();
       setInvoices(data);
     };
-  
+
     fetchInvoices();
   }, []);
 
   const handleEditClick = (index) => {
     setEditingIndex(index);
-    setExpensesInput(invoices[index].orderExpenses?.toString() || ''); // Load current expense value
+    setExpensesInput(invoices[index].orderExpenses?.toString() || ""); // Load current expense value
   };
 
   const handleExpenseChange = (e) => {
@@ -35,11 +42,11 @@ const InvoiceTable = () => {
     const updatedInvoices = [...invoices];
     updatedInvoices[index].orderExpenses = expenses;
     setInvoices(updatedInvoices);
-    
+
     await fetch(`/api/storedata/${invoiceId}`, {
-      method: 'PUT',
+      method: "PUT",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ orderExpenses: expenses }),
     });
@@ -59,21 +66,19 @@ const InvoiceTable = () => {
     return totalProfit - azspire15;
   };
 
-
-
   return (
     <div>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead >Store Name</TableHead>
-            <TableHead >Order Date</TableHead>
+            <TableHead>Store Name</TableHead>
+            <TableHead>Order Date</TableHead>
             <TableHead>Month</TableHead>
             <TableHead>Year</TableHead>
-            <TableHead >Order Number</TableHead>
-            <TableHead >Customer Phone</TableHead>
-            <TableHead >Customer Name</TableHead>
-            <TableHead >Order Value</TableHead>
+            <TableHead>Order Number</TableHead>
+            <TableHead>Customer Phone</TableHead>
+            <TableHead>Customer Name</TableHead>
+            <TableHead>Order Value</TableHead>
             <TableHead>Order Expenses</TableHead>
             <TableHead>Total Profit</TableHead>
             <TableHead>Azspire 15%</TableHead>
@@ -84,12 +89,20 @@ const InvoiceTable = () => {
         <TableBody>
           {invoices.map((invoice, index) => {
             const orderDate = new Date(invoice.createdAt);
-            const month = orderDate.toLocaleString('default', { month: 'long' });
+            const month = orderDate.toLocaleString("default", {
+              month: "long",
+            });
             const year = orderDate.getFullYear();
             const orderExpenses = invoice.orderExpenses || 0;
-            const totalProfit = calculateTotalProfit(invoice.subTotal, orderExpenses);
+            const totalProfit = calculateTotalProfit(
+              invoice.subTotal,
+              orderExpenses
+            );
             const azspire15 = calculateAzspire15(totalProfit);
-            const remainingProfit = calculateRemainingProfit(totalProfit, azspire15);
+            const remainingProfit = calculateRemainingProfit(
+              totalProfit,
+              azspire15
+            );
 
             return (
               <TableRow key={invoice._id}>
@@ -121,7 +134,10 @@ const InvoiceTable = () => {
                       Save
                     </Button>
                   ) : (
-                    <Button onClick={() => handleEditClick(index)} disabled={invoice.orderExpenses !== undefined}>
+                    <Button
+                      onClick={() => handleEditClick(index)}
+                      disabled={invoice.orderExpenses !== undefined}
+                    >
                       Edit
                     </Button>
                   )}
