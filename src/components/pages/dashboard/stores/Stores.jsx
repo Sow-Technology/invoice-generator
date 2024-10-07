@@ -34,6 +34,16 @@ export default function Stores({}) {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isNewDialogOpen, setIsNewDialogOpen] = useState(false);
+
+  // Utility function to truncate text
+  const truncateText = (text, maxLength) => {
+    if (!text) return "";
+    if (text.length > maxLength) {
+      return text.substring(0, maxLength) + "...";
+    }
+    return text;
+  };
+
   const columns = [
     {
       accessorKey: "code",
@@ -56,6 +66,7 @@ export default function Stores({}) {
           Store Name <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
+      cell: ({ cell }) => truncateText(cell.getValue(), 20), // Truncate store name to 20 characters
     },
     {
       accessorKey: "phoneNumber",
@@ -64,6 +75,7 @@ export default function Stores({}) {
     {
       accessorKey: "address",
       header: "Address",
+      cell: ({ cell }) => truncateText(cell.getValue(), 30), // Truncate address to 30 characters
     },
     {
       accessorKey: "updatedAt",
@@ -72,14 +84,11 @@ export default function Stores({}) {
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          modified <ArrowUpDown className="ml-2 h-4 w-4" />
+          Modified <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
-      cell: ({ cell }) => {
-        return new Date(cell.row.original.updatedAt).toDateString();
-      },
+      cell: ({ cell }) => new Date(cell.row.original.updatedAt).toDateString(),
     },
-
     {
       id: "actions",
       enableHiding: false,
@@ -126,10 +135,12 @@ export default function Stores({}) {
       return response.data;
     },
   });
+
   if (isLoading) return "Loading...";
+
   return (
-    <div className="mx-5 max-lg:max-w-[83vw] max-w-[90vw] lg:min-w-max flex-1">
-      <Card className="w-full mt-5 h-max  mx-auto">
+    <div className="mx-5 max-lg:max-w-[83vw] max-w-[90vw] overflow-clip lg:min-w-max flex-1">
+      <Card className="w-full mt-5 h-max max-w-[75vw] mx-auto">
         <CardHeader>
           <CardTitle>Stores</CardTitle>
           <CardDescription>
