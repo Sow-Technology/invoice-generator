@@ -1,12 +1,6 @@
 import { NextResponse } from "next/server";
 import { MongoClient, GridFSBucket } from "mongodb";
 
-export const config = {
-  api: {
-    bodyParser: false, // Disable built-in bodyParser
-  },
-};
-
 let mongoClient = null;
 
 async function connectToDatabase() {
@@ -86,3 +80,5 @@ export async function POST(req) {
   console.log("Handling POST request for file upload");
   return handleFileUpload(req);
 }
+
+export const dynamic = "force-dynamic";
