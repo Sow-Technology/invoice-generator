@@ -1,6 +1,6 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import bcrypt from "bcryptjs"; // Import bcrypt for password comparison
+import bcrypt from "bcryptjs";
 import { getUserByEmail, handleEmailSignIn } from "./app/_actions/auth";
 import { User } from "@/models/User";
 

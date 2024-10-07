@@ -32,6 +32,6 @@ export const useInvoiceStore = create((set) => ({
   setCoupon: (coupon) => set({ coupon }),
   couponDiscount: "",
   setCouponDiscount: (couponDiscount) => set({ couponDiscount }),
-  storeName: "",
-  setStoreName: (storeName) => set({ storeName }),
+  store: {},
+  setStore: (store) => set({ store }),
 }));

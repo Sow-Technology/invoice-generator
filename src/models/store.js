@@ -4,7 +4,7 @@ const StoreSchema = new mongoose.Schema(
   {
     code: { type: String, required: true },
     storeName: { type: String, required: true },
-    phoneNumber: { type: Number, required: true },
+    phoneNumber: { type: String, required: true },
     address: { type: String, required: true },
     logo: { type: String },
   },

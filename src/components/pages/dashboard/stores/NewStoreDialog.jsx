@@ -22,6 +22,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { createStore } from "../../../../app/_actions/store";
+import { useRouter } from "next/navigation";
 
 // Validation schema with zod
 const storeSchema = z.object({
@@ -33,7 +34,7 @@ const storeSchema = z.object({
 });
 
 export default function NewStoreDialog({ isOpen, setIsOpen }) {
-  // Use useForm from react-hook-form
+  const router = useRouter();
   const form = useForm({
     resolver: zodResolver(storeSchema),
     defaultValues: {
@@ -44,27 +45,32 @@ export default function NewStoreDialog({ isOpen, setIsOpen }) {
       logo: null,
     },
   });
-
   const handleSubmit = async (data) => {
     try {
-      // const res = await fetch("/api/upload", {
-      //   method: "POST",
-      //   body: formData,
-      // });
-      // if (res.ok) {
-      //   toast.success("Store created successfully!", {
-      //     id: "create-store",
-      //   });
-      //   setIsOpen(false);
-      // } else {
-      //   throw new Error("Failed to create store");
-      // }
-      // toast.success("Store created successfully!", {
-      //   id: "create-store",
-      // });
-      // setIsOpen(false);
+      const formData = new FormData();
+      console.log(data);
+      console.log(data.logo); // Log to ensure the logo is correctly captured
+      if (data.logo && data.logo.length > 0) {
+        formData.append("file", data.logo[0]);
+      }
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await res.json();
+      console.log("Response from server:", result);
+      console.log(result);
+
+      await createStore({ ...data, logo: result.fileUrl });
+      toast.success("Store created successfully!", {
+        id: "create-store",
+      });
+      router.reload();
+      setIsOpen(false);
     } catch (error) {
-      console.log(error);
+      console.error("File upload error:", error.message); // Log any error
       toast.error("Failed to create store. Please try again later.", {
         id: "create-store",
       });

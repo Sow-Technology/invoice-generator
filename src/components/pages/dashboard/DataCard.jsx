@@ -1,16 +1,15 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ReceiptIcon } from "lucide-react";
 import React from "react";
 
 export default function DataCard({ title, icon, value }) {
   return (
-    <Card className="md:min-w-[300px] min-w-[250px] lg:min-w-[25%]">
+    <Card className="lg:min-w-[300px] min-w-[210px] ">
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>{title}</CardTitle>
+        <CardTitle className="max-lg:text-xl">{title}</CardTitle>
         {icon}
       </CardHeader>
       <CardContent>
-        <div className="md:text-4xl text-3xl font-bold">{value}</div>
+        <div className="lg:text-4xl text-2xl font-bold">{value}</div>
       </CardContent>
     </Card>
   );

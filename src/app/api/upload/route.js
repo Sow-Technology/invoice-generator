@@ -1,44 +1,88 @@
-import nextConnect from "next-connect";
-import multer from "multer";
-import { createStore } from "@/app/_actions/store";
+import { NextResponse } from "next/server";
+import { MongoClient, GridFSBucket } from "mongodb";
 
-// Import multer middleware with GridFS configuration
-import { upload } from "@/lib/gridfsConfig"; // Use the GridFS config mentioned earlier
-
-const apiRoute = nextConnect({
-  onError(error, req, res) {
-    res.status(501).json({ error: `Something went wrong: ${error.message}` });
+export const config = {
+  api: {
+    bodyParser: false, // Disable built-in bodyParser
   },
-  onNoMatch(req, res) {
-    res.status(405).json({ error: `Method '${req.method}' not allowed` });
-  },
-});
+};
 
-// Middleware to handle multipart form data (with file upload)
-apiRoute.use(upload.single("file"));
+let mongoClient = null;
 
-// Handle POST request (uploading the file and creating store data)
-apiRoute.post(async (req, res) => {
-  try {
-    const { code, storeName, phoneNumber, address } = req.body;
-    const logoFileId = req.file.id; // The file ID in GridFS
-
-    // Store data along with the logo file ID
-    const storeData = {
-      code,
-      storeName,
-      phoneNumber,
-      address,
-      logoFileId,
-    };
-
-    // Create the store in the database
-    await createStore(storeData);
-
-    res.status(200).json({ message: "Store created successfully" });
-  } catch (err) {
-    res.status(500).json({ error: "Error creating store: " + err.message });
+async function connectToDatabase() {
+  if (!mongoClient) {
+    mongoClient = new MongoClient(process.env.MONGODB_URI);
+    await mongoClient.connect();
   }
-});
+  return mongoClient.db("test");
+}
 
-export default apiRoute;
+const handleFileUpload = async (req) => {
+  try {
+    const formData = await req.formData();
+    const file = formData.get("file");
+
+    if (!file) {
+      return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
+    }
+
+    const db = await connectToDatabase();
+    const bucket = new GridFSBucket(db, {
+      bucketName: "uploads",
+    });
+
+    const buffer = Buffer.from(await file.arrayBuffer());
+    console.log("Buffer size:", buffer.length);
+
+    const uploadStream = bucket.openUploadStream(file.name, {
+      contentType: file.type,
+    });
+
+    return new Promise((resolve, reject) => {
+      uploadStream.end(buffer, (error) => {
+        if (error) {
+          console.error("Error during file upload:", error.message);
+          reject(
+            NextResponse.json(
+              { error: "Error uploading file", details: error.message },
+              { status: 500 }
+            )
+          );
+        } else {
+          const fileId = uploadStream.id;
+          const fileUrl = `${process.env.AUTH_URL}/api/files?id=${fileId}`;
+          console.log("File uploaded successfully:", fileId);
+          resolve(
+            NextResponse.json({
+              message: "File uploaded successfully",
+              fileUrl,
+            })
+          );
+        }
+      });
+
+      const timeout = setTimeout(() => {
+        uploadStream.destroy();
+        reject(
+          NextResponse.json(
+            { error: "Upload process timed out." },
+            { status: 504 }
+          )
+        );
+      }, 30000);
+
+      uploadStream.on("finish", () => clearTimeout(timeout));
+    });
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    return NextResponse.json(
+      { error: "Unexpected error occurred", details: error.message },
+      { status: 500 }
+    );
+  }
+};
+
+export async function POST(req) {
+  console.log("Handling POST request for file upload");
+  return handleFileUpload(req);
+}

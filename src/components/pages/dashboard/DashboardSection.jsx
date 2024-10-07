@@ -30,11 +30,12 @@ const DashboardSection = ({
           <h2 className="text-5xl font-medium">Overview</h2>
           <div className="flex items-center max-lg:flex-wrap gap-3">
             <Select
-              defaultValue="all"
+              defaultValue=""
+              className=""
               value={storeName}
               onValueChange={setStoreName}
             >
-              <SelectTrigger className="md:min-w-[200px] min-w-[130px]">
+              <SelectTrigger className="md:min-w-[200px] min-w-[130px] w-auto">
                 <SelectValue placeholder="Store" />
               </SelectTrigger>
               <SelectContent>
@@ -50,6 +51,7 @@ const DashboardSection = ({
               initialDateFrom={dateRange.from}
               initialDateTo={dateRange.to}
               showCompare={false}
+              className="w-full"
               onUpdate={(values) => {
                 const { from, to } = values.range;
                 if (!from || !to) return;

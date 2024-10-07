@@ -26,6 +26,7 @@ import { storesData } from "@/lib/data";
 import { useLocalStorage } from "@uidotdev/usehooks";
 import { redirect, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { PiSpinner } from "react-icons/pi";
 
 function App() {
   const session = useSession();
@@ -48,8 +49,8 @@ function App() {
     setTaxValue,
     setPaymentMode,
     coupon,
-    storeName,
-    setStoreName,
+    store,
+    setStore,
     setProducts,
     couponDiscount,
   } = useInvoiceStore();
@@ -63,6 +64,7 @@ function App() {
   const [existingCustomer, setExistingCustomer] = useState(false);
   const [isPaymentDone, setIsPaymentDone] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [stores, setStores] = useState([]);
   useEffect(() => {
     console.log(paymentMode);
     if (paymentMode == "upi") {
@@ -104,7 +106,7 @@ function App() {
       subTotal,
       taxValue,
       tax,
-      storeName,
+      storeName: storesData.code,
       coupon,
       couponDiscount,
     };
@@ -138,9 +140,19 @@ function App() {
     setIsLoading(false);
     return response;
   };
+  const getStores = async () => {
+    setIsLoading(true);
+    const response = await axios.get("/api/getStores");
+    console.log(response);
+    setStores(response.data);
+    setIsLoading(false);
+    return response;
+  };
   useEffect(() => {
     getInvoiceNumber();
+    getStores();
   }, []);
+
   const handleFetchCustomerDetails = async () => {
     toast.loading("Fetching Customer Details", {
       id: "fetchingCustomerDetails",
@@ -162,16 +174,23 @@ function App() {
     });
   };
   const handleStoreChange = (value) => {
-    setStoreName(value);
+    const activeStore = stores.filter((store) => store.code === value);
+    console.log(activeStore);
+    setStore(activeStore[0]);
+    console.log(store);
     localStorage.setItem("selectedStore", value);
     console.log(value);
   };
   useEffect(() => {
     if (typeof window !== "undefined") {
       const storedData = localStorage.getItem("selectedStore");
-      setStoreName(storedData);
+      console.log(storedData);
+      const activeStore = stores.filter((store) => store.code === storedData);
+      console.log(activeStore);
+      setStore(activeStore[0]);
     }
   }, []);
+  console.log(stores);
   // useEffect(() => {
   //   if (!orderNumber) {
   //     return "Loading..";
@@ -182,6 +201,13 @@ function App() {
   }
   if (session.status == "authenticated" && session.data.user.role == "user") {
     // redirect("/unauthorized");
+  }
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <PiSpinner />
+      </div>
+    );
   }
   return (
     <>
@@ -200,14 +226,17 @@ function App() {
                   <Label htmlFor="" className="md:min-w-[100px]">
                     Select Store
                   </Label>
-                  <Select onValueChange={handleStoreChange} value={storeName}>
+                  <Select
+                    onValueChange={handleStoreChange}
+                    value={storesData.code}
+                  >
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select a Store" />
                     </SelectTrigger>
                     <SelectContent>
-                      {storesData.map((store) => (
-                        <SelectItem key={store.name} value={store.name}>
-                          {store.name}
+                      {stores?.map((store) => (
+                        <SelectItem key={store.code} value={store.code}>
+                          {store.code}
                         </SelectItem>
                       ))}
                     </SelectContent>
