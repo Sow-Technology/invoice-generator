@@ -106,7 +106,7 @@ function App() {
       subTotal,
       taxValue,
       tax,
-      storeName: storesData.code,
+      storeName: store.code,
       coupon,
       couponDiscount,
     };
@@ -182,13 +182,11 @@ function App() {
     console.log(value);
   };
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedData = localStorage.getItem("selectedStore");
-      console.log(storedData);
-      const activeStore = stores.filter((store) => store.code === storedData);
-      console.log(activeStore);
-      setStore(activeStore[0]);
-    }
+    const storedData = localStorage.getItem("selectedStore");
+    console.log(storedData);
+    const activeStore = stores.filter((store) => store.code === storedData);
+    console.log(activeStore);
+    setStore(activeStore[0]);
   }, []);
   console.log(stores);
   // useEffect(() => {
