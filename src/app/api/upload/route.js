@@ -50,6 +50,7 @@ const handleFileUpload = async (req) => {
             NextResponse.json({
               message: "File uploaded successfully",
               fileUrl,
+              fileId,
             })
           );
         }
