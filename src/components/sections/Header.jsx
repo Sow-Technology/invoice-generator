@@ -1,5 +1,4 @@
 /* eslint-disable @next/next/no-img-element */
-/* eslint-disable react/jsx-no-comment-textnodes */
 import { storesData } from "@/lib/data";
 import { useInvoiceStore } from "@/store/store";
 import Image from "next/image";
@@ -24,7 +23,7 @@ const Header = () => {
         </div>
         <div className=" ">
           <img
-            src={`${process.env.AUTH_URL}/files/?id=${store?.logo}`}
+            src={`${process.env.AUTH_URL}/api/files/?id=${store?.logo}`}
             alt="Logo"
             width={200}
             height={200}
