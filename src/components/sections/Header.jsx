@@ -23,7 +23,7 @@ const Header = () => {
         </div>
         <div className=" ">
           <img
-            src={`${process.env.AUTH_URL}/api/files/?id=${store?.logo}`}
+            src={`/api/files/?id=${store?.logo}`}
             alt="Logo"
             width={200}
             height={200}
