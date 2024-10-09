@@ -8,6 +8,8 @@ import {
   subQuarters,
 } from "date-fns";
 import Invoices from "./dashboard/Invoices";
+import Invoicess from "./dashboard/quotes";
+
 import Sidebar from "./dashboard/Sidebar";
 import { useState, useEffect } from "react";
 import DashboardSection from "./dashboard/DashboardSection";
@@ -129,6 +131,7 @@ export default function Dashboard() {
         {active === "Stores" && <Stores />}
         {active === "Users" && <Users data={invoiceData} />}
         {active === "Expense Table" && <InvoiceTable data={invoiceData} />}
+        {active === "Quotes" && <Invoicess data={invoiceData} />}
       </div>
     </div>
   );
