@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+"use client";
+import React from "react";
 import DataCard from "./DataCard";
 import Invoices from "./Invoices";
-
 import SkeletonWrapper from "@/components/SkeletonWrapper";
 import {
   Select,
@@ -13,6 +13,19 @@ import {
 import { storesData } from "@/lib/data";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
 import Analytics from "./analytics/Analytics";
+import ClientSources from "./analytics/ClientSources";
+import PaymentStatus from "./analytics/PaymentStatus";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from "recharts";
+import {
+  Users,
+  FileText,
+  Calendar,
+  DollarSign,
+  Percent,
+  Repeat,
+  Receipt,
+} from "lucide-react";
 
 const DashboardSection = ({
   data,
@@ -24,18 +37,18 @@ const DashboardSection = ({
   setStoreName,
 }) => {
   return (
-    <div className="flex flex-1 flex-col bg-[#6E81CC8F]  rounded-3xl   sm:pt-4">
-      <div className="p-4 rounded-3xl w-full">
-        <div className="container flex flex-wrap items-end justify-between gap-2 py-6 ">
-          <h2 className="text-5xl font-medium">Overview</h2>
-          <div className="flex items-center max-lg:flex-wrap gap-3">
+    <div className="flex flex-1 flex-col gap-10 rounded-3xl sm:pt-4">
+      <div className="p-6 bg-slate-50 rounded-xl shadow-md w-full">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold">Dashboard</h2>
+          <div className="flex gap-4">
+            {/* Store Selector */}
             <Select
-              defaultValue=""
-              className=""
               value={storeName}
               onValueChange={setStoreName}
+              className="w-48"
             >
-              <SelectTrigger className="md:min-w-[200px] min-w-[130px] w-auto">
+              <SelectTrigger>
                 <SelectValue placeholder="Store" />
               </SelectTrigger>
               <SelectContent>
@@ -47,6 +60,7 @@ const DashboardSection = ({
                 ))}
               </SelectContent>
             </Select>
+
             <DateRangePicker
               initialDateFrom={dateRange.from}
               initialDateTo={dateRange.to}
@@ -61,54 +75,103 @@ const DashboardSection = ({
           </div>
         </div>
 
-        <div className="flex w-full flex-wrap gap-5  flex-row items-center justify-around max-w-[85vw] mx-auto ">
-          <SkeletonWrapper isLoading={isDataLoading}>
-            <DataCard
-              title="Total Orders"
-              value={data.totalOrders}
-              isLoading={isDataLoading}
-            />
-          </SkeletonWrapper>
-          <SkeletonWrapper isLoading={isDataLoading}>
-            <DataCard
-              title="Total Revenue"
-              isLoading={isDataLoading}
-              value={`₹${Number(data.totalOrderValue).toLocaleString("en-IN", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}`}
-            />
-          </SkeletonWrapper>
-          <SkeletonWrapper isLoading={isDataLoading}>
-            <DataCard
-              title="Total Customers"
-              isLoading={isDataLoading}
-              value={data.totalCustomers}
-            />
-          </SkeletonWrapper>
-          <SkeletonWrapper isLoading={isDataLoading}>
-            <DataCard
-              title="Repeat Customers"
-              isLoading={isDataLoading}
-              value={data.totalRepeatedCustomers}
-            />
-          </SkeletonWrapper>
+        <div className="flex flex-wrap justify-between gap-2 items-stretch gap-y-7">
+          <Card className="bg-white min-w-[250px] w-[400px]">
+            <CardHeader>
+              <CardTitle>Client Sources</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ClientSources data={data.clientSourceSummary} />
+            </CardContent>
+          </Card>
+
+          <div className="flex justify-between items-center flex-col">
+            <SkeletonWrapper isLoading={isDataLoading}>
+              <DataCard
+                title="Total Orders"
+                value={data.totalOrders}
+                icon={<Receipt className="h-8 w-8 text-white" />}
+              />
+            </SkeletonWrapper>
+            <SkeletonWrapper isLoading={isDataLoading}>
+              <DataCard
+                title="Total Revenue"
+                value={`₹${Number(data.totalOrderValue).toLocaleString(
+                  "en-IN",
+                  {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  }
+                )}`}
+                icon={
+                  <DollarSign className="h-8 w-8  text-white drop-shadow-2xl" />
+                }
+              />
+            </SkeletonWrapper>
+          </div>
+          <div className="flex justify-between items-center flex-col">
+            <SkeletonWrapper isLoading={isDataLoading}>
+              <DataCard
+                title="Total Profit"
+                value={`₹${Number(data.totalProfit).toLocaleString("en-IN", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}`}
+                icon={<Percent className="h-8 w-8 text-white" />}
+              />
+            </SkeletonWrapper>
+            <SkeletonWrapper isLoading={isDataLoading}>
+              <DataCard
+                title="Aspire 15%"
+                value={`₹${Number(data.aspire15).toLocaleString("en-IN", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}`}
+                icon={<DollarSign className="h-8 w-8 text-white" />}
+              />
+            </SkeletonWrapper>
+          </div>
+          <div className="flex justify-between items-center flex-col">
+            <SkeletonWrapper isLoading={isDataLoading}>
+              <DataCard
+                title="Total Customers"
+                value={data.totalCustomers}
+                icon={<Users className="h-8 w-8 text-white" />}
+              />
+            </SkeletonWrapper>
+            <SkeletonWrapper isLoading={isDataLoading}>
+              <DataCard
+                title="Repeat Customers"
+                value={data.totalRepeatedCustomers}
+                icon={<Repeat className="h-8 w-8 text-white" />}
+              />
+            </SkeletonWrapper>
+          </div>
           <SkeletonWrapper isLoading={isDataLoading}>
             <DataCard
               title="Total Tax Collected"
-              isLoading={isDataLoading}
               value={`₹${Number(data.totalTaxValue).toLocaleString("en-IN", {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}`}
+              icon={<FileText className="h-8 w-8 text-white" />}
             />
           </SkeletonWrapper>
+          <Card className="bg-white min-w-[250px] w-[600px]">
+            <CardHeader>
+              <CardTitle>Invoice Status</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <PaymentStatus data={data.paymentStatusSummary} />
+            </CardContent>
+          </Card>
         </div>
       </div>
-      <div className="bg-[#6e81cc]/60 rounded-3xl  p-10 my-10">
+      <div className="p-6 bg-slate-50 rounded-xl shadow-md w-full">
         <Analytics />
       </div>
-      <div className="bg-[#6e81cc]/60 rounded-3xl  py-10">
+      <div className="bg-white rounded-3xl p-10 my-10">
+        <h3 className="text-3xl font-medium mb-4">Recent Invoices</h3>
         <Invoices data={invoiceData} />
       </div>
     </div>

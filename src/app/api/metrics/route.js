@@ -3,6 +3,7 @@ import { Invoice } from "@/models/Invoice";
 
 export async function GET(req) {
   await dbConnect();
+
   const { searchParams } = new URL(req.url);
 
   const fromDate = new Date(searchParams.get("from"));
@@ -11,46 +12,87 @@ export async function GET(req) {
   toDate.setHours(23, 59, 59, 999);
 
   try {
-    // Aggregation pipeline for calculating metrics
+    const matchConditions = {
+      createdAt: { $gte: fromDate, $lte: toDate },
+      ...(storeName && storeName !== "all" ? { storeName } : {}),
+    };
+
     const [result] = await Invoice.aggregate([
       {
-        $match: {
-          createdAt: { $gte: fromDate, $lte: toDate },
-          ...(storeName && storeName !== "all" ? { storeName } : {}),
-        },
+        $match: matchConditions,
       },
       {
         $group: {
-          _id: "$phoneNumber", // Group by phone number
-          orderCount: { $sum: 1 }, // Count the number of orders per customer
-          totalOrderValue: { $sum: "$subTotal" }, // Sum of subTotal for each customer
-          totalTaxValue: { $sum: "$taxValue" }, // Sum of taxValue for each customer
+          _id: "$phoneNumber",
+          orderCount: { $sum: 1 },
+          totalOrderValue: { $sum: "$subTotal" },
+          totalTaxValue: { $sum: "$taxValue" },
         },
       },
       {
         $group: {
           _id: null,
-          customerPhones: { $addToSet: "$_id" }, // Collect all unique customer phone numbers
+          customerPhones: { $addToSet: "$_id" },
           repeatedCustomers: {
-            $sum: {
-              $cond: [{ $gt: ["$orderCount", 1] }, 1, 0], // Count customers with more than 1 order
-            },
+            $sum: { $cond: [{ $gt: ["$orderCount", 1] }, 1, 0] },
           },
-          totalOrderValue: { $sum: "$totalOrderValue" }, // Sum of all orders
-          totalTaxValue: { $sum: "$totalTaxValue" }, // Sum of total taxValue
-          totalOrders: { $sum: "$orderCount" }, // Total number of orders
+          totalOrderValue: { $sum: "$totalOrderValue" },
+          totalTaxValue: { $sum: "$totalTaxValue" },
+          totalOrders: { $sum: "$orderCount" },
         },
       },
     ]);
 
-    // Return metrics
+    const additionalMetrics = await Invoice.aggregate([
+      {
+        $match: matchConditions,
+      },
+      {
+        $group: {
+          _id: null,
+          totalProfit: { $sum: "$profit" },
+          totalAspire15: { $sum: "$aspire15" },
+          totalExpenses: { $sum: "$orderExpenses" },
+          paymentStatusCounts: {
+            $push: { paymentStatus: "$paymentStatus" },
+          },
+          clientSourceCounts: {
+            $push: { clientSource: "$clientSource" },
+          },
+        },
+      },
+    ]);
+
+    const paymentStatusSummary =
+      additionalMetrics[0]?.paymentStatusCounts.reduce(
+        (acc, { paymentStatus }) => {
+          acc[paymentStatus] = (acc[paymentStatus] || 0) + 1;
+          return acc;
+        },
+        { Paid: 0, "Partially Paid": 0, Unpaid: 0 }
+      );
+
+    const clientSourceSummary = additionalMetrics[0]?.clientSourceCounts.reduce(
+      (acc, { clientSource }) => {
+        acc[clientSource] = (acc[clientSource] || 0) + 1;
+        return acc;
+      },
+      {}
+    );
+
     const metrics = {
-      totalCustomers: result?.customerPhones.length || 0, // Total unique customers
-      totalRepeatedCustomers: result?.repeatedCustomers || 0, // Total repeated customers
-      totalOrderValue: result?.totalOrderValue || 0, // Total order value
-      totalTaxValue: result?.totalTaxValue || 0, // Total tax value
-      totalOrders: result?.totalOrders || 0, // Total number of orders
+      totalCustomers: result?.customerPhones.length || 0,
+      totalRepeatedCustomers: result?.repeatedCustomers || 0,
+      totalOrderValue: result?.totalOrderValue || 0,
+      totalTaxValue: result?.totalTaxValue || 0,
+      totalOrders: result?.totalOrders || 0,
+      totalProfit: additionalMetrics[0]?.totalProfit || 0,
+      aspire15: additionalMetrics[0]?.totalAspire15 || 0,
+      totalExpenses: additionalMetrics[0]?.totalExpenses || 0,
+      paymentStatusSummary,
+      clientSourceSummary,
     };
+
     console.log(metrics);
     return new Response(JSON.stringify(metrics), { status: 200 });
   } catch (error) {

@@ -61,15 +61,37 @@ const InvoiceSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    orderExpenses: { type: Number, },
+    orderExpenses: { type: Number },
+    profit: {
+      type: Number,
+    },
+    aspire15: {
+      type: Number,
+    },
+    clientSource: {
+      type: String,
+      enum: [
+        "Phone Outreach",
+        "Website",
+        "Email Campaign",
+        "Advertisement",
+        "Referral",
+        "Social Media",
+        "Networking",
+        "LinkedIn",
+        "Affiliate",
+        "Other",
+      ],
+      default: "Other",
+    },
+    paymentStatus: {
+      type: String,
+      enum: ["Paid", "Partially Paid", "Unpaid"],
+      default: "Unpaid",
+    },
   },
   { timestamps: true }
 );
-
-
-const Invoices = mongoose.models.Invoice || mongoose.model("Invoice", InvoiceSchema); 
-delete mongoose.models.Invoices;
-
 
 export const Invoice =
   mongoose.models.Invoice || mongoose.model("Invoice", InvoiceSchema);

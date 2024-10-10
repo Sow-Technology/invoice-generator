@@ -84,3 +84,10 @@ body::-webkit-scrollbar,.custom-scrollbar::-webkit-scrollbar {
 scrollbar-track-color: blue;
 scroll-behavior: smooth;
 }
+
+body{
+  font-family: var(--inter), sans-serif;
+}
+.spice{
+  font-family: var(--spice-rice), sans-serif;
+}

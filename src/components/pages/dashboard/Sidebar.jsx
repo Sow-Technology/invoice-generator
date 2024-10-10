@@ -21,7 +21,6 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import React, { useState } from "react";
 import { AiFillProduct } from "react-icons/ai";
-import { IoMdArrowDroprightCircle } from "react-icons/io";
 import { PiSignOutBold } from "react-icons/pi";
 
 export default function Sidebar({ active, setActive, user }) {
@@ -30,34 +29,33 @@ export default function Sidebar({ active, setActive, user }) {
   return (
     <aside
       className={cn(
-        "z-10 flex h-screen flex-col transition-all duration-300 pt-4 md:pt-10",
-        open
-          ? // ? "w-full md:w-60 fixed md:sticky md:bg-transparent bg-[#6E81CC] left-0 top-0"
-            "w-40 md:w-60 sticky bg-transparent left-0 top-0"
-          : "w-16 sm:w-20 fixed md:sticky top-0"
+        "bg-gray-50 z-10 flex h-screen flex-col transition-all duration-300 pt-4 md:pt-10 shadow-lg pl-2",
+        open ? "w-64 sticky left-0 top-0" : "w-16 sticky left-0 top-0"
       )}
     >
-      <Image
-        src={open ? "/logo.svg" : "/icon.svg"}
-        alt=""
-        width={200}
-        height={100}
-        className="p-2 max-w-full h-auto"
-      />
-      {/* <IoMdArrowDroprightCircle
-        onClick={() => setOpen(!open)}
-        className={cn(
-          "text-3xl md:text-4xl text-accent-foreground mx-4 cursor-pointer transition-transform duration-300 ",
-          open ? "rotate-180" : "rotate-0"
-        )}
-      /> */}
+      {/* Sidebar Header with Logo */}
+      <div className="flex items-center justify-between px-4 py-4">
+        <Image
+          src={open ? "/logo.svg" : "/icon.svg"}
+          alt=""
+          width={open ? 180 : 50}
+          height={50}
+          className="transition-all duration-300 -my-12"
+        />
+        {/* <button
+          onClick={() => setOpen(!open)}
+          className="p-2 bg-blue-600 text-white rounded-md"
+        >
+          {open ? "Close" : "Open"}
+        </button> */}
+      </div>
 
-      <nav className="flex flex-col justify-start gap-2 md:gap-4 py-2 md:py-5 text-accent-foreground">
+      {/* Navigation Menu */}
+      <nav className="flex flex-col gap-2 py-2 text-gray-700">
         <TooltipProvider>
           {[
             "Invoices",
             "Dashboard",
-            // "Analytics",
             "Coupons",
             "Products",
             "Stores",
@@ -67,11 +65,8 @@ export default function Sidebar({ active, setActive, user }) {
             <div
               key={item}
               className={cn(
-                "flex items-center justify-start gap-2 cursor-pointer hover:scale-105 pl-4 md:pl-6",
-                active == item && "bg-white text-black rounded-l-full p-2",
-                item == ("Users" || "Expense Table") &&
-                  user.role != "superAdmin" &&
-                  "hidden"
+                "flex items-center gap-3 cursor-pointer px-4 py-3 hover:bg-gray-200 rounded-lg",
+                active == item && "bg-blue-600 text-white"
               )}
               onClick={() => setActive(item)}
             >
@@ -79,63 +74,55 @@ export default function Sidebar({ active, setActive, user }) {
                 <TooltipTrigger asChild>
                   <Link
                     href="#"
-                    className="flex h-8 w-8 md:h-9 md:w-9 items-center justify-center rounded-lg transition-colors"
+                    className="flex h-10 w-10 items-center justify-center rounded-lg transition-colors"
                   >
                     {getIcon(item)}
                   </Link>
                 </TooltipTrigger>
                 {!open && <TooltipContent side="right">{item}</TooltipContent>}
               </Tooltip>
-              {open && <span className="text-sm md:text-base">{item}</span>}
+              {open && <span>{item}</span>}
             </div>
           ))}
         </TooltipProvider>
       </nav>
 
-      <nav
-        className="mt-auto flex items-center gap-2 px-2 py-3 md:py-5 md:px-6 cursor-pointer text-accent-foreground"
-        onClick={() => {
-          signOut();
-          redirect("/auth");
-        }}
-      >
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Link
-                href="#"
-                className="flex h-8 w-8 md:h-9 md:w-9 items-center justify-start rounded-lg text-accent-foreground transition-colors"
-              >
-                <PiSignOutBold className="h-5 w-5 md:h-6 md:w-6" />
-              </Link>
-            </TooltipTrigger>
-            {!open && <TooltipContent side="right">Sign out</TooltipContent>}
-            {open && <span className="text-sm md:text-base">Sign out</span>}
-          </Tooltip>
-        </TooltipProvider>
-      </nav>
+      {/* Sign out button */}
+      <div className="mt-auto px-4 py-4">
+        <button
+          className="flex items-center gap-2 text-red-600 hover:text-red-800"
+          onClick={() => {
+            signOut();
+            redirect("/auth");
+          }}
+        >
+          <PiSignOutBold className="h-6 w-6" />
+          {open && <span>Sign out</span>}
+        </button>
+      </div>
     </aside>
   );
 }
 
+// Function to get icons based on the item
 function getIcon(item) {
   switch (item) {
     case "Invoices":
-      return <ReceiptIcon className="h-5 w-5 md:h-6 md:w-6" />;
+      return <ReceiptIcon className="h-5 w-5" />;
     case "Dashboard":
-      return <LayoutDashboardIcon className="h-5 w-5 md:h-6 md:w-6" />;
+      return <LayoutDashboardIcon className="h-5 w-5" />;
     case "Analytics":
-      return <BarChartIcon className="h-5 w-5 md:h-6 md:w-6" />;
+      return <BarChartIcon className="h-5 w-5" />;
     case "Coupons":
-      return <TicketCheck className="h-5 w-5 md:h-6 md:w-6" />;
+      return <TicketCheck className="h-5 w-5" />;
     case "Products":
-      return <AiFillProduct className="h-4 w-4 md:h-5 md:w-5" />;
+      return <AiFillProduct className="h-5 w-5" />;
     case "Stores":
-      return <Store className="h-4 w-4 md:h-5 md:w-5" />;
+      return <Store className="h-5 w-5" />;
     case "Users":
-      return <Users className="h-4 w-4 md:h-5 md:w-5" />;
+      return <Users className="h-5 w-5" />;
     case "Expense Table":
-      return <Money className="h-4 w-4 md:h-5 md:w-5" />;
+      return <Money className="h-5 w-5" />;
     default:
       return null;
   }

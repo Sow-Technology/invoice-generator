@@ -18,7 +18,7 @@ import Stores from "./dashboard/stores/Stores";
 import Coupons from "./dashboard/coupons/Coupons";
 import Users from "./dashboard/users/Users";
 import Analytics from "./dashboard/analytics/Analytics";
-import InvoiceTable from "@/app/storedetails/page";
+import Expenses from "./dashboard/expenses/Expenses";
 
 export default function Dashboard() {
   const session = useSession();
@@ -108,9 +108,14 @@ export default function Dashboard() {
     redirect("/unauthorized");
   }
   return (
-    <div className="flex flex-row min-h-screen w-full relative bg-[#6E81CC]  px-2 md:px-5 md:pl-0 max-w-screen">
-      <Sidebar active={active} setActive={setActive} user={session.data.user} />
-      <div className="bg-white   md:ml-0   rounded-3xl p-4 md:p-6 my-4 max-w-[75vw] md:max-w-[80vw] w-full">
+    <div className="flex min-h-screen w-full  ">
+      <Sidebar
+        active={active}
+        setActive={setActive}
+        user={session.data?.user}
+      />
+      <div className="bg-white rounded-2xl shadow-lg p-6 w-full mx-auto ">
+        {/* Section Rendering */}
         {active === "Dashboard" && (
           <DashboardSection
             data={metricsData}
@@ -128,7 +133,7 @@ export default function Dashboard() {
         {active === "Products" && <Products />}
         {active === "Stores" && <Stores />}
         {active === "Users" && <Users data={invoiceData} />}
-        {active === "Expense Table" && <InvoiceTable data={invoiceData} />}
+        {active === "Expense Table" && <Expenses data={invoiceData} />}
       </div>
     </div>
   );
