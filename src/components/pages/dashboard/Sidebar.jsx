@@ -61,6 +61,7 @@ export default function Sidebar({ active, setActive, user }) {
             "Stores",
             "Users",
             "Expense Table",
+            "Quotes",
           ].map((item) => (
             <div
               key={item}
@@ -123,6 +124,8 @@ function getIcon(item) {
       return <Users className="h-5 w-5" />;
     case "Expense Table":
       return <Money className="h-5 w-5" />;
+    case "Quotes":
+      return <TicketCheck className="h-4 w-4 md:h-5 md:w-5" />;
     default:
       return null;
   }

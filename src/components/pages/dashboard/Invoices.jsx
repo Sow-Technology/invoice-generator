@@ -20,23 +20,121 @@ const printInvoice = (invoice) => {
       <head>
         <title>Print Invoice</title>
         <style>
-          /* Add your custom styles here */
-          body { font-family: Arial, sans-serif; }
-          .invoice { padding: 20px; }
-          .header { font-size: 24px; font-weight: bold; }
-          .details { margin-top: 20px; }
+          body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            font-size:14px;
+          }
+          .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 10px solid rgb(40 53 146);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+          }
+          .invoice-header h1 {
+            color: #00008B;
+          }
+          .customer-details, .order-details {
+            margin-bottom: 20px;
+
+          }
+          .customer-details p, .order-details p {
+            margin: 5px 0;
+          }
+          .details-title {
+            font-weight: bold;
+          }
+          .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+          }
+          .table th, .table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+          }
+          .table th {
+            background-color: #f2f2f2;
+            text-align: left;
+          }
+          .total-section {
+            display: flex;
+            flex-direction:column;
+            justify-content: flex-end;
+            margin-top: 20px;
+          }
+          .total-section p {
+            margin: 5px 0;
+          }
+          .notes, .payment-mode {
+            margin-top: 20px;
+          }
+          .paid-status {
+            color: purple;
+            font-weight: bold;
+          }
         </style>
       </head>
       <body>
+        <div>
+        <p>${invoice.storeName}</p>
+        <p>${invoice.address}</p>
+        <p>${invoice.phoneNumber}</p>
+        </div> 
         <div class="invoice">
-          <div class="header">Invoice Details</div>
-          <div class="details">
-            <p><strong>Invoice Number:</strong> ${invoice.orderNumber}</p>
-            <p><strong>Customer Name:</strong> ${invoice.customerName}</p>
-            <p><strong>Phone Number:</strong> ${invoice.phoneNumber}</p>
-            <p><strong>Date:</strong> ${new Date(invoice.createdAt).toDateString()}</p>
-            <p><strong>Amount:</strong> $${invoice.subTotal.toFixed(2)}</p>
-            <p><strong>Store Name:</strong> ${invoice.storeName}</p>
+          <div class="invoice-header">
+            <div><img src="${invoice.logo}" alt="Company Logo" /></div>
+          </div>
+            <h1 style="color:rgb(40 53 146);">Invoice</h1>
+
+          <div style="display:flex;">
+          <div class="customer-details">
+            <p class="details-title">Customer Name: <span>${invoice.customerName}</span></p>
+            <p>Phone Number: ${invoice.phoneNumber}</p>
+            <p>Email Id: ${invoice.emailId}</p>
+          </div>
+          <div style="margin-left:250px;" class="order-details">
+            <p><strong>Order number:</strong> #${invoice.orderNumber}</p>
+            <p><strong>Invoice date:</strong> ${new Date(invoice.createdAt).toDateString()}</p>
+            <p><strong>GST IN:</strong> 29BCNPT0590C1ZB </p>
+          </div>
+          </div>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Product Name</th>
+                <th>Qty</th>
+                <th>Unit Price</th>
+                <th>Discount</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${invoice.items.map(item => `
+                <tr>
+                  <td>${item.code}</td>
+                  <td>${item.productName}</td>
+                  <td>${item.quantity}</td>
+                  <td>${item.unitPrice}</td>
+                  <td>${item.discount}</td>
+                  <td>${item.total}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+          <div style="margin-left:530px;" class="total-section">
+            <p>Tax: ₹${invoice.taxValue.toFixed(2)}</p><br />
+            <p>SubTotal: ₹${invoice.subTotal.toFixed(2)}</p><br />
+            <p class="paid-status">Paid: ₹${invoice.paid}</p>
+          </div>
+          <div class="payment-mode">
+            <p><strong>Payment Mode:</strong> ${invoice.paymentMode}</p>
+          </div>
+          <div class="notes">
+            <p><strong>Additional notes:</strong> ${invoice.notes}</p>
           </div>
         </div>
       </body>
@@ -47,6 +145,7 @@ const printInvoice = (invoice) => {
   printWindow.document.close();
   printWindow.print();
 };
+
 
 // Function to delete an invoice
 const deleteInvoice = async (orderNumber) => {
