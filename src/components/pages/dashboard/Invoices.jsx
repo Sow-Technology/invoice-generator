@@ -23,12 +23,13 @@ const printInvoice = (invoice) => {
           body {
             font-family: Arial, sans-serif;
             padding: 20px;
+            font-size:14px;
           }
           .invoice-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 2px solid #00008B;
+            border-bottom: 10px solid rgb(40 53 146);
             padding-bottom: 10px;
             margin-bottom: 20px;
           }
@@ -37,6 +38,7 @@ const printInvoice = (invoice) => {
           }
           .customer-details, .order-details {
             margin-bottom: 20px;
+
           }
           .customer-details p, .order-details p {
             margin: 5px 0;
@@ -59,6 +61,7 @@ const printInvoice = (invoice) => {
           }
           .total-section {
             display: flex;
+            flex-direction:column;
             justify-content: flex-end;
             margin-top: 20px;
           }
@@ -75,20 +78,28 @@ const printInvoice = (invoice) => {
         </style>
       </head>
       <body>
+        <div>
+        <p>${invoice.storeName}</p>
+        <p>${invoice.address}</p>
+        <p>${invoice.phoneNumber}</p>
+        </div> 
         <div class="invoice">
           <div class="invoice-header">
-            <h1>Invoice</h1>
-            <div><img src="${invoice.logoUrl}" alt="Company Logo" /></div>
+            <div><img src="${invoice.logo}" alt="Company Logo" /></div>
           </div>
+            <h1 style="color:rgb(40 53 146);">Invoice</h1>
+
+          <div style="display:flex;">
           <div class="customer-details">
-            <p class="details-title">Customer Name: <span style="color: red;">${invoice.customerName}</span></p>
+            <p class="details-title">Customer Name: <span>${invoice.customerName}</span></p>
             <p>Phone Number: ${invoice.phoneNumber}</p>
-            <p>Email Id: ${invoice.email}</p>
+            <p>Email Id: ${invoice.emailId}</p>
           </div>
-          <div class="order-details">
+          <div style="margin-left:250px;" class="order-details">
             <p><strong>Order number:</strong> #${invoice.orderNumber}</p>
             <p><strong>Invoice date:</strong> ${new Date(invoice.createdAt).toDateString()}</p>
-            <p><strong>GST IN:</strong> ${invoice.gstIn}</p>
+            <p><strong>GST IN:</strong> 29BCNPT0590C1ZB </p>
+          </div>
           </div>
           <table class="table">
             <thead>
@@ -106,7 +117,7 @@ const printInvoice = (invoice) => {
                 <tr>
                   <td>${item.code}</td>
                   <td>${item.productName}</td>
-                  <td>${item.qty}</td>
+                  <td>${item.quantity}</td>
                   <td>${item.unitPrice}</td>
                   <td>${item.discount}</td>
                   <td>${item.total}</td>
@@ -114,10 +125,10 @@ const printInvoice = (invoice) => {
               `).join('')}
             </tbody>
           </table>
-          <div class="total-section">
-            <p>Tax: ₹${invoice.tax.toFixed(2)}</p><br />
+          <div style="margin-left:530px;" class="total-section">
+            <p>Tax: ₹${invoice.taxValue.toFixed(2)}</p><br />
             <p>SubTotal: ₹${invoice.subTotal.toFixed(2)}</p><br />
-            <p class="paid-status">Paid: ₹${invoice.paidAmount}</p>
+            <p class="paid-status">Paid: ₹${invoice.paid}</p>
           </div>
           <div class="payment-mode">
             <p><strong>Payment Mode:</strong> ${invoice.paymentMode}</p>
