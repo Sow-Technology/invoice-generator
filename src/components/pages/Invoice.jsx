@@ -67,7 +67,7 @@ function App() {
   const [isPaymentDone, setIsPaymentDone] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [stores, setStores] = useState([]);
-  const [clientSource, setClientSource] = useState();
+  const [clientSource, setClientSource] = useState("WalkIn");
   const [paymentStatus, setPaymentStatus] = useState("Unpaid");
   useEffect(() => {
     console.log(paymentMode);
@@ -295,12 +295,19 @@ function App() {
                   <Label htmlFor="" className="w-full">
                     Client Source
                   </Label>
-                  <Select onValueChange={setClientSource} value={clientSource}>
+                  <Select
+                    onValueChange={(e) => {
+                      console.log(e);
+                      setClientSource(e);
+                    }}
+                    value={clientSource}
+                  >
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select a source" />
                     </SelectTrigger>
                     <SelectContent>
                       {[
+                        "WalkIn",
                         "Phone Outreach",
                         "Website",
                         "Email Campaign",

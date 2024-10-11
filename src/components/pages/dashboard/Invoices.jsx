@@ -309,10 +309,10 @@ export default function Invoices({ data }) {
   ];
 
   return (
-    <div className="mx-5 max-w-[85vw]  flex-1 custom-scrollbar">
-      <Card className="w-full mt-5 h-max mx-auto">
+    <div className=" max-w-[85vw] p-6 bg-slate-50 rounded-xl shadow-md w-full flex-1 custom-scrollbar">
+      <Card className="w-full mt-5 h-max mx-auto bg-white">
         <CardHeader>
-          <CardTitle>Invoices</CardTitle>
+          <CardTitle className="text-2xl font-bold">Invoices</CardTitle>
           <CardDescription>
             Manage your invoices and view their details.
           </CardDescription>

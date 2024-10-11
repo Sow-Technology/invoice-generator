@@ -25,7 +25,9 @@ import {
   Percent,
   Repeat,
   Receipt,
+  IndianRupee,
 } from "lucide-react";
+import Past7DaysSales from "./analytics/Past7DaysSales";
 
 const DashboardSection = ({
   data,
@@ -36,9 +38,10 @@ const DashboardSection = ({
   storeName,
   setStoreName,
 }) => {
+  console.log("=====METRICS=====", data);
   return (
     <div className="flex flex-1 flex-col gap-10 rounded-3xl sm:pt-4 w-full">
-      <div className="p-6 bg-slate-50 rounded-xl shadow-md w-full">
+      <div className="p-6 bg-slate-50 rounded-xl shadow-md w-full flex flex-col gap-5">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold">Dashboard</h2>
           <div className="flex gap-4">
@@ -76,7 +79,7 @@ const DashboardSection = ({
         </div>
 
         <div className="flex flex-wrap justify-between gap-2 items-stretch gap-y-7">
-          <Card className="bg-white min-w-[250px] lg:w-[500px]">
+          <Card className="bg-white min-w-[250px] lg:w-[450px] ">
             <CardHeader>
               <CardTitle>Client Sources</CardTitle>
             </CardHeader>
@@ -84,77 +87,16 @@ const DashboardSection = ({
               <ClientSources data={data.clientSourceSummary} />
             </CardContent>
           </Card>
-
-          <div className="flex justify-between items-center flex-col">
-            <SkeletonWrapper isLoading={isDataLoading}>
-              <DataCard
-                title="Total Orders"
-                value={data.totalOrders}
-                icon={<Receipt className="h-8 w-8 text-white" />}
-              />
-            </SkeletonWrapper>
-            <SkeletonWrapper isLoading={isDataLoading}>
-              <DataCard
-                title="Total Revenue"
-                value={`₹${Number(data.totalOrderValue).toLocaleString(
-                  "en-IN",
-                  {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  }
-                )}`}
-                icon={
-                  <DollarSign className="h-8 w-8  text-white drop-shadow-2xl" />
-                }
-              />
-            </SkeletonWrapper>
-          </div>
-          <div className="flex justify-between items-center flex-col">
-            <SkeletonWrapper isLoading={isDataLoading}>
-              <DataCard
-                title="Total Profit"
-                value={`₹${Number(data.totalProfit).toLocaleString("en-IN", {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}`}
-                icon={<Percent className="h-8 w-8 text-white" />}
-              />
-            </SkeletonWrapper>
-            <SkeletonWrapper isLoading={isDataLoading}>
-              <DataCard
-                title="Aspire 15%"
-                value={`₹${Number(data.aspire15).toLocaleString("en-IN", {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}`}
-                icon={<DollarSign className="h-8 w-8 text-white" />}
-              />
-            </SkeletonWrapper>
-          </div>
-          <div className="flex justify-between items-center flex-col">
-            <SkeletonWrapper isLoading={isDataLoading}>
-              <DataCard
-                title="Total Customers"
-                value={data.totalCustomers}
-                icon={<Users className="h-8 w-8 text-white" />}
-              />
-            </SkeletonWrapper>
-            <SkeletonWrapper isLoading={isDataLoading}>
-              <DataCard
-                title="Repeat Customers"
-                value={data.totalRepeatedCustomers}
-                icon={<Repeat className="h-8 w-8 text-white" />}
-              />
-            </SkeletonWrapper>
-          </div>
           <SkeletonWrapper isLoading={isDataLoading}>
             <DataCard
-              title="Total Tax Collected"
-              value={`₹${Number(data.totalTaxValue).toLocaleString("en-IN", {
+              title="Total Revenue"
+              value={`₹${Number(data.totalOrderValue).toLocaleString("en-IN", {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}`}
-              icon={<FileText className="h-8 w-8 text-white" />}
+              icon={
+                <IndianRupee className="h-8 w-8  text-white drop-shadow-2xl" />
+              }
             />
           </SkeletonWrapper>
           <Card className="bg-white min-w-[250px] w-[600px]">
@@ -166,12 +108,76 @@ const DashboardSection = ({
             </CardContent>
           </Card>
         </div>
+        <div className="flex flex-wrap justify-evenly gap-2 items-stretch gap-y-7">
+          <Card className="bg-white min-w-[250px] w-[600px]">
+            <CardHeader>
+              <CardTitle>Daily Sales (Past 7 Days)</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Past7DaysSales />
+            </CardContent>
+          </Card>
+          <div className="flex items-center flex-col justify-between">
+            <SkeletonWrapper isLoading={isDataLoading}>
+              <DataCard
+                title="Total Orders"
+                value={data.totalOrders}
+                icon={<Receipt className="h-8 w-8 text-white" />}
+              />
+            </SkeletonWrapper>
+            <SkeletonWrapper isLoading={isDataLoading}>
+              <DataCard
+                title="Total Profit"
+                value={`₹${Number(data.totalProfit).toLocaleString("en-IN", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}`}
+                icon={<Percent className="h-8 w-8 text-white" />}
+              />
+            </SkeletonWrapper>
+          </div>
+          <div className="flex items-center flex-col justify-between">
+            <SkeletonWrapper isLoading={isDataLoading}>
+              <DataCard
+                title="Aspire 15%"
+                value={`₹${Number(data.aspire15).toLocaleString("en-IN", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}`}
+                icon={<IndianRupee className="h-8 w-8 text-white" />}
+              />
+            </SkeletonWrapper>
+            <SkeletonWrapper isLoading={isDataLoading}>
+              <DataCard
+                title="Total Customers"
+                value={data.totalCustomers}
+                icon={<Users className="h-8 w-8 text-white" />}
+              />
+            </SkeletonWrapper>
+          </div>
+          <SkeletonWrapper isLoading={isDataLoading}>
+            <DataCard
+              title="Repeat Customers"
+              value={data.totalRepeatedCustomers}
+              icon={<Repeat className="h-8 w-8 text-white" />}
+            />
+          </SkeletonWrapper>
+          <SkeletonWrapper isLoading={isDataLoading}>
+            <DataCard
+              title="Total Tax Collected"
+              value={`₹${Number(data.totalTaxValue).toLocaleString("en-IN", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}`}
+              icon={<FileText className="h-8 w-8 text-white" />}
+            />
+          </SkeletonWrapper>
+        </div>
       </div>
       <div className="p-6 bg-slate-50 rounded-xl shadow-md w-full">
         <Analytics />
       </div>
-      <div className="bg-white rounded-3xl p-10 my-10 max-w-full">
-        <h3 className="text-3xl font-medium mb-4">Recent Invoices</h3>
+      <div className="">
         <Invoices data={invoiceData} />
       </div>
     </div>

@@ -91,6 +91,7 @@ export async function GET(req) {
       totalExpenses: additionalMetrics[0]?.totalExpenses || 0,
       paymentStatusSummary,
       clientSourceSummary,
+      paymentStatusCounts: additionalMetrics[0]?.paymentStatusCounts || [0],
     };
 
     console.log(metrics);

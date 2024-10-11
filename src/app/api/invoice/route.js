@@ -11,25 +11,12 @@ export async function POST(req) {
 
   console.log("Received body:", body);
 
-  const {
-    orderNumber,
-    customerName,
-    phoneNumber,
-    emailId,
-    items,
-    amountPaid,
-    taxValue,
-    tax,
-    couponCode,
-    subTotal,
-    notes,
-    storeName,
-    paymentMode,
-    isPaymentDone,
-    orderExpenses,
-  } = body;
-
-  if (!orderNumber || !customerName || !phoneNumber || !emailId) {
+  if (
+    !body.orderNumber ||
+    !body.customerName ||
+    !body.phoneNumber ||
+    !body.emailId
+  ) {
     return new Response(
       JSON.stringify({ success: false, message: "Missing required fields" }),
       { status: 400 }
@@ -41,20 +28,7 @@ export async function POST(req) {
 
   try {
     const newInvoice = new Invoice({
-      orderNumber,
-      customerName,
-      phoneNumber,
-      emailId,
-      items,
-      amountPaid,
-      taxValue,
-      tax,
-      couponCode,
-      subTotal,
-      notes,
-      storeName,
-      paymentMode,
-      orderExpenses,
+      ...body,
     });
 
     // Save the invoice to the database
@@ -104,7 +78,10 @@ export async function DELETE(req) {
 
   try {
     // Find and delete the invoice
-    const deletedInvoice = await Invoice.findOneAndDelete({ orderNumber }, { session });
+    const deletedInvoice = await Invoice.findOneAndDelete(
+      { orderNumber },
+      { session }
+    );
 
     if (!deletedInvoice) {
       return new Response(
@@ -121,9 +98,12 @@ export async function DELETE(req) {
     session.endSession();
 
     console.log("Invoice deleted successfully");
-    return new Response(JSON.stringify({ success: true, data: deletedInvoice }), {
-      status: 200,
-    });
+    return new Response(
+      JSON.stringify({ success: true, data: deletedInvoice }),
+      {
+        status: 200,
+      }
+    );
   } catch (error) {
     // If an error occurred, abort the transaction
     await session.abortTransaction();

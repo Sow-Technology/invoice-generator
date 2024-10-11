@@ -80,9 +80,10 @@ const InvoiceSchema = new mongoose.Schema(
         "Networking",
         "LinkedIn",
         "Affiliate",
+        "WalkIn",
         "Other",
       ],
-      default: "Other",
+      default: "WalkIn",
     },
     paymentStatus: {
       type: String,
