@@ -116,7 +116,7 @@ export default function Dashboard() {
         setActive={setActive}
         user={session.data?.user}
       />
-      <div className="bg-white rounded-2xl shadow-lg p-6 w-full mx-auto ">
+      <div className="bg-white rounded-2xl shadow-lg p-6 w-full mx-auto max-w-[85vw] ">
         {/* Section Rendering */}
         {active === "Dashboard" && (
           <DashboardSection

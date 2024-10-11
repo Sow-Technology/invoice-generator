@@ -262,6 +262,17 @@ const columns = [
     ),
   },
   {
+    accessorKey: "amountPaid",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Client Source <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+  },
+  {
     accessorKey: "actions", // New column for actions
     header: "Actions",
     cell: ({ row }) => (
@@ -298,7 +309,7 @@ export default function Invoices({ data }) {
   ];
 
   return (
-    <div className="mx-5 max-lg:max-w-[83vw] max-w-[90vw] lg:min-w-max flex-1 custom-scrollbar">
+    <div className="mx-5 max-w-[85vw]  flex-1 custom-scrollbar">
       <Card className="w-full mt-5 h-max mx-auto">
         <CardHeader>
           <CardTitle>Invoices</CardTitle>

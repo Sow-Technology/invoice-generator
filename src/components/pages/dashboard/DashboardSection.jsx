@@ -37,7 +37,7 @@ const DashboardSection = ({
   setStoreName,
 }) => {
   return (
-    <div className="flex flex-1 flex-col gap-10 rounded-3xl sm:pt-4">
+    <div className="flex flex-1 flex-col gap-10 rounded-3xl sm:pt-4 w-full">
       <div className="p-6 bg-slate-50 rounded-xl shadow-md w-full">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold">Dashboard</h2>
@@ -170,7 +170,7 @@ const DashboardSection = ({
       <div className="p-6 bg-slate-50 rounded-xl shadow-md w-full">
         <Analytics />
       </div>
-      <div className="bg-white rounded-3xl p-10 my-10">
+      <div className="bg-white rounded-3xl p-10 my-10 max-w-full">
         <h3 className="text-3xl font-medium mb-4">Recent Invoices</h3>
         <Invoices data={invoiceData} />
       </div>
