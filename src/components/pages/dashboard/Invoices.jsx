@@ -7,8 +7,20 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { DataTable } from "@/components/ui/data-table";
-import { ArrowUpDown, PlusIcon, MoreVerticalIcon,MoreHorizontalIcon, PrinterIcon, TrashIcon } from "lucide-react"; // Import MoreVerticalIcon
-import { DropdownMenu, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuContent } from "@/components/ui/dropdown-menu"; // For dropdown menu
+import {
+  ArrowUpDown,
+  PlusIcon,
+  MoreVerticalIcon,
+  MoreHorizontalIcon,
+  PrinterIcon,
+  TrashIcon,
+} from "lucide-react"; // Import MoreVerticalIcon
+import {
+  DropdownMenu,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+} from "@/components/ui/dropdown-menu"; // For dropdown menu
 import Link from "next/link";
 import React from "react";
 
@@ -91,13 +103,17 @@ const printInvoice = (invoice) => {
 
           <div style="display:flex;">
           <div class="customer-details">
-            <p class="details-title">Customer Name: <span>${invoice.customerName}</span></p>
+            <p class="details-title">Customer Name: <span>${
+              invoice.customerName
+            }</span></p>
             <p>Phone Number: ${invoice.phoneNumber}</p>
             <p>Email Id: ${invoice.emailId}</p>
           </div>
           <div style="margin-left:250px;" class="order-details">
             <p><strong>Order number:</strong> #${invoice.orderNumber}</p>
-            <p><strong>Invoice date:</strong> ${new Date(invoice.createdAt).toDateString()}</p>
+            <p><strong>Invoice date:</strong> ${new Date(
+              invoice.createdAt
+            ).toDateString()}</p>
             <p><strong>GST IN:</strong> 29BCNPT0590C1ZB </p>
           </div>
           </div>
@@ -113,7 +129,9 @@ const printInvoice = (invoice) => {
               </tr>
             </thead>
             <tbody>
-              ${invoice.items.map(item => `
+              ${invoice.items
+                .map(
+                  (item) => `
                 <tr>
                   <td>${item.code}</td>
                   <td>${item.productName}</td>
@@ -122,7 +140,9 @@ const printInvoice = (invoice) => {
                   <td>${item.discount}</td>
                   <td>${item.total}</td>
                 </tr>
-              `).join('')}
+              `
+                )
+                .join("")}
             </tbody>
           </table>
           <div style="margin-left:530px;" class="total-section">
@@ -146,13 +166,12 @@ const printInvoice = (invoice) => {
   printWindow.print();
 };
 
-
 // Function to delete an invoice
 const deleteInvoice = async (orderNumber) => {
   const response = await fetch(`/api/invoice`, {
-    method: 'DELETE',
+    method: "DELETE",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({ orderNumber }),
   });
@@ -160,10 +179,10 @@ const deleteInvoice = async (orderNumber) => {
   const result = await response.json();
 
   if (result.success) {
-    alert('Invoice deleted successfully!');
+    alert("Invoice deleted successfully!");
     window.location.reload(); // Reload the page to reflect changes
   } else {
-    alert('Failed to delete invoice: ' + result.message);
+    alert("Failed to delete invoice: " + result.message);
   }
 };
 
@@ -232,6 +251,17 @@ const columns = [
     ),
   },
   {
+    accessorKey: "clientSource",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Client Source <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+  },
+  {
     accessorKey: "actions", // New column for actions
     header: "Actions",
     cell: ({ row }) => (
@@ -246,7 +276,9 @@ const columns = [
             <PrinterIcon className="mr-2 h-4 w-4" />
             <span>Print</span>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => deleteInvoice(row.original.orderNumber)}>
+          <DropdownMenuItem
+            onClick={() => deleteInvoice(row.original.orderNumber)}
+          >
             <TrashIcon className="mr-2 h-4 w-4 text-red-500" />
             <span className="text-red-500">Delete</span>
           </DropdownMenuItem>

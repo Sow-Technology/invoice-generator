@@ -76,7 +76,7 @@ const DashboardSection = ({
         </div>
 
         <div className="flex flex-wrap justify-between gap-2 items-stretch gap-y-7">
-          <Card className="bg-white min-w-[250px] w-[400px]">
+          <Card className="bg-white min-w-[250px] lg:w-[500px]">
             <CardHeader>
               <CardTitle>Client Sources</CardTitle>
             </CardHeader>
