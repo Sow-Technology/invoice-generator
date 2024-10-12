@@ -23,7 +23,7 @@ export async function GET(req) {
       },
       {
         $group: {
-          _id: "$phoneNumber",
+          _id: { phoneNumber: "$phoneNumber", storeName: "$storeName" }, // Grouping by phoneNumber and storeName
           orderCount: { $sum: 1 },
           totalOrderValue: { $sum: "$subTotal" },
           totalTaxValue: { $sum: "$taxValue" },
@@ -32,7 +32,7 @@ export async function GET(req) {
       {
         $group: {
           _id: null,
-          customerPhones: { $addToSet: "$_id" },
+          customerPhones: { $addToSet: "$_id.phoneNumber" },
           repeatedCustomers: {
             $sum: { $cond: [{ $gt: ["$orderCount", 1] }, 1, 0] },
           },
@@ -80,6 +80,25 @@ export async function GET(req) {
       {}
     );
 
+    // New aggregation to get total sales by store
+    const salesByStore = await Invoice.aggregate([
+      {
+        $match: matchConditions,
+      },
+      {
+        $group: {
+          _id: "$storeName", // Group by storeName
+          totalSales: { $sum: "$subTotal" }, // Sum the sales per store
+        },
+      },
+    ]);
+
+    // Creating a key-value pair for sales by store in the response
+    const salesByStoreSummary = salesByStore.reduce((acc, store) => {
+      acc[store._id] = store.totalSales || 0;
+      return acc;
+    }, {});
+
     const metrics = {
       totalCustomers: result?.customerPhones.length || 0,
       totalRepeatedCustomers: result?.repeatedCustomers || 0,
@@ -92,6 +111,7 @@ export async function GET(req) {
       paymentStatusSummary,
       clientSourceSummary,
       paymentStatusCounts: additionalMetrics[0]?.paymentStatusCounts || [0],
+      salesByStore: salesByStoreSummary, // Include sales by store in the response
     };
 
     console.log(metrics);

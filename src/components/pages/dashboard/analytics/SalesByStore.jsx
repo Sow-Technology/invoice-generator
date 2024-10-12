@@ -1,16 +1,18 @@
 import { TooltipProvider, Tooltip } from "@radix-ui/react-tooltip";
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer } from "recharts";
 
-export default function ClientSources({ data }) {
+export default function SalesByStore({ data }) {
+  // You can customize the color scheme based on the number of statuses
   const COLORS = [
-    "#4A90E2",
-    "#50E3C2",
-    "#F5A623",
-    "#D0021B",
-    "#BD10E0",
-    "#B8E986",
+    "#FF6384",
+    "#36A2EB",
+    "#FFCE56",
+    "#4BC0C0",
+    "#9966FF",
+    "#FF9F40",
   ];
 
+  // Transforming the data into a format compatible with the chart
   const chartData = Object.entries(data || {}).map(([name, value]) => ({
     name,
     value,
@@ -18,7 +20,7 @@ export default function ClientSources({ data }) {
 
   return (
     <TooltipProvider>
-      <ResponsiveContainer width="110%" height={220}>
+      <ResponsiveContainer width="100%" height={220}>
         <PieChart>
           <Pie
             data={chartData}
@@ -34,7 +36,7 @@ export default function ClientSources({ data }) {
             {chartData.map((entry, index) => (
               <Cell
                 key={`cell-${index}`}
-                fill={COLORS[index % COLORS.length]}
+                fill={COLORS[index % COLORS.length]} // Assign colors to each slice
               />
             ))}
           </Pie>
