@@ -80,9 +80,9 @@ const DashboardSection = ({
           </div>
         </div>
         <div className="flex justify-between gap-5 flex-auto">
-          <div className="flex flex-col justify-between gap-10 ">
+          <div className="flex flex-col justify-between gap-10 flex-1">
             {" "}
-            <Card className="bg-white min-w-[250px] lg:w-[450px]">
+            <Card className="bg-white min-w-[250px] lg:w-[300px]">
               <CardHeader>
                 <CardTitle>Client Sources</CardTitle>
               </CardHeader>
@@ -90,7 +90,7 @@ const DashboardSection = ({
                 <ClientSources data={data.clientSourceSummary} />
               </CardContent>
             </Card>
-            <Card className="bg-white min-w-[250px] w-[450px]  flex-1">
+            <Card className="bg-white min-w-[250px] lg:w-[300px]  flex-1">
               <CardHeader>
                 <CardTitle>Sales By Store</CardTitle>
               </CardHeader>
@@ -99,7 +99,7 @@ const DashboardSection = ({
               </CardContent>
             </Card>
           </div>
-          <div className="flex flex-col gap-5">
+          <div className="flex flex-col gap-5 ">
             <div className="flex gap-10 flex-wrap justify-between">
               <SkeletonWrapper isLoading={isDataLoading}>
                 <DataCard
@@ -182,7 +182,7 @@ const DashboardSection = ({
               </SkeletonWrapper>
             </div>
           </div>
-          <div className="flex flex-col gap-10 flex-1">
+          <div className="flex flex-col gap-10 ">
             {" "}
             <Card className="bg-white min-w-[250px] w-auto flex-1">
               <CardHeader>
@@ -192,7 +192,7 @@ const DashboardSection = ({
                 <PaymentStatus data={data.paymentStatusSummary} />
               </CardContent>
             </Card>
-            <Card className="bg-white min-w-[250px] w-[500px] flex-1">
+            <Card className="bg-white min-w-[250px] w-[380px] flex-1">
               <CardHeader>
                 <CardTitle>Daily Sales (Past 7 Days)</CardTitle>
               </CardHeader>
