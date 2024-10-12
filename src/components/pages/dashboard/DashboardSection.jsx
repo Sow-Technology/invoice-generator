@@ -99,7 +99,7 @@ const DashboardSection = ({
               }
             />
           </SkeletonWrapper>
-          <Card className="bg-white min-w-[250px] w-[600px]">
+          <Card className="bg-white min-w-[250px] w-[450px]">
             <CardHeader>
               <CardTitle>Invoice Status</CardTitle>
             </CardHeader>

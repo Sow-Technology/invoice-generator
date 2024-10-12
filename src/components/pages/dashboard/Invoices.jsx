@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
 import React from "react";
-import ConfirmationModal from "@/components/ConfirmationModal"; 
+import ConfirmationModal from "@/components/ConfirmationModal";
 import NotificationPopup from "@/components/NotificationPopup"; // Import the new notification component
 
 // Function to print the invoice details
@@ -105,13 +105,17 @@ const printInvoice = (invoice) => {
 
           <div style="display:flex;">
           <div class="customer-details">
-            <p class="details-title">Customer Name: <span>${invoice.customerName}</span></p>
+            <p class="details-title">Customer Name: <span>${
+              invoice.customerName
+            }</span></p>
             <p>Phone Number: ${invoice.phoneNumber}</p>
             <p>Email Id: ${invoice.emailId}</p>
           </div>
           <div style="margin-left:250px;" class="order-details">
             <p><strong>Order number:</strong> #${invoice.orderNumber}</p>
-            <p><strong>Invoice date:</strong> ${new Date(invoice.createdAt).toDateString()}</p>
+            <p><strong>Invoice date:</strong> ${new Date(
+              invoice.createdAt
+            ).toDateString()}</p>
             <p><strong>GST IN:</strong> 29BCNPT0590C1ZB </p>
           </div>
           </div>
@@ -242,7 +246,7 @@ const columns = [
     ),
   },
   {
-    accessorKey: "actions", 
+    accessorKey: "actions",
     header: "Actions",
     cell: ({ row }) => (
       <DropdownMenu>
@@ -283,7 +287,7 @@ export default function Invoices({ data }) {
       setSelectedInvoice(null);
 
       // Show notification for 2 seconds
-      
+
       setShowNotification(true);
       setTimeout(() => {
         setShowNotification(false);
@@ -298,7 +302,7 @@ export default function Invoices({ data }) {
   };
 
   return (
-    <div className="mx-5 max-lg:max-w-[83vw] max-w-[90vw] lg:min-w-max flex-1 custom-scrollbar">
+    <div className="max-lg:max-w-[83vw] max-w-[90vw] lg:min-w-max flex-1 custom-scrollbar p-6 bg-slate-50 rounded-xl shadow-md w-full">
       <Card className="w-full mt-5 h-max mx-auto">
         <CardHeader>
           <CardTitle>Invoices</CardTitle>

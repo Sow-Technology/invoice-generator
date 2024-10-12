@@ -139,7 +139,7 @@ export default function Stores({}) {
   if (isLoading) return "Loading...";
 
   return (
-    <div className="mx-5 max-lg:max-w-[83vw] max-w-[90vw] overflow-clip lg:min-w-max flex-1">
+    <div className="p-6 bg-slate-50 rounded-xl shadow-md w-full max-lg:max-w-[83vw] max-w-[90vw] overflow-clip lg:min-w-max flex-1">
       <Card className="w-full mt-5 h-max max-w-[75vw] mx-auto">
         <CardHeader>
           <CardTitle>Stores</CardTitle>

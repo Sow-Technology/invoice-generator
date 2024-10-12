@@ -138,7 +138,7 @@ export default function Products() {
   if (isLoading) return <Loader />;
 
   return (
-    <div className="mx-5 max-lg:max-w-[83vw] max-w-[90vw] lg:min-w-max flex-1 ">
+    <div className="p-6 bg-slate-50 rounded-xl shadow-md w-full max-lg:max-w-[83vw] max-w-[90vw] lg:min-w-max flex-1 ">
       <Card className="w-full mt-5 h-max mx-auto">
         <CardHeader>
           <CardTitle>Products</CardTitle>
