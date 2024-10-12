@@ -91,3 +91,9 @@ body{
 .spice{
   font-family: var(--spice-rice), sans-serif;
 }
+@media print {
+
+  body {
+    font-family: var(--inter), sans-serif;
+  }
+}

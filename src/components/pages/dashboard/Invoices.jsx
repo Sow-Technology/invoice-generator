@@ -246,6 +246,17 @@ const columns = [
     ),
   },
   {
+    accessorKey: "clientSource",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Client Source <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+  },
+  {
     accessorKey: "actions",
     header: "Actions",
     cell: ({ row }) => (

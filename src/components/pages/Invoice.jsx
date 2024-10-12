@@ -27,6 +27,7 @@ import { useLocalStorage } from "@uidotdev/usehooks";
 import { redirect, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { PiSpinner } from "react-icons/pi";
+import TermsConditions from "../sections/TermsConditions";
 
 function App() {
   const session = useSession();
@@ -441,6 +442,7 @@ function App() {
             <TableContainer />
 
             <Notes />
+            <TermsConditions />
           </div>
         </div>
       </main>
@@ -449,7 +451,3 @@ function App() {
 }
 
 export default App;
-
-
-
-
