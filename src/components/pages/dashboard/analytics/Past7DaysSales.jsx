@@ -84,8 +84,10 @@ const Past7DaysSales = () => {
           <BarChart data={salesData}>
             <defs>
               <linearGradient id="gradientBar" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#ff7f50" /> {/* Top color */}
-                <stop offset="100%" stopColor="#ff4500" /> {/* Bottom color */}
+                <stop offset="0%" stopColor="hsl(221.21, 83.19%, 63%)" />{" "}
+                {/* Lighter blue */}
+                <stop offset="100%" stopColor="hsl(221.21, 83.19%, 43%)" />{" "}
+                {/* Darker blue */}
               </linearGradient>
             </defs>
             <XAxis dataKey="_id" tickFormatter={chartConfig.xAxisFormatter} />
