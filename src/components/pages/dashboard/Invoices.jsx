@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -7,10 +8,23 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { DataTable } from "@/components/ui/data-table";
-import { ArrowUpDown, PlusIcon, MoreVerticalIcon,MoreHorizontalIcon, PrinterIcon, TrashIcon } from "lucide-react"; // Import MoreVerticalIcon
-import { DropdownMenu, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuContent } from "@/components/ui/dropdown-menu"; // For dropdown menu
+import {
+  ArrowUpDown,
+  PlusIcon,
+  MoreHorizontalIcon,
+  PrinterIcon,
+  TrashIcon,
+} from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+} from "@/components/ui/dropdown-menu";
 import Link from "next/link";
 import React from "react";
+import ConfirmationModal from "@/components/ConfirmationModal"; 
+import NotificationPopup from "@/components/NotificationPopup"; // Import the new notification component
 
 // Function to print the invoice details
 const printInvoice = (invoice) => {
@@ -113,7 +127,9 @@ const printInvoice = (invoice) => {
               </tr>
             </thead>
             <tbody>
-              ${invoice.items.map(item => `
+              ${invoice.items
+                .map(
+                  (item) => `
                 <tr>
                   <td>${item.code}</td>
                   <td>${item.productName}</td>
@@ -122,7 +138,9 @@ const printInvoice = (invoice) => {
                   <td>${item.discount}</td>
                   <td>${item.total}</td>
                 </tr>
-              `).join('')}
+              `
+                )
+                .join("")}
             </tbody>
           </table>
           <div style="margin-left:530px;" class="total-section">
@@ -146,25 +164,17 @@ const printInvoice = (invoice) => {
   printWindow.print();
 };
 
-
 // Function to delete an invoice
 const deleteInvoice = async (orderNumber) => {
   const response = await fetch(`/api/invoice`, {
-    method: 'DELETE',
+    method: "DELETE",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({ orderNumber }),
   });
 
-  const result = await response.json();
-
-  if (result.success) {
-    alert('Invoice deleted successfully!');
-    window.location.reload(); // Reload the page to reflect changes
-  } else {
-    alert('Failed to delete invoice: ' + result.message);
-  }
+  return await response.json();
 };
 
 // Define columns with sorting functionality
@@ -232,7 +242,7 @@ const columns = [
     ),
   },
   {
-    accessorKey: "actions", // New column for actions
+    accessorKey: "actions", 
     header: "Actions",
     cell: ({ row }) => (
       <DropdownMenu>
@@ -246,7 +256,7 @@ const columns = [
             <PrinterIcon className="mr-2 h-4 w-4" />
             <span>Print</span>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => deleteInvoice(row.original.orderNumber)}>
+          <DropdownMenuItem onClick={() => handleDeleteClick(row.original)}>
             <TrashIcon className="mr-2 h-4 w-4 text-red-500" />
             <span className="text-red-500">Delete</span>
           </DropdownMenuItem>
@@ -257,13 +267,35 @@ const columns = [
 ];
 
 export default function Invoices({ data }) {
-  // Initialize sorting state
-  const initialSortingState = [
-    {
-      id: "createdAt", // Column id to be sorted
-      desc: true, // true for descending order
-    },
-  ];
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [showNotification, setShowNotification] = useState(false);
+
+  const handleDeleteClick = (invoice) => {
+    setSelectedInvoice(invoice);
+    setIsModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (selectedInvoice) {
+      await deleteInvoice(selectedInvoice.orderNumber);
+      setIsModalOpen(false);
+      setSelectedInvoice(null);
+
+      // Show notification for 2 seconds
+      
+      setShowNotification(true);
+      setTimeout(() => {
+        setShowNotification(false);
+        window.location.reload();
+      }, 2000);
+    }
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedInvoice(null);
+  };
 
   return (
     <div className="mx-5 max-lg:max-w-[83vw] max-w-[90vw] lg:min-w-max flex-1 custom-scrollbar">
@@ -287,13 +319,63 @@ export default function Invoices({ data }) {
               </Link>
             </div>
             <DataTable
-              columns={columns}
+              columns={[
+                ...columns.map((col) =>
+                  col.accessorKey === "actions"
+                    ? {
+                        ...col,
+                        cell: ({ row }) => (
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost">
+                                <MoreHorizontalIcon className="h-5 w-5" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                              <DropdownMenuItem
+                                onClick={() => printInvoice(row.original)}
+                              >
+                                <PrinterIcon className="mr-2 h-4 w-4" />
+                                <span>Print</span>
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => handleDeleteClick(row.original)}
+                              >
+                                <TrashIcon className="mr-2 h-4 w-4 text-red-500" />
+                                <span className="text-red-500">Delete</span>
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        ),
+                      }
+                    : col
+                ),
+              ]}
               data={data}
-              initialSorting={initialSortingState}
+              initialSorting={[
+                {
+                  id: "createdAt",
+                  desc: true,
+                },
+              ]}
             />
           </div>
         </CardContent>
       </Card>
+
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onConfirm={confirmDelete}
+        message={`Are you sure you want to delete invoice #${selectedInvoice?.orderNumber}?`}
+      />
+
+      {/* Notification Popup */}
+      <NotificationPopup
+        message="Invoice deleted successfully!"
+        isVisible={showNotification}
+      />
     </div>
   );
 }

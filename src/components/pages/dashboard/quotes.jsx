@@ -2,14 +2,14 @@ import { useInvoiceStore } from "@/store/store";
 import Header from "../../sections/quoteHeader";
 import MainDetails from "../../sections/quotesMainDetails";
 import Notes from "../../sections/Notes";
-import TableForm from "../../sections/TableForm";
+import TableForm from "../../sections/quoteTableForm";
 import { useEffect, useRef, useState } from "react";
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
 import { Textarea } from "../../ui/textarea";
 import { Button } from "../../ui/button";
 import ReactToPrint from "react-to-print";
-import TableContainer from "../../sections/Table";
+import TableContainer from "../../sections/quoteTable";
 import { Checkbox } from "../../ui/checkbox";
 import Image from "next/image";
 import { RadioGroup, RadioGroupItem } from "../../ui/radio-group";
@@ -110,14 +110,14 @@ function App() {
       coupon,
       couponDiscount,
     };
-    if (!existingCustomer) {
-      const newCustomer = await axios.post("/api/createCustomer", {
-        name: customerName,
-        phoneNumber,
-        emailId,
-      });
-      console.log(newCustomer);
-    }
+    // if (!existingCustomer) {
+    //   const newCustomer = await axios.post("/api/createCustomer", {
+    //     name: customerName,
+    //     phoneNumber,
+    //     emailId,
+    //   });
+    //   console.log(newCustomer);
+    // }
     const response = await axios.post("/api/invoice", { ...data });
     setIsInvoiceSaved(true);
 
@@ -308,62 +308,7 @@ function App() {
                 onChange={(e) => setNotes(e.target.value)}
               ></Textarea>
             </div>
-            <div>
-              <Label>Payment Mode:</Label>
-              <RadioGroup
-                defaultValue="cash"
-                value={paymentMode}
-                onValueChange={setPaymentMode}
-                className="flex gap-4 my-2"
-              >
-                <div className="flex items-center space-x-2 ">
-                  <RadioGroupItem value="cash" id="cash" />
-                  <Label htmlFor="cash">Cash</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="upi" id="upi" />
-                  <Label htmlFor="upi">Upi</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="card" id="card" />
-                  <Label htmlFor="card">Card</Label>
-                </div>
-              </RadioGroup>
-              {isPopoverOpen && (
-                <>
-                  <Image
-                    src="/images/upi.jpg"
-                    width={400}
-                    height={800}
-                    alt=""
-                  />
-                </>
-              )}
-              <div className="flex items-center my-4 space-x-2">
-                <Checkbox
-                  id="paymentDone"
-                  checked={isPaymentDone}
-                  onCheckedChange={setIsPaymentDone}
-                />
-                <Label
-                  htmlFor="paymentDone"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  Payment Done?
-                </Label>
-              </div>
-              {isPaymentDone && (
-                <div className="flex gap-2">
-                  <div className="" onClick={handleSubmit}>
-                    {" "}
-                    <ReactToPrint
-                      trigger={() => <Button>Save / Download</Button>}
-                      content={() => componentRef.current}
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
+            
           </div>
         </section>
 
