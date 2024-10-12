@@ -63,11 +63,13 @@ export default function NewStoreDialog({ isOpen, setIsOpen }) {
       console.log("Response from server:", result);
       console.log(result);
 
-      await createStore({ ...data, logo: result.fileUrl });
+      await createStore({ ...data, logo: result.fileId });
       toast.success("Store created successfully!", {
         id: "create-store",
       });
-      router.reload();
+
+      window.location.reload();
+
       setIsOpen(false);
     } catch (error) {
       console.error("File upload error:", error.message); // Log any error

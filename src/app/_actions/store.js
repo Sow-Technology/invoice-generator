@@ -14,6 +14,7 @@ export async function createStore(storeData) {
       logo: storeData.logo,
     });
     await newStore.save();
+    console.log("Store created successfully");
     return true;
   } catch (err) {
     console.error(err);

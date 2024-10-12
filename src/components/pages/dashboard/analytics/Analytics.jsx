@@ -239,6 +239,7 @@ const Analytics = () => {
   };
   return (
     <div className="space-y-8">
+      <h2 className="text-2xl font-bold">Sales Analytics</h2>
       <div className="flex space-x-4">
         <Select value={viewMode} onValueChange={setViewMode}>
           <SelectTrigger>

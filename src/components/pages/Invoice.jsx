@@ -44,6 +44,8 @@ function App() {
     subTotal,
     paymentMode,
     setTax,
+    paid,
+    setPaid,
     tax,
     taxValue,
     setTaxValue,
@@ -65,6 +67,8 @@ function App() {
   const [isPaymentDone, setIsPaymentDone] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [stores, setStores] = useState([]);
+  const [clientSource, setClientSource] = useState("WalkIn");
+  const [paymentStatus, setPaymentStatus] = useState("Unpaid");
   useEffect(() => {
     console.log(paymentMode);
     if (paymentMode == "upi") {
@@ -74,25 +78,30 @@ function App() {
       setIsPopoverOpen(false);
     }
   }, [paymentMode]);
+  const PAYMENT_TOLERANCE = 10;
+
+  const handleReset = async () => {
+    await getInvoiceNumber();
+    setCustomerName("");
+    setPhoneNumber("");
+    setEmailId("");
+    setNotes("");
+    setItems([]);
+    setPaymentMode(null);
+    setTax(0);
+    setProducts([]);
+    setTaxValue(0);
+    setIsPaymentDone(false);
+    setIsInvoiceSaved(false);
+    setClientSource("");
+    setPaymentStatus("Unpaid");
+    setPaid(0);
+  };
   const handleSubmit = async () => {
     if (isInvoiceSaved) {
       toast.error("This invoice has already been saved!");
       return;
     }
-    const handleReset = async () => {
-      await getInvoiceNumber();
-      setCustomerName("");
-      setPhoneNumber("");
-      setEmailId("");
-      setNotes("");
-      setItems([]);
-      setPaymentMode(null);
-      setTax(0);
-      setProducts([]);
-      setTaxValue(0);
-      setIsPaymentDone(false);
-      setIsInvoiceSaved(false);
-    };
 
     const data = {
       orderNumber,
@@ -109,7 +118,11 @@ function App() {
       storeName: store.code,
       coupon,
       couponDiscount,
+      clientSource,
+      paymentStatus,
+      amountPaid: paid,
     };
+
     if (!existingCustomer) {
       const newCustomer = await axios.post("/api/createCustomer", {
         name: customerName,
@@ -118,6 +131,7 @@ function App() {
       });
       console.log(newCustomer);
     }
+
     const response = await axios.post("/api/invoice", { ...data });
     setIsInvoiceSaved(true);
 
@@ -125,8 +139,20 @@ function App() {
       console.log(res);
       setOrderNumber(res.data);
     });
+
     handleReset();
   };
+  useEffect(() => {
+    const difference = subTotal - paid;
+    console.log("DIFFERENCE", difference);
+    if (paid > 0 && difference > 0 && difference > PAYMENT_TOLERANCE) {
+      setPaymentStatus("Partially Paid");
+    } else if (difference <= PAYMENT_TOLERANCE) {
+      setPaymentStatus("Paid");
+    } else {
+      setPaymentStatus("Unpaid");
+    }
+  }, [paid, subTotal]);
   useEffect(() => {
     if (window.innerWidth < width) {
       alert("Place your phone in landscape mode for the best experience");
@@ -207,6 +233,8 @@ function App() {
       </div>
     );
   }
+
+  console.log(clientSource);
   return (
     <>
       <main
@@ -242,7 +270,7 @@ function App() {
                 </div>
               </article>
               <article className="grid grid-cols-4 gap-4 md:mt-6 max-lg:space-y-2">
-                <div className=" flex-col gap-3 col-span-3">
+                <div className=" flex-col gap-3 col-span-2">
                   <Label htmlFor="phoneNumber">
                     Enter customer phone number
                   </Label>
@@ -256,11 +284,47 @@ function App() {
                     onChange={(e) => setPhoneNumber(e.target.value)}
                   />
                 </div>
+
                 <div className="w-max col-span-1 flex  items-end">
                   {" "}
                   <Button onClick={handleFetchCustomerDetails}>
                     Get Details
                   </Button>
+                </div>
+                <div className="flex flex-col w-auto items-start gap-2 col-span-1">
+                  <Label htmlFor="" className="w-full">
+                    Client Source
+                  </Label>
+                  <Select
+                    onValueChange={(e) => {
+                      console.log(e);
+                      setClientSource(e);
+                    }}
+                    value={clientSource}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select a source" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {[
+                        "WalkIn",
+                        "Phone Outreach",
+                        "Website",
+                        "Email Campaign",
+                        "Advertisement",
+                        "Referral",
+                        "Social Media",
+                        "Networking",
+                        "LinkedIn",
+                        "Affiliate",
+                        "Other",
+                      ].map((source, idx) => (
+                        <SelectItem key={idx} value={source}>
+                          {source}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="flex flex-col gap-3 col-span-2">
                   <Label htmlFor="customerName">Customer Name</Label>

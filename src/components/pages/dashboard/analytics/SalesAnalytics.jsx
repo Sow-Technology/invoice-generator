@@ -68,7 +68,7 @@ const SalesAnalytics = ({
 
   if (isLoading) {
     return (
-      <Card>
+      <Card className="bg-white ">
         <CardHeader>
           <CardTitle>{chartConfig.title}</CardTitle>
         </CardHeader>
@@ -97,7 +97,7 @@ const SalesAnalytics = ({
   }
 
   return (
-    <Card>
+    <Card className="bg-white">
       <CardHeader>
         <CardTitle>{chartConfig.title}</CardTitle>
       </CardHeader>

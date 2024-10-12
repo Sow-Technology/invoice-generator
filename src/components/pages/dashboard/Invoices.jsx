@@ -11,16 +11,28 @@ import { DataTable } from "@/components/ui/data-table";
 import {
   ArrowUpDown,
   PlusIcon,
+<<<<<<< HEAD
   MoreHorizontalIcon,
   PrinterIcon,
   TrashIcon,
 } from "lucide-react";
+=======
+  MoreVerticalIcon,
+  MoreHorizontalIcon,
+  PrinterIcon,
+  TrashIcon,
+} from "lucide-react"; // Import MoreVerticalIcon
+>>>>>>> b8ae4f5466f0b685b97dc034bf3b05d52c3f99fe
 import {
   DropdownMenu,
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuContent,
+<<<<<<< HEAD
 } from "@/components/ui/dropdown-menu";
+=======
+} from "@/components/ui/dropdown-menu"; // For dropdown menu
+>>>>>>> b8ae4f5466f0b685b97dc034bf3b05d52c3f99fe
 import Link from "next/link";
 import React from "react";
 import ConfirmationModal from "@/components/ConfirmationModal"; 
@@ -105,13 +117,17 @@ const printInvoice = (invoice) => {
 
           <div style="display:flex;">
           <div class="customer-details">
-            <p class="details-title">Customer Name: <span>${invoice.customerName}</span></p>
+            <p class="details-title">Customer Name: <span>${
+              invoice.customerName
+            }</span></p>
             <p>Phone Number: ${invoice.phoneNumber}</p>
             <p>Email Id: ${invoice.emailId}</p>
           </div>
           <div style="margin-left:250px;" class="order-details">
             <p><strong>Order number:</strong> #${invoice.orderNumber}</p>
-            <p><strong>Invoice date:</strong> ${new Date(invoice.createdAt).toDateString()}</p>
+            <p><strong>Invoice date:</strong> ${new Date(
+              invoice.createdAt
+            ).toDateString()}</p>
             <p><strong>GST IN:</strong> 29BCNPT0590C1ZB </p>
           </div>
           </div>
@@ -174,7 +190,18 @@ const deleteInvoice = async (orderNumber) => {
     body: JSON.stringify({ orderNumber }),
   });
 
+<<<<<<< HEAD
   return await response.json();
+=======
+  const result = await response.json();
+
+  if (result.success) {
+    alert("Invoice deleted successfully!");
+    window.location.reload(); // Reload the page to reflect changes
+  } else {
+    alert("Failed to delete invoice: " + result.message);
+  }
+>>>>>>> b8ae4f5466f0b685b97dc034bf3b05d52c3f99fe
 };
 
 // Define columns with sorting functionality
@@ -242,7 +269,33 @@ const columns = [
     ),
   },
   {
+<<<<<<< HEAD
     accessorKey: "actions", 
+=======
+    accessorKey: "clientSource",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Client Source <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+  },
+  {
+    accessorKey: "amountPaid",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Client Source <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+  },
+  {
+    accessorKey: "actions", // New column for actions
+>>>>>>> b8ae4f5466f0b685b97dc034bf3b05d52c3f99fe
     header: "Actions",
     cell: ({ row }) => (
       <DropdownMenu>
@@ -256,7 +309,13 @@ const columns = [
             <PrinterIcon className="mr-2 h-4 w-4" />
             <span>Print</span>
           </DropdownMenuItem>
+<<<<<<< HEAD
           <DropdownMenuItem onClick={() => handleDeleteClick(row.original)}>
+=======
+          <DropdownMenuItem
+            onClick={() => deleteInvoice(row.original.orderNumber)}
+          >
+>>>>>>> b8ae4f5466f0b685b97dc034bf3b05d52c3f99fe
             <TrashIcon className="mr-2 h-4 w-4 text-red-500" />
             <span className="text-red-500">Delete</span>
           </DropdownMenuItem>
@@ -298,10 +357,10 @@ export default function Invoices({ data }) {
   };
 
   return (
-    <div className="mx-5 max-lg:max-w-[83vw] max-w-[90vw] lg:min-w-max flex-1 custom-scrollbar">
-      <Card className="w-full mt-5 h-max mx-auto">
+    <div className=" max-w-[85vw] p-6 bg-slate-50 rounded-xl shadow-md w-full flex-1 custom-scrollbar">
+      <Card className="w-full mt-5 h-max mx-auto bg-white">
         <CardHeader>
-          <CardTitle>Invoices</CardTitle>
+          <CardTitle className="text-2xl font-bold">Invoices</CardTitle>
           <CardDescription>
             Manage your invoices and view their details.
           </CardDescription>

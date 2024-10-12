@@ -9,3 +9,12 @@ export async function getNewInvoiceNumber() {
   const nextInvoiceNumber = "JO" + (invoiceCount + 1);
   return nextInvoiceNumber;
 }
+
+export async function updateInvoice(invoice) {
+  await dbConnect();
+  const updatedInvoice = await Invoice.findByIdAndUpdate(invoice._id, invoice, {
+    new: true,
+  });
+  console.log(updatedInvoice);
+  return true;
+}
