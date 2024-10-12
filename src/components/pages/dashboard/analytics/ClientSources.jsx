@@ -18,7 +18,7 @@ export default function ClientSources({ data }) {
 
   return (
     <TooltipProvider>
-      <ResponsiveContainer width="110%" height={220}>
+      <ResponsiveContainer width="110%" height={250}>
         <PieChart>
           <Pie
             data={chartData}

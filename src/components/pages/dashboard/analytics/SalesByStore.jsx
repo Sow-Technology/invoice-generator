@@ -20,7 +20,7 @@ export default function SalesByStore({ data }) {
 
   return (
     <TooltipProvider>
-      <ResponsiveContainer width="100%" height={320}>
+      <ResponsiveContainer width="100%" height={300}>
         <PieChart>
           <Pie
             data={chartData}
