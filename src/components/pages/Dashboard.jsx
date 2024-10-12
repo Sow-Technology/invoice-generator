@@ -11,7 +11,7 @@ import Invoices from "./dashboard/Invoices";
 import Invoicess from "./dashboard/quotes";
 
 import Sidebar from "./dashboard/Sidebar";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import DashboardSection from "./dashboard/DashboardSection";
 import { useSession } from "next-auth/react";
 import Products from "./dashboard/products/Products";
@@ -90,6 +90,13 @@ export default function Dashboard() {
     queryFn: () => fetchMetrics(),
   });
 
+  const { data: stores, isLoading: isStoreLoading } = useQuery({
+    queryKey: ["store"],
+    queryFn: async () => {
+      const response = await axios.get("/api/getStores");
+      return response.data;
+    },
+  });
   // Update URL search parameters when active section changes
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -100,7 +107,8 @@ export default function Dashboard() {
       `${window.location.pathname}?${params}`
     );
   }, [active]);
-  if (isLoading || metricsLoading) return <div>Loading...</div>;
+  if (isLoading || metricsLoading || isStoreLoading)
+    return <div>Loading...</div>;
   if (error) return <div>Error loading invoices: {error.message}</div>;
   console.log(session);
   if (session.status == "unauthenticated") {
@@ -126,6 +134,7 @@ export default function Dashboard() {
             isDataLoading={metricsLoading}
             setDateRange={setDateRange}
             storeName={storeName}
+            stores={stores}
             setStoreName={setStoreName}
           />
         )}

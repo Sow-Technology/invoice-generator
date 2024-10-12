@@ -35,6 +35,7 @@ const DashboardSection = ({
   dateRange,
   setDateRange,
   isDataLoading,
+  stores,
   storeName,
   setStoreName,
 }) => {
@@ -56,9 +57,9 @@ const DashboardSection = ({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Stores</SelectItem>
-                {storesData.map((store) => (
-                  <SelectItem key={store.name} value={store.name}>
-                    {store.name}
+                {stores.map((store) => (
+                  <SelectItem key={store.code} value={store.code}>
+                    {store.code}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -78,8 +79,8 @@ const DashboardSection = ({
           </div>
         </div>
 
-        <div className="flex flex-wrap justify-between gap-2 items-stretch gap-y-7">
-          <Card className="bg-white min-w-[250px] lg:w-[450px] ">
+        <div className="flex flex-wrap justify-between gap-7 items-stretch gap-y-7">
+          <Card className="bg-white min-w-[250px] lg:w-[450px] flex-1">
             <CardHeader>
               <CardTitle>Client Sources</CardTitle>
             </CardHeader>
@@ -99,7 +100,7 @@ const DashboardSection = ({
               }
             />
           </SkeletonWrapper>
-          <Card className="bg-white min-w-[250px] w-[450px]">
+          <Card className="bg-white min-w-[250px] w-[450px] flex-1">
             <CardHeader>
               <CardTitle>Invoice Status</CardTitle>
             </CardHeader>
@@ -109,7 +110,7 @@ const DashboardSection = ({
           </Card>
         </div>
         <div className="flex flex-wrap justify-evenly gap-2 items-stretch gap-y-7">
-          <Card className="bg-white min-w-[250px] w-[600px]">
+          <Card className="bg-white min-w-[250px] w-[500px]">
             <CardHeader>
               <CardTitle>Daily Sales (Past 7 Days)</CardTitle>
             </CardHeader>
@@ -155,23 +156,25 @@ const DashboardSection = ({
               />
             </SkeletonWrapper>
           </div>
-          <SkeletonWrapper isLoading={isDataLoading}>
-            <DataCard
-              title="Repeat Customers"
-              value={data.totalRepeatedCustomers}
-              icon={<Repeat className="h-8 w-8 text-white" />}
-            />
-          </SkeletonWrapper>
-          <SkeletonWrapper isLoading={isDataLoading}>
-            <DataCard
-              title="Total Tax Collected"
-              value={`₹${Number(data.totalTaxValue).toLocaleString("en-IN", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}`}
-              icon={<FileText className="h-8 w-8 text-white" />}
-            />
-          </SkeletonWrapper>
+          <div className="flex items-center flex-col justify-between">
+            <SkeletonWrapper isLoading={isDataLoading}>
+              <DataCard
+                title="Repeat Customers"
+                value={data.totalRepeatedCustomers}
+                icon={<Repeat className="h-8 w-8 text-white" />}
+              />
+            </SkeletonWrapper>
+            <SkeletonWrapper isLoading={isDataLoading}>
+              <DataCard
+                title="Total Tax Collected"
+                value={`₹${Number(data.totalTaxValue).toLocaleString("en-IN", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}`}
+                icon={<FileText className="h-8 w-8 text-white" />}
+              />
+            </SkeletonWrapper>
+          </div>
         </div>
       </div>
       <div className="p-6 bg-slate-50 rounded-xl shadow-md w-full">

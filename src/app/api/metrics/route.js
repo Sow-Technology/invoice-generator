@@ -69,7 +69,7 @@ export async function GET(req) {
           acc[paymentStatus] = (acc[paymentStatus] || 0) + 1;
           return acc;
         },
-        { Paid: 0, "Partially Paid": 0, Unpaid: 0 }
+        { Paid: 0, "Partially Paid": 0 }
       );
 
     const clientSourceSummary = additionalMetrics[0]?.clientSourceCounts.reduce(
