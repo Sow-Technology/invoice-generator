@@ -2,11 +2,11 @@ import React from "react";
 
 export default function TermsConditions() {
   return (
-    <div className="flex flex-col gap-5">
-      <h2 className="font-bold text-xl text-[#272727]">
+    <div className="flex flex-col gap-5 text-[10px] leading-3 ">
+      <h2 className="font-bold text-xs text-[#272727]">
         Terms and Conditions for Jaanavi Opticals
       </h2>{" "}
-      <ol className="list-decimal ml-7">
+      <ol className="list-decimal ml-7 ">
         <li>
           {" "}
           <b>Warranty on Frames</b> All frames purchased from Jaanavi Opticals
@@ -26,8 +26,9 @@ export default function TermsConditions() {
           </li>
           <li>
             {" "}
-            <b>Warranty on Sunglasses Polarized Sunglasses:</b> Have a 6-month
-            unconditional warranty.
+            <b>Warranty on Sunglasses:</b>
+            <br /> <b> Polarized Sunglasses:</b> Have a 6-month unconditional
+            warranty.
             <br /> <b>Other Sunglasses:</b> Not covered under any warranty.
           </li>
           <li>
