@@ -16,16 +16,13 @@ import Analytics from "./analytics/Analytics";
 import ClientSources from "./analytics/ClientSources";
 import PaymentStatus from "./analytics/PaymentStatus";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from "recharts";
 import {
-  Users,
-  FileText,
-  Calendar,
-  DollarSign,
-  Percent,
-  Repeat,
-  Receipt,
   IndianRupee,
+  Percent,
+  Receipt,
+  Repeat,
+  FileText,
+  Users,
 } from "lucide-react";
 import Past7DaysSales from "./analytics/Past7DaysSales";
 import SalesByStore from "./analytics/SalesByStore";
@@ -41,9 +38,11 @@ const DashboardSection = ({
   setStoreName,
 }) => {
   console.log("=====METRICS=====", data);
+
   return (
     <div className="flex flex-1 flex-col gap-10 rounded-3xl sm:pt-4 w-full">
       <div className="p-6 bg-slate-50 rounded-xl shadow-md w-full flex flex-col gap-5">
+        {/* Header Section */}
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold">Dashboard</h2>
           <div className="flex gap-4">
@@ -79,133 +78,115 @@ const DashboardSection = ({
             />
           </div>
         </div>
-        <div className="flex justify-between gap-5 flex-auto">
-          <div className="flex flex-col justify-between gap-10 flex-1">
-            {" "}
-            <Card className="bg-white min-w-[250px] lg:w-[300px]">
+
+        {/* Main Content */}
+        <div className="grid grid-cols-1 2xl:grid-cols-[2.3fr_2fr_2.3fr] gap-8 lg:grid-cols-7 ">
+          {/* Left Side Graphs */}
+          <div className="flex flex-col gap-8 max-2xl:col-span-2">
+            <Card className="bg-white">
               <CardHeader>
                 <CardTitle>Client Sources</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className=" ">
                 <ClientSources data={data.clientSourceSummary} />
               </CardContent>
             </Card>
-            <Card className="bg-white min-w-[250px] lg:w-[300px]  flex-1">
+            <Card className="bg-white ">
               <CardHeader>
                 <CardTitle>Sales By Store</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="">
                 <SalesByStore data={data.salesByStore} />
               </CardContent>
             </Card>
           </div>
-          <div className="flex flex-col gap-5 ">
-            <div className="flex gap-10 flex-wrap justify-between">
-              <SkeletonWrapper isLoading={isDataLoading}>
-                <DataCard
-                  title="Total Revenue"
-                  value={`₹${Number(data.totalOrderValue).toLocaleString(
-                    "en-IN",
-                    {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    }
-                  )}`}
-                  icon={
-                    <IndianRupee className="h-8 w-8  text-white drop-shadow-2xl" />
+
+          {/* Center DataCards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-2xl:col-span-3">
+            <SkeletonWrapper isLoading={isDataLoading}>
+              <DataCard
+                title="Total Revenue"
+                value={`₹${Number(data.totalOrderValue).toLocaleString(
+                  "en-IN",
+                  {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
                   }
-                />
-              </SkeletonWrapper>
-              <SkeletonWrapper isLoading={isDataLoading}>
-                <DataCard
-                  title="Total Profit"
-                  value={`₹${Number(data.totalProfit).toLocaleString("en-IN", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}`}
-                  icon={<Percent className="h-8 w-8 text-white" />}
-                />
-              </SkeletonWrapper>{" "}
-              <SkeletonWrapper isLoading={isDataLoading}>
-                <DataCard
-                  title="Total Orders"
-                  value={data.totalOrders}
-                  icon={<Receipt className="h-8 w-8 text-white" />}
-                />
-              </SkeletonWrapper>
-              <SkeletonWrapper isLoading={isDataLoading}>
-                <DataCard
-                  title="Repeat Customers"
-                  value={data.totalRepeatedCustomers}
-                  icon={<Repeat className="h-8 w-8 text-white" />}
-                />
-              </SkeletonWrapper>
-              <SkeletonWrapper isLoading={isDataLoading}>
-                <DataCard
-                  title="Total Tax Collected"
-                  value={`₹${Number(data.totalTaxValue).toLocaleString(
-                    "en-IN",
-                    {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    }
-                  )}`}
-                  icon={<FileText className="h-8 w-8 text-white" />}
-                />
-              </SkeletonWrapper>
-              <SkeletonWrapper isLoading={isDataLoading}>
-                <DataCard
-                  title="Total Profit"
-                  value={`₹${Number(data.totalProfit).toLocaleString("en-IN", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}`}
-                  icon={<Percent className="h-8 w-8 text-white" />}
-                />
-              </SkeletonWrapper>
-              <SkeletonWrapper isLoading={isDataLoading}>
-                <DataCard
-                  title="Aspire 15%"
-                  value={`₹${Number(data.aspire15).toLocaleString("en-IN", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}`}
-                  icon={<IndianRupee className="h-8 w-8 text-white" />}
-                />
-              </SkeletonWrapper>
-              <SkeletonWrapper isLoading={isDataLoading}>
-                <DataCard
-                  title="Total Customers"
-                  value={data.totalCustomers}
-                  icon={<Users className="h-8 w-8 text-white" />}
-                />
-              </SkeletonWrapper>
-            </div>
+                )}`}
+                icon={<IndianRupee className="h-8 w-8 text-white" />}
+              />
+            </SkeletonWrapper>
+            <SkeletonWrapper isLoading={isDataLoading}>
+              <DataCard
+                title="Total Profit"
+                value={`₹${Number(data.totalProfit).toLocaleString("en-IN", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}`}
+                icon={<Percent className="h-8 w-8 text-white" />}
+              />
+            </SkeletonWrapper>
+            <SkeletonWrapper isLoading={isDataLoading}>
+              <DataCard
+                title="Total Orders"
+                value={data.totalOrders}
+                icon={<Receipt className="h-8 w-8 text-white" />}
+              />
+            </SkeletonWrapper>
+            <SkeletonWrapper isLoading={isDataLoading}>
+              <DataCard
+                title="Repeat Customers"
+                value={data.totalRepeatedCustomers}
+                icon={<Repeat className="h-8 w-8 text-white" />}
+              />
+            </SkeletonWrapper>
+            <SkeletonWrapper isLoading={isDataLoading}>
+              <DataCard
+                title="Total Tax Collected"
+                value={`₹${Number(data.totalTaxValue).toLocaleString("en-IN", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}`}
+                icon={<FileText className="h-8 w-8 text-white" />}
+              />
+            </SkeletonWrapper>
+            <SkeletonWrapper isLoading={isDataLoading}>
+              <DataCard
+                title="Total Customers"
+                value={data.totalCustomers}
+                icon={<Users className="h-8 w-8 text-white" />}
+              />
+            </SkeletonWrapper>
           </div>
-          <div className="flex flex-col gap-10 ">
-            {" "}
-            <Card className="bg-white min-w-[250px] w-auto flex-1">
+
+          {/* Right Side Graphs */}
+          <div className="flex flex-col gap-8 max-2xl:col-span-2">
+            <Card className="bg-white flex-1">
               <CardHeader>
                 <CardTitle>Invoice Status</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="">
                 <PaymentStatus data={data.paymentStatusSummary} />
               </CardContent>
             </Card>
-            <Card className="bg-white min-w-[250px] w-[380px] flex-1">
+            <Card className="bg-white flex-1 ">
               <CardHeader>
                 <CardTitle>Daily Sales (Past 7 Days)</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="">
                 <Past7DaysSales />
               </CardContent>
             </Card>
           </div>
         </div>
       </div>
+
+      {/* Analytics Section */}
       <div className="p-6 bg-slate-50 rounded-xl shadow-md w-full">
         <Analytics />
       </div>
+
+      {/* Invoices Section */}
       <div className="">
         <Invoices data={invoiceData} />
       </div>
