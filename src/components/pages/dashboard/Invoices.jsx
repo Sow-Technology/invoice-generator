@@ -150,7 +150,7 @@ const printInvoice = (invoice) => {
           <div style="margin-left:530px;" class="total-section">
             <p>Tax: ₹${invoice.taxValue.toFixed(2)}</p><br />
             <p>SubTotal: ₹${invoice.subTotal.toFixed(2)}</p><br />
-            <p class="paid-status">Paid: ₹${invoice.paid}</p>
+            <p class="paid-status">Paid: ₹${invoice.amountPaid}</p>
           </div>
           <div class="payment-mode">
             <p><strong>Payment Mode:</strong> ${invoice.paymentMode}</p>
@@ -377,9 +377,11 @@ export default function Invoices({ data }) {
 
       {/* Notification Popup */}
       <NotificationPopup
-        message="Invoice deleted successfully!"
-        isVisible={showNotification}
-      />
+  message="Invoice deleted successfully!"
+  isVisible={showNotification}
+  variant="success"  // Pass "success" or "error" based on the type of notification
+/>
+
     </div>
   );
 }

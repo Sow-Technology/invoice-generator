@@ -74,14 +74,14 @@ const TableContainer = () => {
           <div className="">Tax</div>
           {couponDiscount && <div className="">Coupon Discount</div>}
           <div className="">SubTotal</div>
-          <div className="text-primary font-medium">Paid</div>
+          {/* <div className="text-primary font-medium">Paid</div> */}
         </div>
         <div className="text-right">
           <div>₹{taxValue}</div>
           {couponDiscount && <div className="">-₹{couponDiscount}</div>}
 
           <div>₹{subTotal}</div>
-          <div className="text-primary font-medium">₹{paid}</div>
+          {/* <div className="text-primary font-medium">₹{paid}</div> */}
         </div>
       </div>
      
