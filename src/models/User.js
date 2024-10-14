@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { union } from "zod";
 
 const userSchema = new mongoose.Schema(
   {

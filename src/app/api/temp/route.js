@@ -9,14 +9,14 @@ export async function GET(req) {
   try {
     // Find the highest invoice number currently in the database
     const latestInvoice = await Invoice.findOne()
-      .sort({ createdAt: -1 }) // Assuming 'createdAt' or '_id' can be used for sorting
-      .select("invoiceNumber"); // Select the invoiceNumber field
+      .sort({ createdAt: -1 })
+      .select("orderNumber");
 
     let highestInvoiceNumber = 0;
 
     if (latestInvoice) {
       // Extract the numeric part from the existing invoice number
-      const invoiceNumberString = latestInvoice.invoiceNumber.replace("JO", "");
+      const invoiceNumberString = latestInvoice.orderNumber.replace("JO", "");
       highestInvoiceNumber = parseInt(invoiceNumberString, 10);
     }
 

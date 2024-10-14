@@ -20,8 +20,8 @@ const PaymentStatus = ({ data }) => {
   const colors = {
     Paid: ["#66bb6a", "#43a047"],
     "Partially Paid": ["#ffca28", "#ffb300"],
-    Unpaid: ["#ef5350", "#d32f2f"],
-    Undefined: ["#bdbdbd", "#757575"], // Gray gradient for undefined status
+    // Unpaid: ["#ef5350", "#d32f2f"],
+    // Undefined: ["#bdbdbd", "#757575"], // Gray gradient for undefined status
   };
 
   return (
@@ -31,7 +31,16 @@ const PaymentStatus = ({ data }) => {
         <XAxis dataKey="name" />
         <YAxis />
         <Tooltip />
-        <Legend />
+        <Legend
+          payload={Object.entries(colors).map(
+            ([status, [startColor, endColor]]) => ({
+              id: status,
+              value: status,
+              type: "square",
+              color: `url(#gradient-${status})`,
+            })
+          )}
+        />
         <defs>
           {Object.entries(colors).map(([status, [startColor, endColor]]) => (
             <linearGradient

@@ -92,7 +92,11 @@ const Past7DaysSales = () => {
             </defs>
             <XAxis dataKey="_id" tickFormatter={chartConfig.xAxisFormatter} />
             <YAxis tickFormatter={formatYAxis} />
-            <Tooltip labelFormatter={chartConfig.tooltipFormatter} />
+            <Tooltip
+              labelFormatter={chartConfig.tooltipFormatter}
+              formatter={(value) => [`${formatYAxis(value)}`, "Total Sales"]}
+              // Custom label "Total Sales"
+            />
             <Bar dataKey="totalSales" fill="url(#gradientBar)" />
           </BarChart>
         </ResponsiveContainer>

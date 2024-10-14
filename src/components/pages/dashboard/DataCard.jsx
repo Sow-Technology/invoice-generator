@@ -1,6 +1,13 @@
 import { cn } from "@/lib/utils";
 
-export default function DataCard({ title, icon, value, onClick, className }) {
+export default function DataCard({
+  title,
+  icon,
+  value,
+  onClick,
+  className,
+  revenue,
+}) {
   return (
     <div
       onClick={onClick}
@@ -10,14 +17,21 @@ export default function DataCard({ title, icon, value, onClick, className }) {
       )}
     >
       <div className="flex justify-between items-center mb-2 ">
-        <div className=" text-lg font-bold text-slate-50 drop-shadow-2xl  spice">
+        <div
+          className={cn(
+            "text-xl lg:text-[1.3vw] font-bold text-slate-50 drop-shadow-2xl  spice",
+            revenue
+          )}
+        >
           {" "}
           {value}
         </div>
 
         <span className="text-4xl h-8 w-8 block">{icon}</span>
       </div>
-      <span className="text-gray-800 text-base  block font-bold">{title}</span>
+      <span className={cn("text-gray-800 lg:text-[1.15vw]  block font-bold")}>
+        {title}
+      </span>
     </div>
   );
 }

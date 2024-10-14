@@ -1,5 +1,5 @@
 import { useInvoiceStore } from "@/store/store";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   Table,
   TableBody,
@@ -9,40 +9,45 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Popover, PopoverContent } from "../ui/popover";
-import Image from "next/image";
 
 const TableContainer = () => {
   const {
     products,
-    setProducts,
     total,
     subTotal,
-    setSubTotal,
     balance,
-    setBalance,
     paid,
-    setPaid,
-    isEditing,
-    setIsEditing,
-    showModal,
     couponDiscount,
-    setShowModal,
     paymentMode,
     taxValue,
   } = useInvoiceStore();
 
   return (
     <>
-      <Table width="100%" className="mb-10 overflow-auto">
+      <Table
+        width="100%"
+        className="mb-10 overflow-auto border-collapse border border-gray-300"
+      >
         <TableHeader>
-          <TableRow className="bg-gray-100 p-1 text-primary">
-            <TableHead className="font-bold">Code</TableHead>
-            <TableHead className="font-bold">Product Name</TableHead>
-            <TableHead className="font-bold">Qty</TableHead>
-            <TableHead className="font-bold">Unit Price</TableHead>
-            <TableHead className="font-bold">Discount</TableHead>
-            <TableHead className="font-bold">Total</TableHead>
+          <TableRow className="bg-gray-100 p-1 text-primary border border-gray-300">
+            <TableHead className="font-bold border border-gray-300">
+              Code
+            </TableHead>
+            <TableHead className="font-bold border border-gray-300">
+              Product Name
+            </TableHead>
+            <TableHead className="font-bold border border-gray-300">
+              Qty
+            </TableHead>
+            <TableHead className="font-bold border border-gray-300">
+              Unit Price
+            </TableHead>
+            <TableHead className="font-bold border border-gray-300">
+              Discount
+            </TableHead>
+            <TableHead className="font-bold border border-gray-300">
+              Total
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -56,13 +61,23 @@ const TableContainer = () => {
               discount,
               id,
             }) => (
-              <TableRow className="h-10" key={id}>
-                <TableCell>{code}</TableCell>
-                <TableCell>{productName}</TableCell>
-                <TableCell>{quantity}</TableCell>
-                <TableCell>{unitPrice}</TableCell>
-                <TableCell>{discount}%</TableCell>
-                <TableCell className="amount">{total}</TableCell>
+              <TableRow className="h-10 border border-gray-300" key={id}>
+                <TableCell className="border border-gray-300">{code}</TableCell>
+                <TableCell className="border border-gray-300">
+                  {productName}
+                </TableCell>
+                <TableCell className="border border-gray-300">
+                  {quantity}
+                </TableCell>
+                <TableCell className="border border-gray-300">
+                  {unitPrice}
+                </TableCell>
+                <TableCell className="border border-gray-300">
+                  {discount}%
+                </TableCell>
+                <TableCell className="border border-gray-300 amount">
+                  {total}
+                </TableCell>
               </TableRow>
             )
           )}
@@ -79,14 +94,14 @@ const TableContainer = () => {
         <div className="text-right">
           <div>₹{taxValue}</div>
           {couponDiscount && <div className="">-₹{couponDiscount}</div>}
-
           <div>₹{subTotal}</div>
           <div className="text-primary font-medium">₹{paid}</div>
         </div>
       </div>
+
       <div className="flex gap-10">
         <div className="font-medium text-[#373737]">Payment Mode:</div>
-        <div className=" capitalize">{paymentMode}</div>
+        <div className="capitalize">{paymentMode}</div>
       </div>
     </>
   );

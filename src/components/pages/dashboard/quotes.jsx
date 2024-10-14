@@ -308,7 +308,10 @@ function App() {
                 onChange={(e) => setNotes(e.target.value)}
               ></Textarea>
             </div>
-            
+            <ReactToPrint
+              trigger={() => <Button className="my-5">Print / Download</Button>}
+              content={() => componentRef.current}
+            />
           </div>
         </section>
 

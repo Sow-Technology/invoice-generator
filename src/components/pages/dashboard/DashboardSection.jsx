@@ -43,19 +43,15 @@ const DashboardSection = ({
     <div className="flex flex-1 flex-col gap-10 rounded-3xl sm:pt-4 w-full">
       <div className="p-6 bg-slate-50 rounded-xl shadow-md w-full flex flex-col gap-5">
         {/* Header Section */}
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-start mb-6">
           <h2 className="text-2xl font-bold">Dashboard</h2>
-          <div className="flex gap-4">
+          <div className="flex gap-4 flex-wrap justify-end ">
             {/* Store Selector */}
-            <Select
-              value={storeName}
-              onValueChange={setStoreName}
-              className="w-48"
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Store" />
+            <Select value={storeName} onValueChange={setStoreName} className="">
+              <SelectTrigger className="w-52">
+                <SelectValue placeholder="Store" className="w-[50px]" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="w-[50px]">
                 <SelectItem value="all">All Stores</SelectItem>
                 {stores.map((store) => (
                   <SelectItem key={store.code} value={store.code}>
@@ -115,6 +111,7 @@ const DashboardSection = ({
                   }
                 )}`}
                 icon={<IndianRupee className="h-8 w-8 text-white" />}
+                revenue="lg:text-[1.8vw]"
               />
             </SkeletonWrapper>
             <SkeletonWrapper isLoading={isDataLoading}>
@@ -161,7 +158,7 @@ const DashboardSection = ({
             <SkeletonWrapper isLoading={isDataLoading}>
               <DataCard
                 title="Aspire 15"
-                value={data.aspire15}
+                value={"₹" + data.aspire15}
                 icon={<IndianRupee className="h-8 w-8 text-white" />}
               />
             </SkeletonWrapper>

@@ -1,19 +1,26 @@
 import dbConnect from "@/lib/dbConnect";
-import { Invoice } from "@/models/Invoice";
+import { Counter } from "@/models/Counter";
 import { NextResponse } from "next/server";
 
 export async function GET(req) {
   await dbConnect();
 
   try {
-    const invoiceCount = await Invoice.countDocuments();
-    const nextInvoiceNumber = "JO" + (invoiceCount + 1);
+    // Find the invoice counter and increment it atomically
+    const counter = await Counter.findOneAndUpdate(
+      { name: "invoice" },
+      { $inc: { value: 1 } },
+      { new: true, upsert: true }
+    );
+
+    const nextInvoiceNumber = "JO" + counter.value;
     console.log(nextInvoiceNumber);
+
     return NextResponse.json(nextInvoiceNumber);
   } catch (error) {
-    console.error("Error fetching invoice count:", error);
+    console.error("Error fetching invoice number:", error);
     return NextResponse.json(
-      { error: "Unable to fetch invoice count" },
+      { error: "Unable to fetch invoice number" },
       { status: 500 }
     );
   }

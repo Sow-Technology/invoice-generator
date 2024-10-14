@@ -4,10 +4,28 @@ import MainDetails from "@/components/sections/MainDetails";
 import Notes from "@/components/sections/Notes";
 import TableContainer from "@/components/sections/Table";
 import TermsConditions from "@/components/sections/TermsConditions";
+import { useInvoiceStore } from "@/store/store";
 import React, { useRef, useEffect } from "react";
 import { useReactToPrint } from "react-to-print";
 
 export default function PrintInvoiceDialog({ isOpen, setIsOpen }) {
+  const {
+    setOrderNumber,
+    setCustomerName,
+    setPhoneNumber,
+    setSubTotal,
+    setEmailId,
+    setProducts,
+    setNotes,
+    setPaymentMode,
+    setTax,
+    setTaxValue,
+    setPaymentStatus,
+    setPaid,
+
+    setInvoiceDate,
+    setStore, // Store setter
+  } = useInvoiceStore();
   const componentRef = useRef();
 
   const handlePrint = useReactToPrint({
@@ -25,6 +43,7 @@ export default function PrintInvoiceDialog({ isOpen, setIsOpen }) {
       setTaxValue(null);
       setProducts([]);
       setNotes("");
+      setStore({});
     },
   });
 

@@ -234,7 +234,7 @@ export default function Invoices({ data }) {
   ];
 
   return (
-    <div className="max-lg:max-w-[83vw] max-w-[90vw] lg:min-w-max flex-1 custom-scrollbar p-6 bg-slate-50 rounded-xl shadow-md w-full">
+    <div className="max-lg:max-w-[83vw] max-w-[90vw] flex-1 custom-scrollbar p-6 bg-slate-50 rounded-xl shadow-md w-full">
       <Card className="w-full mt-5 h-max mx-auto">
         <CardHeader>
           <CardTitle>Invoices</CardTitle>
