@@ -34,4 +34,6 @@ export const useInvoiceStore = create((set) => ({
   setCouponDiscount: (couponDiscount) => set({ couponDiscount }),
   store: {},
   setStore: (store) => set({ store }),
+  invoiceDate: new Date().toLocaleDateString(),
+  setInvoiceDate: (invoiceDate) => set({ invoiceDate }),
 }));

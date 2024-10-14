@@ -27,7 +27,7 @@ export default function ClientSources({ data }) {
             label={({ name, percent }) =>
               `${name}: ${(percent * 100).toFixed(0)}%`
             }
-            outerRadius={70}
+            outerRadius={90}
             fill="#8884d8"
             dataKey="value"
           >
@@ -39,7 +39,7 @@ export default function ClientSources({ data }) {
             ))}
           </Pie>
           <Tooltip />
-          <Legend layout="horizontal" verticalAlign="bottom" align="center" />
+          {/* <Legend layout="horizontal" verticalAlign="bottom" align="center" /> */}
         </PieChart>
       </ResponsiveContainer>
     </TooltipProvider>

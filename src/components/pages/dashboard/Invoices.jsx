@@ -1,5 +1,17 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import axios from "axios";
+import { useInvoiceStore } from "@/store/store";
+import { useEffect, useState } from "react";
+import PrintInvoiceDialog from "./invoices/PrintInvoiceDialog";
+import NotificationPopup from "@/components/NotificationPopup";
+import ConfirmationModal from "@/components/ConfirmationModal";
+import { DataTable } from "@/components/ui/data-table";
+import {
+  ArrowUpDown,
+  MoreHorizontalIcon,
+  PlusIcon,
+  PrinterIcon,
+  TrashIcon,
+} from "lucide-react";
 import {
   Card,
   CardContent,
@@ -7,284 +19,96 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { DataTable } from "@/components/ui/data-table";
-import {
-  ArrowUpDown,
-  PlusIcon,
-  MoreHorizontalIcon,
-  PrinterIcon,
-  TrashIcon,
-} from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
+  DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuContent,
 } from "@/components/ui/dropdown-menu";
-import Link from "next/link";
-import React from "react";
-import ConfirmationModal from "@/components/ConfirmationModal";
-import NotificationPopup from "@/components/NotificationPopup"; // Import the new notification component
-
-// Function to print the invoice details
-const printInvoice = (invoice) => {
-  const printWindow = window.open("", "_blank");
-  const content = `
-    <html>
-      <head>
-        <title>Print Invoice</title>
-        <style>
-          body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            font-size:14px;
-          }
-          .invoice-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 10px solid rgb(40 53 146);
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-          }
-          .invoice-header h1 {
-            color: #00008B;
-          }
-          .customer-details, .order-details {
-            margin-bottom: 20px;
-
-          }
-          .customer-details p, .order-details p {
-            margin: 5px 0;
-          }
-          .details-title {
-            font-weight: bold;
-          }
-          .table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-          }
-          .table th, .table td {
-            border: 1px solid #ddd;
-            padding: 8px;
-          }
-          .table th {
-            background-color: #f2f2f2;
-            text-align: left;
-          }
-          .total-section {
-            display: flex;
-            flex-direction:column;
-            justify-content: flex-end;
-            margin-top: 20px;
-          }
-          .total-section p {
-            margin: 5px 0;
-          }
-          .notes, .payment-mode {
-            margin-top: 20px;
-          }
-          .paid-status {
-            color: purple;
-            font-weight: bold;
-          }
-        </style>
-      </head>
-      <body>
-        <div>
-        <p>${invoice.storeName}</p>
-        <p>${invoice.address}</p>
-        <p>${invoice.phoneNumber}</p>
-        </div> 
-        <div class="invoice">
-          <div class="invoice-header">
-            <div><img src="${invoice.logo}" alt="Company Logo" /></div>
-          </div>
-            <h1 style="color:rgb(40 53 146);">Invoice</h1>
-
-          <div style="display:flex;">
-          <div class="customer-details">
-            <p class="details-title">Customer Name: <span>${
-              invoice.customerName
-            }</span></p>
-            <p>Phone Number: ${invoice.phoneNumber}</p>
-            <p>Email Id: ${invoice.emailId}</p>
-          </div>
-          <div style="margin-left:250px;" class="order-details">
-            <p><strong>Order number:</strong> #${invoice.orderNumber}</p>
-            <p><strong>Invoice date:</strong> ${new Date(
-              invoice.createdAt
-            ).toDateString()}</p>
-            <p><strong>GST IN:</strong> 29BCNPT0590C1ZB </p>
-          </div>
-          </div>
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Code</th>
-                <th>Product Name</th>
-                <th>Qty</th>
-                <th>Unit Price</th>
-                <th>Discount</th>
-                <th>Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${invoice.items
-                .map(
-                  (item) => `
-                <tr>
-                  <td>${item.code}</td>
-                  <td>${item.productName}</td>
-                  <td>${item.quantity}</td>
-                  <td>${item.unitPrice}</td>
-                  <td>${item.discount}</td>
-                  <td>${item.total}</td>
-                </tr>
-              `
-                )
-                .join("")}
-            </tbody>
-          </table>
-          <div style="margin-left:530px;" class="total-section">
-            <p>Tax: ₹${invoice.taxValue.toFixed(2)}</p><br />
-            <p>SubTotal: ₹${invoice.subTotal.toFixed(2)}</p><br />
-            <p class="paid-status">Paid: ₹${invoice.amountPaid}</p>
-          </div>
-          <div class="payment-mode">
-            <p><strong>Payment Mode:</strong> ${invoice.paymentMode}</p>
-          </div>
-          <div class="notes">
-            <p><strong>Additional notes:</strong> ${invoice.notes}</p>
-          </div>
-        </div>
-      </body>
-    </html>
-  `;
-
-  printWindow.document.write(content);
-  printWindow.document.close();
-  printWindow.print();
-};
-
-// Function to delete an invoice
-const deleteInvoice = async (orderNumber) => {
-  const response = await fetch(`/api/invoice`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ orderNumber }),
-  });
-
-  return await response.json();
-};
-
-// Define columns with sorting functionality
-const columns = [
-  {
-    accessorKey: "orderNumber",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Invoice <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-  },
-  {
-    accessorKey: "customerName",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Customer Name <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-  },
-  {
-    accessorKey: "phoneNumber",
-    header: "Phone Number",
-  },
-  {
-    accessorKey: "createdAt",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Date <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ cell }) => {
-      return new Date(cell.row.original.createdAt).toDateString();
-    },
-  },
-  {
-    accessorKey: "subTotal",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Amount <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-  },
-  {
-    accessorKey: "storeName",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Store Name <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-  },
-  {
-    accessorKey: "clientSource",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Client Source <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-  },
-  {
-    accessorKey: "actions",
-    header: "Actions",
-    cell: ({ row }) => (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost">
-            <MoreHorizontalIcon className="h-5 w-5" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <DropdownMenuItem onClick={() => printInvoice(row.original)}>
-            <PrinterIcon className="mr-2 h-4 w-4" />
-            <span>Print</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleDeleteClick(row.original)}>
-            <TrashIcon className="mr-2 h-4 w-4 text-red-500" />
-            <span className="text-red-500">Delete</span>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    ),
-  },
-];
 
 export default function Invoices({ data }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [showNotification, setShowNotification] = useState(false);
+  const [isPrintInvoiceDialogOpen, setIsPrintInvoiceDialogOpen] =
+    useState(false);
+  const [stores, setStores] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Zustand global store hooks
+  const {
+    setOrderNumber,
+    setCustomerName,
+    setPhoneNumber,
+    setSubTotal,
+    setEmailId,
+    setProducts,
+    setNotes,
+    setPaymentMode,
+    setTax,
+    setTaxValue,
+    setPaymentStatus,
+    setPaid,
+
+    setInvoiceDate,
+    setStore, // Store setter
+  } = useInvoiceStore();
+
+  // Function to fetch all stores
+  const getStores = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get("/api/getStores");
+      setStores(response.data);
+    } catch (error) {
+      console.error("Error fetching stores:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Filter the store using storeName from invoice
+  const findStoreDetails = (storeName) => {
+    const storeDetails = stores.find((store) => store.code === storeName);
+    return storeDetails || null;
+  };
+
+  useEffect(() => {
+    getStores();
+  }, []);
+  const printInvoice = async (invoice) => {
+    if (stores.length === 0) {
+      await getStores();
+    }
+
+    const storeDetails = findStoreDetails(invoice.storeName);
+
+    setOrderNumber(invoice.orderNumber);
+    setCustomerName(invoice.customerName);
+    setPhoneNumber(invoice.phoneNumber);
+    setSubTotal(invoice.subTotal);
+    setEmailId(invoice.emailId);
+    setPaymentMode(invoice.paymentMode);
+    setInvoiceDate(new Date(invoice.createdAt).toLocaleDateString());
+    setPaid(invoice.amountPaid);
+    setTax(invoice.tax);
+    setTaxValue(invoice.taxValue);
+    setProducts(invoice.items); // Assuming `items` is the products list
+    setNotes(invoice.notes);
+
+    if (storeDetails) {
+      setStore(storeDetails);
+      setIsPrintInvoiceDialogOpen(true);
+    } else {
+      console.warn(
+        `Store details not found for store name: ${invoice.storeName}`
+      );
+    }
+
+    // Open the print dialog
+  };
 
   const handleDeleteClick = (invoice) => {
     setSelectedInvoice(invoice);
@@ -298,7 +122,6 @@ export default function Invoices({ data }) {
       setSelectedInvoice(null);
 
       // Show notification for 2 seconds
-
       setShowNotification(true);
       setTimeout(() => {
         setShowNotification(false);
@@ -311,6 +134,104 @@ export default function Invoices({ data }) {
     setIsModalOpen(false);
     setSelectedInvoice(null);
   };
+  const columns = [
+    {
+      accessorKey: "orderNumber",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Invoice <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+    },
+    {
+      accessorKey: "customerName",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Customer Name <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+    },
+    {
+      accessorKey: "phoneNumber",
+      header: "Phone Number",
+    },
+    {
+      accessorKey: "createdAt",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Date <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ cell }) => {
+        return new Date(cell.row.original.createdAt).toDateString();
+      },
+    },
+    {
+      accessorKey: "subTotal",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Amount <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+    },
+    {
+      accessorKey: "storeName",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Store Name <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+    },
+    {
+      accessorKey: "clientSource",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Client Source <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+    },
+    {
+      accessorKey: "actions",
+      header: "Actions",
+      cell: ({ row }) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost">
+              <MoreHorizontalIcon className="h-5 w-5" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem onClick={() => printInvoice(row.original)}>
+              <PrinterIcon className="mr-2 h-4 w-4" />
+              <span>Print</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleDeleteClick(row.original)}>
+              <TrashIcon className="mr-2 h-4 w-4 text-red-500" />
+              <span className="text-red-500">Delete</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ),
+    },
+  ];
 
   return (
     <div className="max-lg:max-w-[83vw] max-w-[90vw] lg:min-w-max flex-1 custom-scrollbar p-6 bg-slate-50 rounded-xl shadow-md w-full">
@@ -334,38 +255,7 @@ export default function Invoices({ data }) {
               </Link>
             </div>
             <DataTable
-              columns={[
-                ...columns.map((col) =>
-                  col.accessorKey === "actions"
-                    ? {
-                        ...col,
-                        cell: ({ row }) => (
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost">
-                                <MoreHorizontalIcon className="h-5 w-5" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent>
-                              <DropdownMenuItem
-                                onClick={() => printInvoice(row.original)}
-                              >
-                                <PrinterIcon className="mr-2 h-4 w-4" />
-                                <span>Print</span>
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={() => handleDeleteClick(row.original)}
-                              >
-                                <TrashIcon className="mr-2 h-4 w-4 text-red-500" />
-                                <span className="text-red-500">Delete</span>
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        ),
-                      }
-                    : col
-                ),
-              ]}
+              columns={columns}
               data={data}
               initialSorting={[
                 {
@@ -388,11 +278,14 @@ export default function Invoices({ data }) {
 
       {/* Notification Popup */}
       <NotificationPopup
-  message="Invoice deleted successfully!"
-  isVisible={showNotification}
-  variant="success"  // Pass "success" or "error" based on the type of notification
-/>
-
+        message="Invoice deleted successfully!"
+        isVisible={showNotification}
+        variant="success"
+      />
+      <PrintInvoiceDialog
+        isOpen={isPrintInvoiceDialogOpen}
+        setIsOpen={setIsPrintInvoiceDialogOpen}
+      />
     </div>
   );
 }

@@ -80,9 +80,9 @@ const DashboardSection = ({
         </div>
 
         {/* Main Content */}
-        <div className="grid grid-cols-1 2xl:grid-cols-[2.3fr_2fr_2.3fr] gap-8 lg:grid-cols-7 ">
+        <div className="grid grid-cols-1 2xl:grid-cols-3 gap-8 lg:grid-cols-4 ">
           {/* Left Side Graphs */}
-          <div className="flex flex-col gap-8 max-2xl:col-span-2">
+          <div className="flex flex-col gap-8 max-2xl:col-span-1 ">
             <Card className="bg-white">
               <CardHeader>
                 <CardTitle>Client Sources</CardTitle>
@@ -102,10 +102,11 @@ const DashboardSection = ({
           </div>
 
           {/* Center DataCards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-2xl:col-span-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-2xl:col-span-2 col-span-1">
             <SkeletonWrapper isLoading={isDataLoading}>
               <DataCard
                 title="Total Revenue"
+                className="col-span-2 w-full "
                 value={`₹${Number(data.totalOrderValue).toLocaleString(
                   "en-IN",
                   {
@@ -167,7 +168,7 @@ const DashboardSection = ({
           </div>
 
           {/* Right Side Graphs */}
-          <div className="flex flex-col gap-8 max-2xl:col-span-2">
+          <div className="flex flex-col gap-8 col-span-1">
             <Card className="bg-white flex-1">
               <CardHeader>
                 <CardTitle>Invoice Status</CardTitle>

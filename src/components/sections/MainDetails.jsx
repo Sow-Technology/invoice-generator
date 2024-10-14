@@ -4,7 +4,8 @@ import { Input } from "../ui/input";
 import { useInvoiceStore } from "@/store/store";
 
 const MainDetails = () => {
-  const { customerName, phoneNumber, emailId, orderNumber } = useInvoiceStore();
+  const { customerName, phoneNumber, emailId, orderNumber, invoiceDate } =
+    useInvoiceStore();
   return (
     <>
       <section className="flex flex-row items-center justify-between text-sm">
@@ -29,7 +30,7 @@ const MainDetails = () => {
             </li>
             <li className="p-1 bg-gray-100">
               <span className="font-bold">Invoice date:</span>{" "}
-              {new Date().toLocaleDateString()}
+              {invoiceDate || new Date().toLocaleDateString()}
             </li>
             <li className="p-1 ">
               <span className="font-bold">GST IN: </span> 29BCNPT0590C1ZB
