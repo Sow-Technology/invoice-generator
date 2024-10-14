@@ -18,3 +18,16 @@ export async function updateInvoice(invoice) {
   console.log(updatedInvoice);
   return true;
 }
+export async function deleteInvoice(invoiceId) {
+  await dbConnect();
+  try {
+    const deletedInvoice = await Invoice.findByIdAndDelete(invoiceId);
+    if (!deletedInvoice) {
+      throw new Error("Invoice not found");
+    }
+    return true;
+  } catch (err) {
+    console.error(err);
+    throw new Error("Unable to delete the invoice!");
+  }
+}

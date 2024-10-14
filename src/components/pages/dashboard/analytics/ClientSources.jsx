@@ -1,24 +1,28 @@
-import { TooltipProvider, Tooltip } from "@radix-ui/react-tooltip";
-import { Cell, Legend, Pie, PieChart, ResponsiveContainer } from "recharts";
+import React from "react";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
+
+const COLORS = [
+  "#4A90E2",
+  "#50E3C2",
+  "#F5A623",
+  "#D0021B",
+  "#BD10E0",
+  "#B8E986",
+];
 
 export default function ClientSources({ data }) {
-  const COLORS = [
-    "#4A90E2",
-    "#50E3C2",
-    "#F5A623",
-    "#D0021B",
-    "#BD10E0",
-    "#B8E986",
-  ];
-
   const chartData = Object.entries(data || {}).map(([name, value]) => ({
     name,
     value,
   }));
 
   return (
-    <TooltipProvider>
-      <ResponsiveContainer width="110%" height={250}>
+    <div className="w-full h-[250px]">
+      <ResponsiveContainer
+        width="100%"
+        height="100%"
+        className="mx-auto  flex items-center justify-center"
+      >
         <PieChart>
           <Pie
             data={chartData}
@@ -38,10 +42,18 @@ export default function ClientSources({ data }) {
               />
             ))}
           </Pie>
-          <Tooltip />
-          {/* <Legend layout="horizontal" verticalAlign="bottom" align="center" /> */}
+          <Tooltip
+            contentStyle={{
+              backgroundColor: "hsl(var(--background))",
+              border: "1px solid hsl(var(--border))",
+              borderRadius: "var(--radius)",
+            }}
+            itemStyle={{
+              color: "hsl(var(--foreground))",
+            }}
+          />
         </PieChart>
       </ResponsiveContainer>
-    </TooltipProvider>
+    </div>
   );
 }

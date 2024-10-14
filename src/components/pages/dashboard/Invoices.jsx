@@ -2,8 +2,6 @@ import axios from "axios";
 import { useInvoiceStore } from "@/store/store";
 import { useEffect, useState } from "react";
 import PrintInvoiceDialog from "./invoices/PrintInvoiceDialog";
-import NotificationPopup from "@/components/NotificationPopup";
-import ConfirmationModal from "@/components/ConfirmationModal";
 import { DataTable } from "@/components/ui/data-table";
 import {
   ArrowUpDown,
@@ -27,11 +25,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import DeleteInvoiceDialog from "./invoices/DeleteInvoiceDialog";
 
 export default function Invoices({ data }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
-  const [showNotification, setShowNotification] = useState(false);
   const [isPrintInvoiceDialogOpen, setIsPrintInvoiceDialogOpen] =
     useState(false);
   const [stores, setStores] = useState([]);
@@ -106,8 +104,6 @@ export default function Invoices({ data }) {
         `Store details not found for store name: ${invoice.storeName}`
       );
     }
-
-    // Open the print dialog
   };
 
   const handleDeleteClick = (invoice) => {
@@ -115,25 +111,6 @@ export default function Invoices({ data }) {
     setIsModalOpen(true);
   };
 
-  const confirmDelete = async () => {
-    if (selectedInvoice) {
-      await deleteInvoice(selectedInvoice.orderNumber);
-      setIsModalOpen(false);
-      setSelectedInvoice(null);
-
-      // Show notification for 2 seconds
-      setShowNotification(true);
-      setTimeout(() => {
-        setShowNotification(false);
-        window.location.reload();
-      }, 2000);
-    }
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedInvoice(null);
-  };
   const columns = [
     {
       accessorKey: "orderNumber",
@@ -268,20 +245,12 @@ export default function Invoices({ data }) {
         </CardContent>
       </Card>
 
-      {/* Confirmation Modal */}
-      <ConfirmationModal
+      <DeleteInvoiceDialog
         isOpen={isModalOpen}
-        onClose={closeModal}
-        onConfirm={confirmDelete}
-        message={`Are you sure you want to delete invoice #${selectedInvoice?.orderNumber}?`}
+        setIsOpen={setIsModalOpen}
+        invoice={selectedInvoice}
       />
 
-      {/* Notification Popup */}
-      <NotificationPopup
-        message="Invoice deleted successfully!"
-        isVisible={showNotification}
-        variant="success"
-      />
       <PrintInvoiceDialog
         isOpen={isPrintInvoiceDialogOpen}
         setIsOpen={setIsPrintInvoiceDialogOpen}

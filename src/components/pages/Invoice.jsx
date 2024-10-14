@@ -210,17 +210,14 @@ function App() {
   };
   useEffect(() => {
     const storedData = localStorage.getItem("selectedStore");
-    console.log(storedData);
+    console.log("LOCAL STORAGE", storedData);
+    console.log(stores);
     const activeStore = stores.filter((store) => store.code === storedData);
     console.log(activeStore);
     setStore(activeStore[0]);
-  }, []);
+  }, [setStore, stores]);
   console.log(stores);
-  // useEffect(() => {
-  //   if (!orderNumber) {
-  //     return "Loading..";
-  //   }
-  // }, [orderNumber]);
+
   if (session.status == "unauthenticated") {
     redirect("/auth");
   }
@@ -253,10 +250,7 @@ function App() {
                   <Label htmlFor="" className="md:min-w-[100px]">
                     Select Store
                   </Label>
-                  <Select
-                    onValueChange={handleStoreChange}
-                    value={storesData.code}
-                  >
+                  <Select onValueChange={handleStoreChange} value={store?.code}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select a Store" />
                     </SelectTrigger>
