@@ -158,7 +158,10 @@ const DashboardSection = ({
             <SkeletonWrapper isLoading={isDataLoading}>
               <DataCard
                 title="Aspire 15"
-                value={"₹" + data.aspire15}
+                value={`₹${Number(data.aspire15).toLocaleString("en-IN", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}`}
                 icon={<IndianRupee className="h-8 w-8 text-white" />}
               />
             </SkeletonWrapper>

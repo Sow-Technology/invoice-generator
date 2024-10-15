@@ -50,18 +50,12 @@ const Expenses = () => {
     },
   });
 
-  const handleInvoiceEdit = (invoice) => {
-    setSelectedInvoice(invoice);
-    setIsEditDialogOpen(true);
-    refetch();
-  };
-
   const calculateTotalProfit = (orderValue, orderExpenses) => {
     return orderValue - (parseInt(orderExpenses, 10) || 0);
   };
 
-  const calculateAzspire15 = (totalProfit, storeName) => {
-    return storeName?.includes("Trinity") ? (totalProfit * 15) / 100 : "N/A";
+  const calculateAzspire15 = (orderValue, storeName) => {
+    return storeName?.includes("Trinity") ? (orderValue * 15) / 100 : "N/A";
   };
 
   const calculateRemainingProfit = (totalProfit, azspire15) => {
@@ -167,7 +161,7 @@ const Expenses = () => {
           row.original.orderExpenses
         );
         const azspire15 = calculateAzspire15(
-          totalProfit,
+          row.original.subTotal,
           row.original.storeName
         );
         return azspire15;
@@ -201,7 +195,7 @@ const Expenses = () => {
       expense
     );
     const azspire15 = calculateAzspire15(
-      totalProfit,
+      invoiceToAddExpenses.subTotal,
       invoiceToAddExpenses.storeName
     );
     const remainingProfit = calculateRemainingProfit(totalProfit, azspire15);
