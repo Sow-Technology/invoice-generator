@@ -205,14 +205,17 @@ const Expenses = () => {
       invoiceToAddExpenses.storeName
     );
     const remainingProfit = calculateRemainingProfit(totalProfit, azspire15);
+
     await updateInvoice({
       ...invoiceToAddExpenses,
       orderExpenses: expense,
-      aspire15: azspire15,
+      aspire15: azspire15 === "N/A" ? null : azspire15,
       profit: remainingProfit,
     });
+
+    // Reset states
     setInvoiceToAddExpenses(null);
-    setExpense(null);
+    setExpense(0); // Reset expense state here
     refetch();
   };
 
