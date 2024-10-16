@@ -1,30 +1,32 @@
 import dbConnect from "@/lib/dbConnect";
-import { Counter } from "@/models/Counter";
+import { Invoice } from "@/models/Invoice";
 import { NextResponse } from "next/server";
 
-export async function GET(req) {
+export async function GET() {
   await dbConnect();
 
   try {
-    // Find the invoice counter and increment it atomically
-    const counter = await Counter.findOneAndUpdate(
-      { name: "invoice" },
-      { $inc: { value: 1 } },
-      { new: true, upsert: true }
-    );
+    // Check for the latest invoice
+    const latestInvoice = await Invoice.findOne().sort({ createdAt: -1 });
 
-    const nextInvoiceNumber = "JO" + counter.value;
-    console.log(nextInvoiceNumber);
+    let nextInvoiceNumber;
+
+    if (latestInvoice) {
+      // Extract the numerical part of the latest invoice number and increment it
+      const lastInvoiceNumber = latestInvoice.orderNumber;
+      const lastInvoiceValue = parseInt(lastInvoiceNumber.replace(/\D/g, "")); // Extract only the number part
+
+      nextInvoiceNumber = "JO" + (lastInvoiceValue + 1);
+    } else {
+      nextInvoiceNumber = "JO1";
+    }
 
     return NextResponse.json(nextInvoiceNumber);
   } catch (error) {
-    console.error("Error fetching invoice number:", error);
+    console.error("Error generating invoice number:", error);
     return NextResponse.json(
-      { error: "Unable to fetch invoice number" },
+      { error: "Unable to generate invoice number" },
       { status: 500 }
     );
   }
 }
-
-// This configuration ensures the route is always dynamic
-export const dynamic = "force-dynamic";

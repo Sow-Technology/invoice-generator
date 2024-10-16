@@ -122,6 +122,7 @@ function App() {
       clientSource,
       paymentStatus,
       amountPaid: paid,
+      balance: subTotal - paid,
     };
 
     if (!existingCustomer) {

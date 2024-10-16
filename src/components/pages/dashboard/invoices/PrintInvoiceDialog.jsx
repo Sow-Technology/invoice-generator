@@ -54,7 +54,7 @@ export default function PrintInvoiceDialog({ isOpen, setIsOpen }) {
   }, [isOpen, handlePrint]);
 
   return (
-    <div className="invoice__preview bg-white p-5 rounded-2xl border-4 border-blue-200  top-0 invisible absolute">
+    <div className="invoice__preview bg-white p-5 rounded-2xl border-4 border-blue-200  hidden  absolute ">
       <div ref={componentRef} className="p-5" paperSize="A4">
         <Header />
         <MainDetails />

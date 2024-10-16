@@ -9,7 +9,9 @@ import { cn } from "@/lib/utils";
 import { Money } from "@mui/icons-material";
 import {
   BarChartIcon,
+  FormInput,
   LayoutDashboardIcon,
+  Receipt,
   ReceiptIcon,
   Store,
   TicketCheck,
@@ -40,7 +42,7 @@ export default function Sidebar({ active, setActive, user }) {
           alt=""
           width={open ? 180 : 50}
           height={50}
-          className="transition-all duration-300 -my-12"
+          className="transition-all duration-300 -my-[68px]"
         />
         {/* <button
           onClick={() => setOpen(!open)}
@@ -56,6 +58,7 @@ export default function Sidebar({ active, setActive, user }) {
           {[
             "Invoices",
             "Dashboard",
+            "Order Form",
             "Coupons",
             "Products",
             "Stores",
@@ -110,6 +113,8 @@ function getIcon(item) {
   switch (item) {
     case "Invoices":
       return <ReceiptIcon className="h-5 w-5" />;
+    case "Order Form":
+      return <FormInput className="h-5 w-5" />;
     case "Dashboard":
       return <LayoutDashboardIcon className="h-5 w-5" />;
     case "Analytics":

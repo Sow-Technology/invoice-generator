@@ -90,6 +90,10 @@ const InvoiceSchema = new mongoose.Schema(
       enum: ["Paid", "Partially Paid", "Unpaid"],
       default: "Unpaid",
     },
+    balance: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );

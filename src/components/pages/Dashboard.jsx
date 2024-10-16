@@ -21,6 +21,7 @@ import Coupons from "./dashboard/coupons/Coupons";
 import Users from "./dashboard/users/Users";
 import Analytics from "./dashboard/analytics/Analytics";
 import Expenses from "./dashboard/expenses/Expenses";
+import OrderForm from "./dashboard/order/OrderForm";
 
 export default function Dashboard() {
   const session = useSession();
@@ -139,6 +140,7 @@ export default function Dashboard() {
           />
         )}
         {active === "Invoices" && <Invoices data={invoiceData} />}
+        {active === "Order Form" && <OrderForm data={invoiceData} />}
         {active === "Coupons" && <Coupons />}
         {active === "Analytics" && <Analytics />}
         {active === "Products" && <Products />}
