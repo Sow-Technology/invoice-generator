@@ -8,6 +8,7 @@ import {
   MoreHorizontalIcon,
   PlusIcon,
   PrinterIcon,
+  EditIcon,
   TrashIcon,
 } from "lucide-react";
 import {
@@ -205,7 +206,7 @@ export default function Invoices({ data }) {
               <span>Print</span>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => router.push(`/edit/id=${row.original.orderNumber}`)}>
-              <PrinterIcon className="mr-2 h-4 w-4" />
+              <EditIcon className="mr-2 h-4 w-4" />
               <span>Edit</span>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => handleDeleteClick(row.original)}>
