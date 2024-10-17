@@ -26,6 +26,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import DeleteInvoiceDialog from "./invoices/DeleteInvoiceDialog";
+import { useRouter } from "next/navigation";
+
 
 export default function Invoices({ data }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -34,6 +36,8 @@ export default function Invoices({ data }) {
     useState(false);
   const [stores, setStores] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter()
+
 
   // Zustand global store hooks
   const {
@@ -199,6 +203,10 @@ export default function Invoices({ data }) {
             <DropdownMenuItem onClick={() => printInvoice(row.original)}>
               <PrinterIcon className="mr-2 h-4 w-4" />
               <span>Print</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => router.push(`/edit/id=${row.original.orderNumber}`)}>
+              <PrinterIcon className="mr-2 h-4 w-4" />
+              <span>Edit</span>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => handleDeleteClick(row.original)}>
               <TrashIcon className="mr-2 h-4 w-4 text-red-500" />
