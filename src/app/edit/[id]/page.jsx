@@ -1,49 +1,99 @@
 import EditInvoice from "@/components/EditInvoice";
 
+
 const getTopicById = async (id) => {
-    console.log("Reaching here");  
+    console.log("Fetching invoice with ID:", id);  
     try {
-      const res = await fetch(`http://localhost:3000/api/invoice/${id}`, {
-        cache: "no-store",
-      });
-  
-      if (!res.ok) {
-        throw new Error("Failed to fetch topic");
-      }
-  
-      console.log("Response hai");
-  
-      // Await the JSON parsing only once
-      const data = await res.json();
-      console.log("Response data: ", data);
-  
-      console.log("Response tha");
-      console.log(res);  // Logging the entire response object if needed
-  
-      return data;
+        const res = await fetch(`http://localhost:3000/api/invoice/${id}`, {
+            cache: "no-store",
+        });
+
+        if (!res.ok) {
+            throw new Error("Failed to fetch invoice");
+        }
+
+        const data = await res.json();
+        console.log("Fetched data:", data);
+        
+        return data; // Return the whole data object
     } catch (error) {
-      console.log("Error");
-      console.log(error);
+        console.error("Error fetching invoice:", error);
+        throw error; // Rethrow the error for handling in the calling function
     }
-  };
-  
+};
 
 export default async function EditTopic({ params }) {
-  console.log(params)
-  const { id } = params;
-  console.log(id)
-  let decodedString = decodeURIComponent(id);  // This will decode to "id=JO28"
+    console.log("Params received:", params);
+    const { id } = params;
+    console.log("Invoice ID:", id);
+    
+    // Decode and clean the ID from params
+    const decodedString = decodeURIComponent(id);
+    const invoiceId = decodedString.replace("id=", ""); // This will get just the ID part
+    
+    try {
+        const { invoice } = await getTopicById(invoiceId);
 
-// Now you can remove the 'id=' part to get just 'JO28'
-  let ids = decodedString.replace("id=", "");
-  const {invoice} = await getTopicById(ids);
-  console.log("uyjvjhb")
-  console.log(invoice)
-  console.log("uyjvjhb")
-  const {orderNumber,phoneNumber,storeName,customerName,amountPaid,subTotal,tax,taxValue } = invoice
-  console.log({orderNumber,phoneNumber,storeName })
-//   const { title, description } = topic;
+        // Ensure invoice exists
+        if (!invoice) {
+            return <div>Invoice not found.</div>; // Handle missing invoice gracefully
+        }
 
-//   return <EditInvoice id={id} title={title} description={description} />;
-  return <EditInvoice id={orderNumber} phoneNumber={phoneNumber} storeName={storeName} customerName={customerName} amountPaid={amountPaid} subTotal={subTotal} tax={tax} taxValue={taxValue} />;
+        console.log("Invoice data:", invoice);
+
+        const {
+            orderNumber,
+            phoneNumber,
+            storeName,
+            customerName,
+            amountPaid,
+            subTotal,
+            tax,
+            taxValue,
+            emailId,
+            coupon,
+            couponDiscount,
+            paymentMode,
+            notes,
+            items = [], // Default to empty array if items is undefined
+        } = invoice;
+
+        // Create item details
+        const itemDetails = items.map(item => ({
+            code: item.code,
+            quantity: item.quantity,
+            discount: item.discount,
+        }));
+
+        // Print each item's details from itemDetails
+        itemDetails.forEach(item => {
+            console.log(`Code: ${item.code}, Quantity: ${item.quantity}, Discount: ${item.discount}`);
+        });
+
+        // Pass all relevant fields to EditInvoice
+        return (
+            <>
+            <EditInvoice 
+                id={orderNumber} 
+                phoneNumber={phoneNumber} 
+                storeName={storeName} 
+                customerName={customerName} 
+                amountPaid={amountPaid} 
+                subTotal={subTotal} 
+                tax={tax} 
+                taxValue={taxValue} 
+                emailId={emailId} 
+                coupon={coupon} 
+                couponDiscount={couponDiscount} 
+                paymentMode={paymentMode} 
+                notes={notes} 
+                items={itemDetails} // Pass item details directly
+            />
+            </>
+        );
+
+    } catch (error) {
+        console.error("Error in EditTopic:", error);
+        return <div>Error loading invoice. Please try again later.</div>; // Fallback UI
+    }
 }
