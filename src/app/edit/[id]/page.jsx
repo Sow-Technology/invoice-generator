@@ -1,178 +1,116 @@
 "use client";
-// import EditInvoice from "@/components/pages/dashboard/invoices/EditInvoice";
-
 import EditInvoice from "@/components/pages/dashboard/invoices/EditInvoice";
 import { useInvoiceStore } from "@/store/store";
 import { useEffect, useState } from "react";
-
-
-
-
+import axios from "axios"; // Ensure axios is imported
 
 export default function EditTopic({ params }) {
-    const [invoice, setInvoice] = useState()
-    const [stores, setStores] = useState()
-    const[isLoading, setIsLoading] = useState()
-    const[isinvoiceloaded, setIsInvoiceLoaded] = useState()
-    console.log(invoice)
-    console.log("Params received:", params);
-    const { id } = params;
-    console.log("Invoice ID:", id);
-    
-    // Decode and clean the ID from params
-    const decodedString = decodeURIComponent(id);
-    const invoiceId = decodedString.replace("id=", ""); // This will get just the ID part
-    
-    // try {
-    //     const { invoice } = await getTopicById(invoiceId);
+  const [invoice, setInvoice] = useState(null); // Initialize with null
+  const [stores, setStores] = useState([]); // Initialize as an empty array
+  const [isLoading, setIsLoading] = useState(false);
+  const [isInvoiceLoading, setIsInvoiceLoading] = useState(false);
 
-    //     // Ensure invoice exists
-    //     if (!invoice) {
-    //         return <div>Invoice not found.</div>; // Handle missing invoice gracefully
-    //     }
+  const { id } = params;
+  const invoiceId = decodeURIComponent(id).replace("id=", ""); // Decoding the ID
 
-    //     console.log("Invoice data:", invoice);
+  const {
+    setOrderNumber,
+    setCustomerName,
+    setPhoneNumber,
+    setSubTotal,
+    setEmailId,
+    setProducts,
+    setNotes,
+    setPaymentMode,
+    setTax,
+    setTaxValue,
+    setPaymentStatus,
+    setPaid,
+    setInvoiceDate,
+    setStore,
+  } = useInvoiceStore();
 
-    //     const {
-    //         orderNumber,
-    //         phoneNumber,
-    //         storeName,
-    //         customerName,
-    //         amountPaid,
-    //         subTotal,
-    //         tax,
-    //         taxValue,
-    //         emailId,
-    //         coupon,
-    //         couponDiscount,
-    //         paymentMode,
-    //         notes,
-    //         items = [], // Default to empty array if items is undefined
-    //     } = invoice;
+  // Fetch stores once
+  const getStores = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get("/api/getStores");
+      setStores(response.data);
+    } catch (error) {
+      console.error("Error fetching stores:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    //     // Create item details
-    //     const itemDetails = items.map(item => ({
-    //         code: item.code,
-    //         quantity: item.quantity,
-    //         discount: item.discount,
-    //     }));
+  // Find store details by store name
+  const findStoreDetails = (storeName) => {
+    return stores.find((store) => store.code === storeName) || null;
+  };
 
-    //     // Print each item's details from itemDetails
-    //     itemDetails.forEach(item => {
-    //         console.log(`Code: ${item.code}, Quantity: ${item.quantity}, Discount: ${item.discount}`);
-    //     });
+  // Fetch the invoice by ID
+  const getInvoiceById = async (id) => {
+    setIsInvoiceLoading(true);
+    try {
+      const res = await fetch(`http://localhost:3000/api/invoice/${id}`, {
+        cache: "no-store",
+      });
+      if (!res.ok) {
+        throw new Error("Failed to fetch invoice");
+      }
+      const data = await res.json();
+      setInvoice(data.invoice);
+      return data.invoice; // Return the invoice data
+    } catch (error) {
+      console.error("Error fetching invoice:", error);
+    } finally {
+      setIsInvoiceLoading(false);
+    }
+  };
+  console.log(invoice);
+  // Set form data based on the fetched invoice
+  const setInvoiceData = (invoice) => {
+    if (!invoice) return;
+    const storeDetails = findStoreDetails(invoice.storeName);
 
-        // Pass all relevant fields to EditInvoice
-        const {
-            setOrderNumber,
-            setCustomerName,
-            setPhoneNumber,
-            setSubTotal,
-            setEmailId,
-            setProducts,
-            setNotes,
-            setPaymentMode,
-            setTax,
-            setTaxValue,
-            setPaymentStatus,
-            setPaid,
-        
-            setInvoiceDate,
-            setStore, // Store setter
-          } = useInvoiceStore();
-        
-          // Function to fetch all stores
-          const getStores = async () => {
-            setIsLoading(true);
-            setIsInvoiceLoaded(false)
-            try {
-              const response = await axios.get("/api/getStores");
-              setStores(response.data);
-            } catch (error) {
-              console.error("Error fetching stores:", error);
-            } finally {
-              setIsLoading(false);
-            }
-          };
-        
-          // Filter the store using storeName from invoice
-          const findStoreDetails = (storeName) => {
-            const storeDetails = stores.find((store) => store.code === storeName);
-            return storeDetails || null;
-          };
-        
-          useEffect(() => {
-            const getTopicById = async  (id) => {
-                setIsLoading(true)
-                console.log("Fetching invoice with ID:", id);  
-                try {
-                    const res = await fetch(`http://localhost:3000/api/invoice/${id}`, {
-                        cache: "no-store",
-                    });
-            
-                    if (!res.ok) {
-                        throw new Error("Failed to fetch invoice");
-                    }
-            
-                    const data = await res.json();
-                    setInvoice(data.invoice)
-                    console.log("Fetched data:", data);
-                    
-                    return data; // Return the whole data object
-                } catch (error) {
-                    console.error("Error fetching invoice:", error);
-                    throw error; // Rethrow the error for handling in the calling function
-                }
-                finally{
-                    setIsLoading(false)
-                }
+    setOrderNumber(invoice.orderNumber);
+    setCustomerName(invoice.customerName);
+    setPhoneNumber(invoice.phoneNumber);
+    setSubTotal(invoice.subTotal);
+    setEmailId(invoice.emailId);
+    setPaymentMode(invoice.paymentMode);
+    setInvoiceDate(new Date(invoice.createdAt).toLocaleDateString());
+    setPaid(invoice.amountPaid);
+    setTax(invoice.tax);
+    setTaxValue(invoice.taxValue);
+    setProducts(invoice.items); // Assuming `items` is the product list
+    setNotes(invoice.notes);
 
-            };
-            getTopicById(invoiceId);
-            getStores();
-            getdata();
-          }, []);
-          const getdata = async () => {
-            if ( !isLoading && stores?.length === 0)  {
-              await getStores();
-            }
-        
-            const storeDetails = findStoreDetails(invoice.storeName);
-        
-            setOrderNumber(invoice.orderNumber);
-            setCustomerName(invoice.customerName);
-            setPhoneNumber(invoice.phoneNumber);
-            setSubTotal(invoice.subTotal);
-            setEmailId(invoice.emailId);
-            setPaymentMode(invoice.paymentMode);
-            setInvoiceDate(new Date(invoice.createdAt).toLocaleDateString());
-            setPaid(invoice.amountPaid);
-            setTax(invoice.tax);
-            setTaxValue(invoice.taxValue);
-            setProducts(invoice.items); // Assuming `items` is the products list
-            setNotes(invoice.notes);
-        
-            if (storeDetails) {
-              setStore(storeDetails);
-              setIsPrintInvoiceDialogOpen(true);
-            } else {
-              console.warn(
-                `Store details not found for store name: ${invoice.storeName}`
-              );
-            }
-          };
-        
-        //   const handleDeleteClick = (invoice) => {
-        //     setSelectedInvoice(invoice);
-        //     setIsModalOpen(true);
-        //   };
-        
-        return (
-            <>
-            <EditInvoice 
-            />
-            </>
-        );
+    if (storeDetails) {
+      setStore(storeDetails);
+    } else {
+      console.warn(
+        `Store details not found for store name: ${invoice.storeName}`
+      );
+    }
+  };
 
-    } 
+  // Fetch data on component mount
+  useEffect(() => {
+    getStores(); // Fetch stores first
+    getInvoiceById(invoiceId);
+  }, [invoiceId]);
 
+  // When stores and invoice are loaded, set the form data
+  useEffect(() => {
+    if (invoice && stores.length > 0) {
+      setInvoiceData(invoice);
+    }
+  }, [invoice, stores]);
+
+  return (
+    <>
+      <EditInvoice />
+    </>
+  );
+}
