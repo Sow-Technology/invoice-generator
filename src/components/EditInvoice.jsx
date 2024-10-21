@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import Header from "./sections/Header";
 import MainDetails from "./sections/MainDetails";
 import Notes from "./sections/Notes";
@@ -45,7 +45,7 @@ export default function EditTopicForm({
   const [newItemQuantity, setNewItemQuantity] = useState(0);
   const [newItemDiscount, setNewItemDiscount] = useState(0);
 
-  const router = useRouter();
+  // const router = useRouter();
 
   useEffect(() => {
     const fetchStores = async () => {
