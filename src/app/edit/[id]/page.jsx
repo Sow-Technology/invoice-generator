@@ -2,16 +2,16 @@
 import EditInvoice from "@/components/pages/dashboard/invoices/EditInvoice";
 import { useInvoiceStore } from "@/store/store";
 import { useEffect, useState } from "react";
-import axios from "axios"; // Ensure axios is imported
+import axios from "axios";
 
 export default function EditTopic({ params }) {
-  const [invoice, setInvoice] = useState(null); // Initialize with null
-  const [stores, setStores] = useState([]); // Initialize as an empty array
+  const [invoice, setInvoice] = useState(null);
+  const [stores, setStores] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isInvoiceLoading, setIsInvoiceLoading] = useState(false);
 
   const { id } = params;
-  const invoiceId = decodeURIComponent(id).replace("id=", ""); // Decoding the ID
+  const invoiceId = decodeURIComponent(id).replace("id=", "");
 
   const {
     setOrderNumber,
