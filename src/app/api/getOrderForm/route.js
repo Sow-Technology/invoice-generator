@@ -19,3 +19,4 @@ export async function GET(req) {
     return Response.json({ error: "Error fetching invoices" }, { status: 500 });
   }
 }
+export const dynamic = "force-dynamic";
