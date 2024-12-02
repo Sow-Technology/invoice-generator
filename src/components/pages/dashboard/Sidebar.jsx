@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { Money } from "@mui/icons-material";
 import {
   BarChartIcon,
+  BriefcaseMedical,
   FormInput,
   LayoutDashboardIcon,
   Receipt,
@@ -53,7 +54,7 @@ export default function Sidebar({ active, setActive, user }) {
       </div>
 
       {/* Navigation Menu */}
-      <nav className="flex flex-col gap-2 py-2 text-gray-700">
+      <nav className="flex flex-col gap-2 py-2 text-gray-700 max-h-[80vh] scroll no-scrollbar overflow-y-scroll">
         <TooltipProvider>
           {[
             "Invoices",
@@ -62,6 +63,7 @@ export default function Sidebar({ active, setActive, user }) {
             "Coupons",
             "Products",
             "Stores",
+            "Medical History",
             "Users",
             "Expense Table",
             "Quotes",
@@ -127,6 +129,8 @@ function getIcon(item) {
       return <Store className="h-5 w-5" />;
     case "Users":
       return <Users className="h-5 w-5" />;
+    case "Medical History":
+      return <BriefcaseMedical className="h-5 w-5" />;
     case "Expense Table":
       return <Money className="h-5 w-5" />;
     case "Quotes":

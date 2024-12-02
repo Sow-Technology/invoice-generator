@@ -22,6 +22,7 @@ import Users from "./dashboard/users/Users";
 import Analytics from "./dashboard/analytics/Analytics";
 import Expenses from "./dashboard/expenses/Expenses";
 import OrderForm from "./dashboard/order/OrderForm";
+import MedicalHistory from "./dashboard/MedicalHistory";
 
 export default function Dashboard() {
   const session = useSession();
@@ -115,9 +116,9 @@ export default function Dashboard() {
   if (session.status == "unauthenticated") {
     redirect("/auth");
   }
-  if (session.status == "authenticated" && session.data.user.role == "user") {
-    redirect("/unauthorized");
-  }
+  // if (session.status == "authenticated" && session.data.user.role == "user") {
+  //   redirect("/unauthorized");
+  // }
   return (
     <div className="flex min-h-screen w-full  ">
       <Sidebar
@@ -144,6 +145,7 @@ export default function Dashboard() {
         {active === "Coupons" && <Coupons />}
         {active === "Analytics" && <Analytics />}
         {active === "Products" && <Products />}
+        {active === "Medical History" && <MedicalHistory />}
         {active === "Stores" && <Stores />}
         {active === "Users" && <Users data={invoiceData} />}
         {active === "Expense Table" && <Expenses data={invoiceData} />}
