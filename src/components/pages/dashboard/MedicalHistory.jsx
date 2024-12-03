@@ -275,10 +275,10 @@ function EyeMeasurementsTable({ measurements }) {
                   {eyeData.pupillaryDistance || "N/A"}
                 </td>
                 <td className="border border-gray-300 p-2">
-                  {eyeData.NV || "N/A"}
+                  {`6/${eyeData.NV}` || "N/A"}
                 </td>
                 <td className="border border-gray-300 p-2">
-                  {eyeData.DV || "N/A"}
+                  {`6/${eyeData.DV}` || "N/A"}
                 </td>
               </tr>
             );
