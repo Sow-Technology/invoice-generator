@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { debounce } from "lodash";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
@@ -18,15 +20,39 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import Link from "next/link";
 
 export default function MedicalHistory() {
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [search, setSearch] = useState(""); // State for search input
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
+
+  // Create a debounced function for updating the search state
+  const debouncedSetSearch = useMemo(
+    () => debounce(setDebouncedSearch, 500),
+    []
+  );
+
+  // Use effect to update the debounced search when the search input changes
+  useEffect(() => {
+    debouncedSetSearch(search);
+  }, [search, debouncedSetSearch]);
+
+  // Update query function to use debounced search parameter
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["medicalHistory"],
+    queryKey: ["medicalHistory", { search: debouncedSearch }], // Include debounced search in query key
     queryFn: async () => {
-      const response = await axios.get("/api/medical-history");
-      return response.data;
+      if (!debouncedSearch) {
+        // Return all records if no search term
+        const response = await axios.get("/api/medical-history");
+        return response.data.data;
+      }
+
+      const response = await axios.get("/api/medical-history", {
+        params: { search: debouncedSearch },
+      });
+      return response.data.data;
     },
   });
 
@@ -112,8 +138,12 @@ export default function MedicalHistory() {
     },
   ];
 
-  if (isLoading) {
-    return <Loader className="h-8 w-8 animate-spin" />;
+  if (isLoading && !data?.length) {
+    return (
+      <div className="flex justify-center items-center h-full">
+        <Loader className="h-8 w-8 animate-spin" />
+      </div>
+    );
   }
 
   if (isError) {
@@ -121,7 +151,7 @@ export default function MedicalHistory() {
   }
 
   return (
-    <div className="p-6 bg-slate-50 rounded-xl shadow-md w-full max-lg:max-w-[83vw] max-w-[90vw] lg:min-w-max flex-1">
+    <div className="p-6 bg-slate-50 rounded-xl shadow-md w-full max-lg:max-w-[83vw] max-w-[90vw]  flex-1">
       <Card className="w-full mt-5 h-max mx-auto">
         <CardHeader>
           <CardTitle>Medical History</CardTitle>
@@ -130,6 +160,23 @@ export default function MedicalHistory() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {/* Add search input */}
+          <div className="mb-4 flex gap-4">
+            <Input
+              type="text"
+              placeholder="Search by mobile number..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="inline-flex"
+            />
+            <Link
+              href="https://et.jaanaviopticals.shop/"
+              className="inline-flex"
+            >
+              {" "}
+              <Button>New Prescription</Button>
+            </Link>{" "}
+          </div>
           <DataTable columns={columns} data={data} />
         </CardContent>
       </Card>
@@ -153,6 +200,7 @@ export default function MedicalHistory() {
     </div>
   );
 }
+
 function EyeMeasurementsTable({ measurements }) {
   if (!measurements || (!measurements.rightEye && !measurements.leftEye)) {
     return <p>No eye measurements available for this patient.</p>;

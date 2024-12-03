@@ -26,8 +26,34 @@ import React, { useState } from "react";
 import { AiFillProduct } from "react-icons/ai";
 import { PiSignOutBold } from "react-icons/pi";
 
+// Define different access lists for different roles
+const roleAccess = {
+  superAdmin: [
+    "Invoices",
+    "Dashboard",
+    "Order Form",
+    "Coupons",
+    "Products",
+    "Stores",
+    "Medical History",
+    "Users",
+    "Expense Table",
+    "Quotes",
+  ],
+  manager: [
+    "Invoices",
+    "Dashboard",
+    "Products",
+    "Medical History",
+    "Order Form",
+  ],
+};
+
 export default function Sidebar({ active, setActive, user }) {
   const [open, setOpen] = useState(true);
+
+  // Get user access based on role
+  const userAccess = (user && roleAccess[user.role]) || [];
 
   return (
     <aside
@@ -45,29 +71,12 @@ export default function Sidebar({ active, setActive, user }) {
           height={50}
           className="transition-all duration-300 -my-[68px]"
         />
-        {/* <button
-          onClick={() => setOpen(!open)}
-          className="p-2 bg-blue-600 text-white rounded-md"
-        >
-          {open ? "Close" : "Open"}
-        </button> */}
       </div>
 
       {/* Navigation Menu */}
       <nav className="flex flex-col gap-2 py-2 text-gray-700 max-h-[80vh] scroll no-scrollbar overflow-y-scroll">
         <TooltipProvider>
-          {[
-            "Invoices",
-            "Dashboard",
-            "Order Form",
-            "Coupons",
-            "Products",
-            "Stores",
-            "Medical History",
-            "Users",
-            "Expense Table",
-            "Quotes",
-          ].map((item) => (
+          {userAccess.map((item) => (
             <div
               key={item}
               className={cn(

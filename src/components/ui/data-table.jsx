@@ -21,7 +21,8 @@ import {
 import { Button } from "./button";
 import React, { useEffect } from "react";
 
-export function DataTable({ columns, data }) {
+export function DataTable({ columns, data = {}, isLoading }) {
+  console.log(data);
   const [sorting, setSorting] = React.useState([]);
 
   const table = useReactTable({
@@ -36,6 +37,8 @@ export function DataTable({ columns, data }) {
       sorting,
     },
   });
+  console.log(table.getRowModel().rows?.length);
+
   useEffect(() => {
     table.setPageSize(9);
   }, []);

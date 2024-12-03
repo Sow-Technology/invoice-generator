@@ -116,9 +116,9 @@ export default function Dashboard() {
   if (session.status == "unauthenticated") {
     redirect("/auth");
   }
-  // if (session.status == "authenticated" && session.data.user.role == "user") {
-  //   redirect("/unauthorized");
-  // }
+  if (session.status == "authenticated" && session.data.user.role == "user") {
+    redirect("/unauthorized");
+  }
   return (
     <div className="flex min-h-screen w-full  ">
       <Sidebar

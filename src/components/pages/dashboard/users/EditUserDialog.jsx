@@ -105,7 +105,7 @@ export default function EditUserDialog({ isOpen, setIsOpen, user }) {
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  {["coSuperAdmin", "admin", "user"].map((role) => (
+                  {["coSuperAdmin", "admin", "manager", "user"].map((role) => (
                     <SelectItem key={role} value={role}>
                       {role}
                     </SelectItem>
