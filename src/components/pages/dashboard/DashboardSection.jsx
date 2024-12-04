@@ -35,6 +35,7 @@ const DashboardSection = ({
   isDataLoading,
   stores,
   storeName,
+  user,
   setStoreName,
 }) => {
   console.log("=====METRICS=====", data);
@@ -155,16 +156,18 @@ const DashboardSection = ({
                 icon={<Users className="h-8 w-8 text-white" />}
               />
             </SkeletonWrapper>
-            <SkeletonWrapper isLoading={isDataLoading}>
-              <DataCard
-                title="Aspire 15"
-                value={`₹${Number(data.aspire15).toLocaleString("en-IN", {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}`}
-                icon={<IndianRupee className="h-8 w-8 text-white" />}
-              />
-            </SkeletonWrapper>
+            {user.role == "superAdmin" && (
+              <SkeletonWrapper isLoading={isDataLoading}>
+                <DataCard
+                  title="Aspire 15"
+                  value={`₹${Number(data.aspire15).toLocaleString("en-IN", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}`}
+                  icon={<IndianRupee className="h-8 w-8 text-white" />}
+                />
+              </SkeletonWrapper>
+            )}
           </div>
 
           {/* Right Side Graphs */}

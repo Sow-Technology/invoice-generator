@@ -12,7 +12,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { DataTable } from "@/components/ui/data-table";
-import { ArrowUpDown, Eye, Loader, X } from "lucide-react";
+import {
+  ArrowUpDown,
+  Eye,
+  Loader,
+  MoreHorizontal,
+  Trash,
+  X,
+} from "lucide-react";
 import {
   Dialog,
   DialogClose,
@@ -21,12 +28,20 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import Link from "next/link";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function MedicalHistory() {
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [search, setSearch] = useState(""); // State for search input
   const [debouncedSearch, setDebouncedSearch] = useState(search);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   // Create a debounced function for updating the search state
   const debouncedSetSearch = useMemo(
@@ -135,6 +150,35 @@ export default function MedicalHistory() {
           View Details
         </Button>
       ),
+    },
+    {
+      id: "actions",
+      enableHiding: false,
+      cell: ({ row }) => {
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+
+              <DropdownMenuItem
+                onClick={() => {
+                  setSelectedPatient(row.original);
+                  setIsDeleteDialogOpen(true);
+                }}
+              >
+                <Trash className="h-3.5 w-3.5 mr-1.5" />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
     },
   ];
 

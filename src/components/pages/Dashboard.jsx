@@ -22,7 +22,7 @@ import Users from "./dashboard/users/Users";
 import Analytics from "./dashboard/analytics/Analytics";
 import Expenses from "./dashboard/expenses/Expenses";
 import OrderForm from "./dashboard/order/OrderForm";
-import MedicalHistory from "./dashboard/MedicalHistory";
+import MedicalHistory from "./dashboard/prescription/MedicalHistory";
 
 export default function Dashboard() {
   const session = useSession();
@@ -137,6 +137,7 @@ export default function Dashboard() {
             setDateRange={setDateRange}
             storeName={storeName}
             stores={stores}
+            user={session.data.user}
             setStoreName={setStoreName}
           />
         )}
