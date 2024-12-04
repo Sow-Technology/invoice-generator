@@ -1,3 +1,4 @@
+"use server";
 import dbConnect from "@/lib/dbConnect";
 import MedicalHistory from "@/models/MedicalHistory";
 

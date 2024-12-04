@@ -35,6 +35,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import DeletePrescriptionDialog from "./DeletePrescriptionDialog";
 
 export default function MedicalHistory() {
   const [selectedPatient, setSelectedPatient] = useState(null);
@@ -56,7 +57,11 @@ export default function MedicalHistory() {
 
   // Update query function to use debounced search parameter
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["medicalHistory", { search: debouncedSearch }], // Include debounced search in query key
+    queryKey: [
+      "medicalHistory",
+      setIsDeleteDialogOpen,
+      { search: debouncedSearch },
+    ], // Include debounced search in query key
     queryFn: async () => {
       if (!debouncedSearch) {
         // Return all records if no search term
@@ -222,6 +227,11 @@ export default function MedicalHistory() {
             </Link>{" "}
           </div>
           <DataTable columns={columns} data={data} />
+          <DeletePrescriptionDialog
+            isOpen={isDeleteDialogOpen}
+            setIsOpen={setIsDeleteDialogOpen}
+            prescription={selectedPatient}
+          />
         </CardContent>
       </Card>
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -231,13 +241,15 @@ export default function MedicalHistory() {
           </DialogHeader>
 
           {selectedPatient && (
-            <Card className="w-full mt-5 h-max mx-auto">
-              <CardContent>
-                <EyeMeasurementsTable
-                  measurements={selectedPatient.eyeMeasurements || {}}
-                />
-              </CardContent>
-            </Card>
+            <>
+              <Card className="w-full mt-5 h-max mx-auto">
+                <CardContent>
+                  <EyeMeasurementsTable
+                    measurements={selectedPatient.eyeMeasurements || {}}
+                  />
+                </CardContent>
+              </Card>
+            </>
           )}
         </DialogContent>
       </Dialog>

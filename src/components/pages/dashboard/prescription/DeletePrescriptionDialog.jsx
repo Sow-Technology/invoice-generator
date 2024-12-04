@@ -29,6 +29,7 @@ export default function DeletePrescriptionDialog({
       });
     }
   };
+  console.log(prescription);
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -37,7 +38,7 @@ export default function DeletePrescriptionDialog({
           <DialogTitle>Are you absolutely sure?</DialogTitle>
           <DialogDescription>
             This action cannot be undone. This will permanently delete{" "}
-            {prescription.name}&#39;s prescription.
+            {prescription?.name}&#39;s prescription.
           </DialogDescription>
         </DialogHeader>
 
