@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import Past7DaysSales from "./analytics/Past7DaysSales";
 import SalesByStore from "./analytics/SalesByStore";
+import AttendanceLogger from "@/app/t/page";
 
 const DashboardSection = ({
   data,
@@ -43,9 +44,14 @@ const DashboardSection = ({
   return (
     <div className="flex flex-1 flex-col gap-10 rounded-3xl sm:pt-4 w-full">
       <div className="p-6 bg-slate-50 rounded-xl shadow-md w-full flex flex-col gap-5">
+        <div className="flex justify-between items-start mb-6 flex-col">
+          <h2 className="text-2xl font-bold">Attendance Logger</h2>
+          <AttendanceLogger />
+        </div>
         {/* Header Section */}
         <div className="flex justify-between items-start mb-6">
           <h2 className="text-2xl font-bold">Dashboard</h2>
+
           <div className="flex gap-4 flex-wrap justify-end ">
             {/* Store Selector */}
             <Select value={storeName} onValueChange={setStoreName} className="">
