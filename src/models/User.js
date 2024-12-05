@@ -25,6 +25,19 @@ const userSchema = new mongoose.Schema(
       type: [String],
       default: [],
     },
+    // New fields
+    name: String,
+    contactNumber: String,
+    employeeId: String,
+    bloodGroup: String,
+    aadharNumber: String,
+    panNumber: String,
+    homeAddress: String,
+    emergencyContact1: String,
+    emergencyContact2: String,
+    bankName: String,
+    bankAccountNumber: String,
+    ifscCode: String,
   },
   { timestamps: true }
 );

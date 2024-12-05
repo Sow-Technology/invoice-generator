@@ -1,5 +1,13 @@
 "use client";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -12,6 +20,8 @@ import {
   BriefcaseMedical,
   FormInput,
   LayoutDashboardIcon,
+  MoreHorizontal,
+  MoreVertical,
   Receipt,
   ReceiptIcon,
   Store,
@@ -103,17 +113,44 @@ export default function Sidebar({ active, setActive, user }) {
       </nav>
 
       {/* Sign out button */}
-      <div className="mt-auto px-4 py-4">
-        <button
-          className="flex items-center gap-2 text-red-600 hover:text-red-800"
-          onClick={() => {
-            signOut();
-            redirect("/auth");
-          }}
+      <div className="mt-auto px-2 py-4 flex items-center justify-between bg-muted/30 rounded-xl">
+        <div
+          onClick={() => setActive("Profile")}
+          className="flex gap-2 items-center"
         >
-          <PiSignOutBold className="h-6 w-6" />
-          {open && <span>Sign out</span>}
-        </button>
+          {" "}
+          <div className="w-6 h-6 rounded-full bg-muted"></div>
+          <div className="text-[10px]">
+            <p className="font-bold text-xs">{user?.name || "Name"}</p>
+            <p>{user.email}</p>
+          </div>
+        </div>
+        <div>
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              {" "}
+              <MoreVertical />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => setActive("Profile")}>
+                Profile
+              </DropdownMenuItem>
+
+              <DropdownMenuItem
+                onClick={() => {
+                  signOut();
+                  redirect("/auth");
+                }}
+                className="gap-1.5 flex justify-between bg-rose-500 text-white "
+              >
+                Sign out
+                <PiSignOutBold className="h-4 w-5" />
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
     </aside>
   );

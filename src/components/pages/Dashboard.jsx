@@ -23,6 +23,7 @@ import Analytics from "./dashboard/analytics/Analytics";
 import Expenses from "./dashboard/expenses/Expenses";
 import OrderForm from "./dashboard/order/OrderForm";
 import MedicalHistory from "./dashboard/prescription/MedicalHistory";
+import Profile from "./dashboard/profile/Profile";
 
 export default function Dashboard() {
   const session = useSession();
@@ -142,6 +143,7 @@ export default function Dashboard() {
           />
         )}
         {active === "Invoices" && <Invoices data={invoiceData} />}
+        {active === "Profile" && <Profile user={session.data.user} />}
         {active === "Order Form" && <OrderForm data={invoiceData} />}
         {active === "Coupons" && <Coupons />}
         {active === "Analytics" && <Analytics />}

@@ -17,6 +17,7 @@ import {
   Eye,
   Loader,
   MoreHorizontal,
+  Pencil,
   Trash,
   X,
 } from "lucide-react";
@@ -36,6 +37,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import DeletePrescriptionDialog from "./DeletePrescriptionDialog";
+import EditPrescriptionDialog from "./EditPresecriptionDialog";
 
 export default function MedicalHistory() {
   const [selectedPatient, setSelectedPatient] = useState(null);
@@ -43,6 +45,7 @@ export default function MedicalHistory() {
   const [search, setSearch] = useState(""); // State for search input
   const [debouncedSearch, setDebouncedSearch] = useState(search);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   // Create a debounced function for updating the search state
   const debouncedSetSearch = useMemo(
@@ -174,6 +177,15 @@ export default function MedicalHistory() {
               <DropdownMenuItem
                 onClick={() => {
                   setSelectedPatient(row.original);
+                  setIsEditDialogOpen(true);
+                }}
+              >
+                <Pencil className="h-3.5 w-3.5 mr-1.5" />
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  setSelectedPatient(row.original);
                   setIsDeleteDialogOpen(true);
                 }}
               >
@@ -227,11 +239,22 @@ export default function MedicalHistory() {
             </Link>{" "}
           </div>
           <DataTable columns={columns} data={data} />
-          <DeletePrescriptionDialog
-            isOpen={isDeleteDialogOpen}
-            setIsOpen={setIsDeleteDialogOpen}
-            prescription={selectedPatient}
-          />
+          {selectedPatient && (
+            <>
+              {" "}
+              <DeletePrescriptionDialog
+                isOpen={isDeleteDialogOpen}
+                setIsOpen={setIsDeleteDialogOpen}
+                prescription={selectedPatient}
+              />
+              <EditPrescriptionDialog
+                isOpen={isEditDialogOpen}
+                setIsOpen={setIsEditDialogOpen}
+                prescriptionId={selectedPatient._id}
+                initialMeasurements={selectedPatient.eyeMeasurements}
+              />
+            </>
+          )}
         </CardContent>
       </Card>
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -262,8 +285,9 @@ function EyeMeasurementsTable({ measurements }) {
     return <p>No eye measurements available for this patient.</p>;
   }
 
+  console.log(measurements);
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto py-8 px-4">
       <h2 className="text-2xl font-bold mb-4 text-indigo-700">
         Eye Measurements
       </h2>
@@ -271,59 +295,34 @@ function EyeMeasurementsTable({ measurements }) {
         <thead>
           <tr>
             <th className="border border-gray-300 p-2">Eye</th>
-            <th className="border border-gray-300 p-2" colSpan="3">
-              Distance
-            </th>
-            <th className="border border-gray-300 p-2" colSpan="3">
-              Addition
-            </th>
+            <th className="border border-gray-300 p-2">SPH</th>
+            <th className="border border-gray-300 p-2">CYL</th>
+            <th className="border border-gray-300 p-2">Axis</th>
+
             <th className="border border-gray-300 p-2">Additional Power</th>
             <th className="border border-gray-300 p-2">Pupillary Distance</th>
-            <th className="border border-gray-300 p-2">NV</th>
-            <th className="border border-gray-300 p-2">DV</th>
-          </tr>
-          <tr>
-            <th className="border border-gray-300 p-2"></th>
-            <th className="border border-gray-300 p-2">SPH</th>
-            <th className="border border-gray-300 p-2">CYL</th>
-            <th className="border border-gray-300 p-2">Axis</th>
-            <th className="border border-gray-300 p-2">SPH</th>
-            <th className="border border-gray-300 p-2">CYL</th>
-            <th className="border border-gray-300 p-2">Axis</th>
-            <th className="border border-gray-300 p-2"></th>
-            <th className="border border-gray-300 p-2"></th>
-            <th className="border border-gray-300 p-2"></th>
-            <th className="border border-gray-300 p-2"></th>
+            <th className="border border-gray-300 p-2 px-5">NV</th>
+            <th className="border border-gray-300 p-2 px-5">DV</th>
           </tr>
         </thead>
         <tbody>
           {["rightEye", "leftEye"].map((eye) => {
             const eyeData = measurements[eye] || {};
-            const distanceData = eyeData.distance || {};
-            const additionData = eyeData.addition || {};
             return (
               <tr key={eye}>
                 <td className="border border-gray-300 p-2 font-semibold">
                   {eye === "rightEye" ? "OD (Right Eye)" : "OS (Left Eye)"}
                 </td>
                 <td className="border border-gray-300 p-2">
-                  {distanceData.SPH || "N/A"}
+                  {eyeData.SPH || "N/A"}
                 </td>
                 <td className="border border-gray-300 p-2">
-                  {distanceData.CYL || "N/A"}
+                  {eyeData.CYL || "N/A"}
                 </td>
                 <td className="border border-gray-300 p-2">
-                  {distanceData.Axis || "N/A"}
+                  {eyeData.Axis || "N/A"}
                 </td>
-                <td className="border border-gray-300 p-2">
-                  {additionData.SPH || "N/A"}
-                </td>
-                <td className="border border-gray-300 p-2">
-                  {additionData.CYL || "N/A"}
-                </td>
-                <td className="border border-gray-300 p-2">
-                  {additionData.Axis || "N/A"}
-                </td>
+
                 <td className="border border-gray-300 p-2">
                   {eyeData.additionalPower || "N/A"}
                 </td>
