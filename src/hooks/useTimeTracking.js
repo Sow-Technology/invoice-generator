@@ -1,115 +1,167 @@
-import { useState, useEffect } from "react";
+"use client";
+import { useState, useEffect, useCallback } from "react";
+import { checkIn, checkOut, startBreak, endBreak } from "@/app/_actions/user";
 
 export function useTimeTracking() {
   const [isCheckedIn, setIsCheckedIn] = useState(false);
   const [checkInTime, setCheckInTime] = useState(null);
   const [checkOutTime, setCheckOutTime] = useState(null);
   const [breaks, setBreaks] = useState([]);
-  const [dailyHours, setDailyHours] = useState(0);
+  const [attendanceStatus, setAttendanceStatus] = useState("not checked in");
+  const [error, setError] = useState(null);
+  const [totalTimeSinceCheckIn, setTotalTimeSinceCheckIn] = useState(0);
+  const [actualWorkTime, setActualWorkTime] = useState(0);
+  const [currentBreakTime, setCurrentBreakTime] = useState(0);
+  const [progressPercentage, setProgressPercentage] = useState(0);
   const [monthlyAttendance, setMonthlyAttendance] = useState([]);
 
-  useEffect(() => {
-    const storedData = localStorage.getItem("timeTrackingData");
-    if (storedData) {
-      const parsedData = JSON.parse(storedData);
-      setIsCheckedIn(parsedData.isCheckedIn);
-      setCheckInTime(parsedData.checkInTime);
-      setCheckOutTime(parsedData.checkOutTime);
-      setBreaks(parsedData.breaks);
-    }
+  const fetchAttendanceData = useCallback(async () => {
+    try {
+      const response = await fetch("/api/attendance/current");
 
-    const storedMonthlyData = localStorage.getItem("monthlyAttendance");
-    if (storedMonthlyData) {
-      setMonthlyAttendance(JSON.parse(storedMonthlyData));
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+
+      if (data.attendance && data.attendance.checkIn) {
+        setIsCheckedIn(true);
+        setCheckInTime(data.attendance.checkIn);
+        setBreaks(data.attendance.breaks || []);
+        if (data.attendance.checkOut) {
+          setCheckOutTime(data.attendance.checkOut);
+        }
+        setAttendanceStatus(data.attendance.status || "checked in");
+      } else {
+        setIsCheckedIn(false);
+        setCheckInTime(null);
+        setCheckOutTime(null);
+        setBreaks([]);
+        setAttendanceStatus("not checked in");
+      }
+
+      setError(null);
+    } catch (err) {
+      console.error("Error fetching attendance data:", err);
+      setError("Failed to fetch attendance data: " + err.message);
+    }
+  }, []);
+  const fetchMonthlyAttendance = useCallback(async () => {
+    try {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = now.getMonth() + 1; // JavaScript months are 0-indexed
+      const response = await fetch(
+        `/api/attendance/monthly?year=${year}&month=${month}`
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log(data);
+      if (data.success) {
+        setMonthlyAttendance(data.attendanceRecords);
+      } else {
+        throw new Error(data.error || "Failed to fetch monthly attendance");
+      }
+    } catch (err) {
+      console.error("Error fetching monthly attendance:", err);
+      setError("Failed to fetch monthly attendance: " + err.message);
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem(
-      "timeTrackingData",
-      JSON.stringify({ isCheckedIn, checkInTime, checkOutTime, breaks })
-    );
-  }, [isCheckedIn, checkInTime, checkOutTime, breaks]);
+    fetchAttendanceData();
+    fetchMonthlyAttendance();
+  }, [fetchAttendanceData, fetchMonthlyAttendance]);
 
   useEffect(() => {
-    localStorage.setItem(
-      "monthlyAttendance",
-      JSON.stringify(monthlyAttendance)
-    );
-  }, [monthlyAttendance]);
+    let interval;
+    if (isCheckedIn && checkInTime && !checkOutTime) {
+      interval = setInterval(() => {
+        const now = new Date();
+        const checkInDate = new Date(checkInTime);
+        if (isNaN(checkInDate.getTime())) {
+          console.error("Invalid checkInTime:", checkInTime);
+          return;
+        }
+        const totalMs = now - checkInDate;
+        setTotalTimeSinceCheckIn(totalMs / 1000);
 
-  const checkIn = () => {
-    const now = new Date().toISOString();
-    setIsCheckedIn(true);
-    setCheckInTime(now);
-    setCheckOutTime(null);
-    setBreaks([]);
-  };
+        let breakMs = 0;
+        breaks.forEach((breakPeriod) => {
+          if (breakPeriod.start && breakPeriod.end) {
+            breakMs += new Date(breakPeriod.end) - new Date(breakPeriod.start);
+          } else if (breakPeriod.start) {
+            breakMs += now - new Date(breakPeriod.start);
+          }
+        });
+        const workTimeHours = (totalMs - breakMs) / (1000 * 60 * 60);
+        setActualWorkTime(workTimeHours);
 
-  const checkOut = () => {
-    const now = new Date().toISOString();
-    setIsCheckedIn(false);
-    setCheckOutTime(now);
-    updateDailyRecord();
-  };
+        const progress = Math.min((workTimeHours / 7) * 100, 100);
+        setProgressPercentage(progress);
 
-  const startBreak = () => {
-    if (breaks.length < 3 && isCheckedIn) {
-      setBreaks([...breaks, { start: new Date().toISOString(), end: null }]);
+        if (workTimeHours >= 7) {
+          setAttendanceStatus("present");
+        } else if (workTimeHours >= 3.5) {
+          setAttendanceStatus("half day");
+        } else {
+          setAttendanceStatus("checked in");
+        }
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isCheckedIn, checkInTime, checkOutTime, breaks]);
+
+  const handleCheckIn = async () => {
+    try {
+      await checkIn();
+      await fetchAttendanceData();
+    } catch (err) {
+      console.error("Check-in error:", err);
+      setError("Failed to check in: " + err.message);
     }
   };
 
-  const endBreak = () => {
-    if (breaks.length > 0 && breaks[breaks.length - 1].end === null) {
-      const updatedBreaks = [...breaks];
-      updatedBreaks[updatedBreaks.length - 1].end = new Date().toISOString();
-      setBreaks(updatedBreaks);
+  const handleCheckOut = async () => {
+    try {
+      await checkOut();
+      await fetchAttendanceData();
+    } catch (err) {
+      console.error("Check-out error:", err);
+      setError("Failed to check out: " + err.message);
     }
   };
 
-  const updateDailyRecord = () => {
-    const totalHours = calculateTotalHours();
-    setDailyHours(totalHours);
-
-    const today = new Date().toISOString().split("T")[0];
-    const dailyRecord = {
-      date: today,
-      checkIn: checkInTime,
-      checkOut: checkOutTime,
-      breaks,
-      totalHours,
-    };
-
-    setMonthlyAttendance((prev) => {
-      const updatedAttendance = [...prev];
-      const existingRecordIndex = updatedAttendance.findIndex(
-        (record) => record.date === today
-      );
-      if (existingRecordIndex !== -1) {
-        updatedAttendance[existingRecordIndex] = dailyRecord;
+  const handleStartBreak = async () => {
+    try {
+      const response = await startBreak();
+      if (response && response.success) {
+        await fetchAttendanceData();
       } else {
-        updatedAttendance.push(dailyRecord);
+        setError("Start break failed: " + (response?.error || "Unknown error"));
       }
-      return updatedAttendance;
-    });
+    } catch (err) {
+      console.error("Start break error:", err);
+      setError("Failed to start break: " + err.message);
+    }
   };
 
-  const calculateTotalHours = () => {
-    if (!checkInTime || !checkOutTime) return 0;
-
-    const start = new Date(checkInTime).getTime();
-    const end = new Date(checkOutTime).getTime();
-    let totalMs = end - start;
-
-    breaks.forEach((breakPeriod) => {
-      if (breakPeriod.start && breakPeriod.end) {
-        const breakStart = new Date(breakPeriod.start).getTime();
-        const breakEnd = new Date(breakPeriod.end).getTime();
-        totalMs -= breakEnd - breakStart;
+  const handleEndBreak = async () => {
+    try {
+      const response = await endBreak();
+      if (response && response.success) {
+        await fetchAttendanceData();
+      } else {
+        setError("End break failed: " + (response?.error || "Unknown error"));
       }
-    });
-
-    return Math.round((totalMs / (1000 * 60 * 60)) * 100) / 100; // Round to 2 decimal places
+    } catch (err) {
+      console.error("End break error:", err);
+      setError("Failed to end break: " + err.message);
+    }
   };
 
   return {
@@ -117,11 +169,16 @@ export function useTimeTracking() {
     checkInTime,
     checkOutTime,
     breaks,
-    checkIn,
-    checkOut,
-    startBreak,
-    endBreak,
-    dailyHours,
+    checkIn: handleCheckIn,
+    checkOut: handleCheckOut,
+    startBreak: handleStartBreak,
+    endBreak: handleEndBreak,
+    attendanceStatus,
+    error,
+    totalTimeSinceCheckIn,
+    actualWorkTime,
+    currentBreakTime,
+    progressPercentage,
     monthlyAttendance,
   };
 }

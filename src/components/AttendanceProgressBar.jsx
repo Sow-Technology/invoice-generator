@@ -1,120 +1,109 @@
-"use client";
+import { Tooltip } from "@/components/ui/tooltip";
 import { useState, useEffect } from "react";
-import { Tooltip } from "@/components/ui/tooltip"; // Assuming Tooltip is already set up correctly
-import { Button } from "@/components/ui/button"; // Assuming Button component from shadcn UI is used
-import { useTimeTracking } from "@/hooks/useTimeTracking";
 
-export default function AttendanceProgressBar({ attendanceData }) {
-  const {
-    isCheckedIn,
-    checkInTime,
-    checkOutTime,
-    breaks,
-    checkIn,
-    checkOut,
-    startBreak,
-    endBreak,
-    dailyHours,
-    monthlyAttendance,
-  } = useTimeTracking();
+export default function AttendanceProgressBar({
+  checkInTime,
+  checkOutTime,
+  breaks,
+  totalTimeSinceCheckIn,
+  progressPercentage,
+  attendanceStatus,
+}) {
+  const [currentBreakDuration, setCurrentBreakDuration] = useState(0);
 
-  const [isOnBreak, setIsOnBreak] = useState(false);
+  const formatTime = (hours) => {
+    if (isNaN(hours) || hours < 0) return "00:00:00";
+    const totalSeconds = Math.floor(hours * 3600);
+    const hours_ = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    return `${hours_.toString().padStart(2, "0")}:${minutes
+      .toString()
+      .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+  };
+
+  const isOnBreak = breaks.length > 0 && !breaks[breaks.length - 1].end;
+  const currentBreakStartTime = isOnBreak
+    ? breaks[breaks.length - 1].start
+    : null;
 
   useEffect(() => {
-    if (breaks.length > 0 && breaks[breaks.length - 1].end === null) {
-      setIsOnBreak(true); // Set to true if there's an active break
-    } else {
-      setIsOnBreak(false);
-    }
-  }, [breaks]);
-
-  const handleBreakClick = () => {
+    let interval;
     if (isOnBreak) {
-      endBreak(); // End the break if currently on break
+      interval = setInterval(() => {
+        const now = new Date();
+        const breakStart = new Date(currentBreakStartTime);
+        const duration = (now - breakStart) / 1000 / 3600; // in hours
+        setCurrentBreakDuration(duration);
+      }, 1000);
     } else {
-      startBreak(); // Start a new break if not on break
+      setCurrentBreakDuration(0);
     }
-  };
+    return () => clearInterval(interval);
+  }, [isOnBreak, currentBreakStartTime]);
 
   return (
     <div className="w-full max-w-lg mx-auto mb-8 p-4 bg-white shadow-md rounded-md">
-      {/* Check-in/Check-out and Breaks Section */}
       <div className="mb-4 text-sm">
-        {!isCheckedIn ? (
-          <Button
-            onClick={checkIn}
-            className="bg-blue-500 text-white px-4 py-2 rounded-md"
-          >
-            Check-in
-          </Button>
-        ) : (
+        <p>
+          <strong>Check-in:</strong>{" "}
+          {checkInTime
+            ? new Date(checkInTime).toLocaleTimeString()
+            : "Not checked in"}
+        </p>
+        {checkOutTime && (
+          <p>
+            <strong>Check-out:</strong>{" "}
+            {new Date(checkOutTime).toLocaleTimeString()}
+          </p>
+        )}
+        {isOnBreak && (
           <>
-            <div>
-              <p>
-                <strong>Check-in:</strong>{" "}
-                {checkInTime
-                  ? new Date(checkInTime).toLocaleTimeString()
-                  : "Not checked in"}
-              </p>
-              <p>
-                <strong>Check-out:</strong>{" "}
-                {checkOutTime
-                  ? new Date(checkOutTime).toLocaleTimeString()
-                  : "Not checked out"}
-              </p>
-            </div>
-
-            <Button
-              onClick={checkOut}
-              className="bg-red-500 text-white px-4 py-2 rounded-md mt-2"
-            >
-              Check-out
-            </Button>
-
-            {!isOnBreak ? (
-              <Button
-                onClick={startBreak}
-                className="bg-yellow-500 text-white px-4 py-2 rounded-md mt-2"
-              >
-                Start Break
-              </Button>
-            ) : (
-              <Button
-                onClick={endBreak}
-                className="bg-green-500 text-white px-4 py-2 rounded-md mt-2"
-              >
-                End Break
-              </Button>
-            )}
+            <p>
+              <strong>Current Break Start:</strong>{" "}
+              {new Date(currentBreakStartTime).toLocaleTimeString()}
+            </p>
+            <p>
+              <strong>Break Duration:</strong>{" "}
+              {formatTime(currentBreakDuration)}
+            </p>
           </>
         )}
+        <p>
+          <strong>Total Time:</strong>{" "}
+          {formatTime(totalTimeSinceCheckIn / 3600)}
+        </p>
+        <p>
+          <strong>Attendance Status:</strong> {attendanceStatus}
+        </p>
       </div>
 
       <div className="relative pt-2">
-        {/* Progress Bar */}
         <div className="w-full h-4 bg-gray-200 rounded-md">
-          {/* Add your progress bar logic here */}
+          <div
+            className="h-full bg-blue-500 rounded-md"
+            style={{
+              width: `${progressPercentage}%`,
+            }}
+          ></div>
         </div>
 
-        {/* Break Indicator */}
         {breaks.map((breakPeriod, index) => {
+          if (!checkInTime) return null;
           const breakStart = new Date(breakPeriod.start);
-          const breakEnd = breakPeriod.end ? new Date(breakPeriod.end) : null;
+          const breakEnd = breakPeriod.end
+            ? new Date(breakPeriod.end)
+            : new Date();
           const breakStartPercentage =
-            ((breakStart.getTime() - new Date(checkInTime).getTime()) /
-              (8 * 60 * 60 * 1000)) *
-            100;
-          const breakEndPercentage = breakEnd
-            ? ((breakEnd.getTime() - new Date(checkInTime).getTime()) /
-                (8 * 60 * 60 * 1000)) *
-              100
-            : breakStartPercentage;
+            ((breakStart - new Date(checkInTime)) / (7 * 3600 * 1000)) * 100;
+          const breakEndPercentage =
+            ((breakEnd - new Date(checkInTime)) / (7 * 3600 * 1000)) * 100;
 
           return (
             <Tooltip
               key={index}
               text={`Break ${index + 1}: ${breakStart.toLocaleTimeString()} - ${
-                breakEnd ? breakEnd.toLocaleTimeString() : "Ongoing"
+                breakPeriod.end ? breakEnd.toLocaleTimeString() : "Ongoing"
               }`}
             >
               <div
@@ -129,13 +118,13 @@ export default function AttendanceProgressBar({ attendanceData }) {
         })}
       </div>
 
-      {/* Progress Information */}
       <div className="mt-4 text-center text-sm">
         <p className="text-gray-700">
-          Worked: <strong>{dailyHours} hrs / 8 hrs</strong>
+          Total Time:{" "}
+          <strong>{formatTime(totalTimeSinceCheckIn / 3600)} / 07:00:00</strong>
         </p>
         <p className="text-gray-500">
-          Progress: <strong>{((dailyHours / 8) * 100).toFixed(2)}%</strong>
+          Progress: <strong>{progressPercentage.toFixed(2)}%</strong>
         </p>
       </div>
     </div>
