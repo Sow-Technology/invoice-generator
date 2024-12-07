@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "node init && next dev",
+    "build": "node init && next build",
+    "start": "node init && next start",
     "lint": "next lint",
     "agg": "node -r esm src/lib/aggregate.js "
   },
@@ -65,6 +65,7 @@
     "react-to-print": "^2.15.1",
     "react-toastify": "^10.0.5",
     "recharts": "^2.13.0",
+    "socket.io-client": "4.8.3",
     "sonner": "^1.5.0",
     "styled-components": "^6.1.13",
     "tailwind-merge": "^2.4.0",
