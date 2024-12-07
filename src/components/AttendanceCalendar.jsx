@@ -32,10 +32,11 @@ const determineAttendanceStatus = (record) => {
     .duration(checkOutTime.diff(checkInTime))
     .asHours();
 
-  if (!record.checkIn || !record.checkOut) return "absent";
+  if (!record.checkIn) return "absent";
 
   if (totalWorkHours >= 7) return "present";
-  if (totalWorkHours > 0) return "partial";
+  if (totalWorkHours < 7 && record.checkOut) return "Half Day";
+  if (totalWorkHours > 0) return "checked in";
 
   return "absent";
 };
@@ -57,6 +58,18 @@ export default function AttendanceCalendar({ attendance = [] }) {
       icon: CheckCircle2,
       label: "Full Day",
     },
+    "checked in": {
+      color: "text-yellow-600",
+      bgColor: "bg-yellow-50",
+      icon: AlertTriangle,
+      label: "Checked In",
+    },
+    "half day": {
+      color: "text-yellow-600",
+      bgColor: "bg-yellow-50",
+      icon: AlertTriangle,
+      label: "Half Day",
+    },
     partial: {
       color: "text-yellow-600",
       bgColor: "bg-yellow-50",
@@ -74,10 +87,12 @@ export default function AttendanceCalendar({ attendance = [] }) {
   // Transform attendance data
   const events = attendance.map((day) => {
     const status = determineAttendanceStatus(day);
+    console.log(status);
+
     return {
       start: new Date(day.date),
       end: new Date(day.date),
-      title: statusConfig[status].label,
+      title: statusConfig[status.toLowerCase()].label,
       status: status,
       ...day,
     };
@@ -99,7 +114,7 @@ export default function AttendanceCalendar({ attendance = [] }) {
 
     return (
       <div className="flex justify-between items-center mb-4 px-4">
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 justify-between w-full">
           <button
             onClick={() => onNavigate("PREV")}
             className="p-2 hover:bg-gray-100 rounded-full"
@@ -154,7 +169,12 @@ export default function AttendanceCalendar({ attendance = [] }) {
 
   // Event style getter
   const eventStyleGetter = (event) => {
-    const { bgColor, color } = statusConfig[event.status];
+    console.log(event);
+    console.log(statusConfig["half day"]);
+    const { bgColor, color } = statusConfig[event.status] || {
+      bgColor: "red",
+      color: "white",
+    };
     return {
       style: {
         backgroundColor: bgColor,
@@ -162,6 +182,9 @@ export default function AttendanceCalendar({ attendance = [] }) {
         borderRadius: "8px",
         border: "none",
         padding: "4px 8px",
+        fontSize: "12px",
+        textAlign: "center",
+        marginTop: "auto",
         fontWeight: 600,
       },
     };

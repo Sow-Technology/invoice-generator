@@ -9,13 +9,15 @@ import { auth } from "@/auth";
 export async function updateUser(user) {
   await dbConnect();
   try {
-    const updatedUser = await User.findByIdAndUpdate(user._id, user);
+    const updatedUser = await User.findByIdAndUpdate(user._id, user, {
+      new: true,
+    }).lean();
     if (!updatedUser) {
       throw new Error("User not found");
     }
-    return true;
+    return { success: true, user: updatedUser };
   } catch (err) {
-    throw new Error("Unable to update the user");
+    return { success: false, error: "Unable to update the user" };
   }
 }
 
@@ -37,13 +39,17 @@ export async function checkIn() {
 
   await Attendance.updateOne(
     { user: session.user.id, date: today },
-    { $set: { checkIn: new Date(), status: "present" } },
+    {
+      $set: {
+        checkIn: new Date(),
+        status: "checked in", // Set initial status to "checked in"
+      },
+    },
     { upsert: true }
   );
 
   revalidatePath("/");
 }
-
 export async function checkOut() {
   const session = await auth();
   await dbConnect();
@@ -67,9 +73,25 @@ export async function checkOut() {
   const checkOutTime = new Date();
   const totalWorkTime = (checkOutTime - attendance.checkIn) / (1000 * 60 * 60);
 
+  // Determine status based on total work time
+  let status;
+  if (totalWorkTime >= 7) {
+    status = "present";
+  } else if (totalWorkTime > 0) {
+    status = "half day";
+  } else {
+    status = "absent";
+  }
+
   await Attendance.updateOne(
     { user: session.user.id, date: today },
-    { $set: { checkOut: checkOutTime, totalWorkTime } }
+    {
+      $set: {
+        checkOut: checkOutTime,
+        totalWorkTime: totalWorkTime,
+        status: status,
+      },
+    }
   );
 
   revalidatePath("/");
@@ -82,21 +104,35 @@ export async function startBreak() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const attendance = await Attendance.findOne({
-    user: session.user.id,
-    date: today,
-  });
+  try {
+    const attendance = await Attendance.findOne({
+      user: session.user.id,
+      date: today,
+    }).lean();
 
-  if (attendance?.breaks?.some((b) => !b.end)) {
-    throw new Error("You already have an ongoing break.");
+    if (!attendance) {
+      return {
+        success: false,
+        error: "You need to check in before starting a break.",
+      };
+    }
+
+    if (attendance?.breaks?.some((b) => !b.end)) {
+      return { success: false, error: "You already have an ongoing break." };
+    }
+
+    const updatedAttendance = await Attendance.findOneAndUpdate(
+      { user: session.user.id, date: today },
+      { $push: { breaks: { start: new Date() } } },
+      { new: true }
+    ).lean();
+
+    revalidatePath("/");
+    return { success: true, attendance: updatedAttendance };
+  } catch (error) {
+    console.error("Start break error:", error);
+    return { success: false, error: "Failed to start break" };
   }
-
-  await Attendance.updateOne(
-    { user: session.user.id, date: today },
-    { $push: { breaks: { start: new Date() } } }
-  );
-
-  revalidatePath("/");
 }
 
 export async function endBreak() {
@@ -106,20 +142,27 @@ export async function endBreak() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const attendance = await Attendance.findOne({
-    user: session.user.id,
-    date: today,
-    "breaks.end": null,
-  });
+  try {
+    const attendance = await Attendance.findOne({
+      user: session.user.id,
+      date: today,
+      "breaks.end": null,
+    }).lean();
 
-  if (!attendance) {
-    throw new Error("No ongoing break found.");
+    if (!attendance) {
+      return { success: false, error: "No ongoing break found." };
+    }
+
+    const updatedAttendance = await Attendance.findOneAndUpdate(
+      { user: session.user.id, date: today, "breaks.end": null },
+      { $set: { "breaks.$.end": new Date() } },
+      { new: true }
+    ).lean();
+
+    revalidatePath("/");
+    return { success: true, attendance: updatedAttendance };
+  } catch (error) {
+    console.error("End break error:", error);
+    return { success: false, error: "Failed to end break" };
   }
-
-  await Attendance.updateOne(
-    { user: session.user.id, date: today, "breaks.end": null },
-    { $set: { "breaks.$.end": new Date() } }
-  );
-
-  revalidatePath("/");
 }
